@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1092115205073",
+    "project_id": "stadium-booking-854aa",
+    "storage_bucket": "stadium-booking-854aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092115205073:android:285d439df787fbfab46ef0",
+        "android_client_info": {
+          "package_name": "com.example.client_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1092115205073-8q8heql73uc7k8foni8vmgqev20v89h2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.client_app",
+            "certificate_hash": "455f2bf50d4dd4e0e2a86316f461c90a1b1ebd28"
+          }
+        },
+        {
+          "client_id": "1092115205073-64hotajeov8jkt2mohjmeph307kbnlre.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTfik6uMgK_XBbrPL8rsQB5GnVal4wFVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092115205073-64hotajeov8jkt2mohjmeph307kbnlre.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1092115205073-kgigipadesfs1hd24cs8lvu96u9f4j0q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.clientApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

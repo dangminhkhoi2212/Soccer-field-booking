@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "stadium-booking-854aa",
+  "private_key_id": "91d2d8a181cdb7007f494a88e8d074f7f2bf9625",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDUyzT3DiNvB7rL\n8Ak3TclB2G9zBeSyJYOLqGIdK4EogE8DhZbjsnnEZIF/jSMjVzEFPEaAiWfUM1Tp\nvAj0kXG085q2to6iWJPKw2o1O0D6RhRZcCDiFycjlBBSAOpe7tfrsGcvI6/Yd5T7\nyc5k0hOM8QeJ6qSOq+TnFe7qsS+ZF80h/zO3LBoxdkZuw4gSH/vpdq6JKjnM8W9z\nZQ/l6LFNeUW4GQhL6CLWOWYU3OaZMX0YDWrfQkAnktYN9Rstoa6T8mv+TkHkYJqL\nKGEX0IRf0DfrCwmbD4AByxpC8UG66TZQ46hiE7P7ktdzXudyj1/dti170BKinGSS\niSdmdcPDAgMBAAECggEAIVU7lL+4OTpCvpN5PhqHPjNDMgdoTaemtYfI5rzb3JZM\nykZw3nYksOj1iB95s52C5kkM2jGr/AeWc46q8HSgFTJbt+dc7H1nmUmHJ5OCmDHG\nGkSAQipSTTZyYAYYsIpFdHwLjczPTN9ejRqNpClsOpW/EpGY+Whf0PsUk9rxk89n\nYTKCfYvm4/DEXbejPPsiH8cx2ZeLoJNT/8J2txmv+xUPYk7XOWp8fsHcc2x8gp3/\nmTtxgmMe/qW3g4N8gE2N7HmpomS29r2CRNWRchzTRjAsTcg9pg523z640jjs01ED\n9ieeu4HLFC6Wic3Y8bhZk2y8gA/XONrBoxjY0+824QKBgQD5NDoupJ8OAUyHeMps\nWiymM9iZeMgvIG2kXZrAeNx9ZZPoebr7ANEe7T3Qw/HTuppgZ3GcPnPU5bfhfZAf\nIr3+8e4jyzYACQB7AdhVryLooMnRmKRh+B8Yk1HHoyAf6KJ6frnyvwhmbbu+1dV+\nyEb90edgiSfYlJX9zL5tXco9mwKBgQDamMnD/H9Fi+OEP2+7smfC9ZJ4l3SDqeXH\nt2sXFHZn9FadckerooZvQaYR96viw5iaVw9YYfM9rcN2AS7fHwlvPuD4DTtvGw1O\n6FNUSCdqGM+Tm6bBnPOSoQ4+M9jvpIvgTJAHDU+qK2YD6HyfYxTIF7hCesDIRrtH\np8GNRykI+QKBgQCJ9FehKpDCeAWdmUi14tWEzH7DtxFaxWDs9MSOeFnXMTxIHdtc\nyH771+m4gECHLW34oEtMa2ZEHUdGFPSLx/fWAqgKOJyUOGeDsOnJxUJV9WzEEvQt\nJ+ZO/H7xPWSzRV1s4mqd7xL/YQ/l/QpLPSPPrzufPU5JnzfJYGaqtJkYsQKBgQCM\nneh8yHpelIRA2EXZ6gPRaANWy6bJ44rKlHSxHhqk+IqXMaJlCGGORB6+RCIv9z69\nWe+nHStJq/Omf1BVezOoejxhlLF84VwIPG8OMnQYTemJvIDi30HYOv5ciSGt1p2c\nJeQohSmP/+bZ8L3qEeSWapu/OBO3QbjLeWCKrxH4kQKBgQCBsAyWTshUn7jbEO+t\niHxr9qbuKjBQ/Qw8UVdC2oGqqMZRP9j00HyeNpojQO2CMBOElkiX5CVPwpb+c4C4\nPU/A3n+ZhJQkEx9hQIMZYd6pSPrY3OanBJQYRWOPQFm0gWqZHWm1aT1nzLNGc+WP\nQDEeYReWUiA1/RbStxenYoUheg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-irg1q@stadium-booking-854aa.iam.gserviceaccount.com",
+  "client_id": "108048474908976276791",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-irg1q%40stadium-booking-854aa.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
