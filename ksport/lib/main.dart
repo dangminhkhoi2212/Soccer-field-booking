@@ -1,4 +1,3 @@
-import 'package:client_app/const/colors.dart';
 import 'package:client_app/firebase_options.dart';
 import 'package:client_app/routes/get_route.dart';
 import 'package:client_app/routes/route_path.dart';
@@ -7,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:widget_component/const/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

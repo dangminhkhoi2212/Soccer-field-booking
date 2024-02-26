@@ -11,18 +11,17 @@ class AppBarProfile extends StatefulWidget {
 }
 
 class _AppBarProfileState extends State<AppBarProfile> {
-  UserJson? user;
   final _box = GetStorage();
   String? name;
   @override
   void initState() {
     super.initState();
-    user = StorageUser().getUserLocal();
     listenChangeName();
   }
 
   Function? disposeListen;
   void listenChangeName() {
+    if (!mounted) return;
     disposeListen = _box.listenKey('name', (value) {
       setState(() {
         name = value;

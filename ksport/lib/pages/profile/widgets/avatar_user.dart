@@ -1,8 +1,8 @@
 import 'package:client_app/models/model_user.dart';
 import 'package:client_app/storage/storage_user.dart';
-import 'package:client_app/widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class AvatarUser extends StatefulWidget {
   const AvatarUser({super.key});
@@ -46,15 +46,8 @@ class _AvatarUserState extends State<AvatarUser> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AvatarCustom(
-          size: 80,
-          child: Image.network(
-            avatar ?? '',
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.fill,
-          ),
-        ),
+        MyImage(
+            width: double.infinity, height: double.infinity, src: avatar ?? ''),
         const SizedBox(
           height: 10,
         ),

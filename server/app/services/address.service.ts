@@ -25,10 +25,14 @@ class AddressService {
         );
         return result;
     }
-    static async getAddress({ userID }: any) {
-        return await AddressModel.findOne({
-            userID: new mongoose.Types.ObjectId(userID),
-        });
+    static async getAddress(query: { userID?: string }) {
+        const queryParams: any = {};
+        if (query.userID)
+            queryParams.userID = new mongoose.Types.ObjectId(query.userID);
+        return await AddressModel.find(queryParams).populate(
+            'userID',
+            'name avatar'
+        );
     }
 }
 export default AddressService;

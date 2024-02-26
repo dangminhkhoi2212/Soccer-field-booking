@@ -12,14 +12,36 @@ class FieldService {
         description: string;
         isLock: boolean;
         isRepair: boolean;
-        fieldID?: string;
     }) {
-        return await FieldModel.findByIdAndUpdate(fieldData.fieldID, {
+        return await FieldModel.create({
             ...fieldData,
             userID: new mongoose.Types.ObjectId(fieldData.userID),
         });
     }
-
+    static async updateField(fieldData: {
+        userID: string;
+        coverImage: string;
+        name: string;
+        type: number;
+        width: number;
+        height: number;
+        description: string;
+        isLock: boolean;
+        isRepair: boolean;
+        fieldID: string;
+    }) {
+        return await FieldModel.findByIdAndUpdate(
+            fieldData.fieldID,
+            {
+                ...fieldData,
+                userID: new mongoose.Types.ObjectId(fieldData.userID),
+            },
+            {
+                upsert: true,
+                new: true,
+            }
+        );
+    }
     static async getSoccerField(data: { userID?: string; fieldID?: string }) {
         return await FieldModel.find({
             $or: [

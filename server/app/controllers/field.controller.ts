@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import FieldService from '../services/field.service';
 import { Query } from 'mongoose';
 
-interface TAddFiled {
+interface TAddField {
     userID: string;
     coverImage: string;
     name: string;
@@ -14,6 +14,9 @@ interface TAddFiled {
     fieldID?: string;
     isRepair: boolean;
 }
+interface TUpdateField extends TAddField {
+    fieldID: string;
+}
 
 interface TGetField {
     userID: string;
@@ -23,7 +26,7 @@ interface TGetField {
 class FieldController {
     static async addField(req: Request, res: Response) {
         try {
-            const body: TAddFiled = req.body as TAddFiled;
+            const body: TAddField = req.body as TAddField;
             const result = await FieldService.createField(body);
             res.send(result);
         } catch (error: any) {
@@ -34,7 +37,19 @@ class FieldController {
                 .json({ err_mes: error.message }); // Use error.message for clarity
         }
     }
+    static async updateField(req: Request, res: Response) {
+        try {
+            const body: TUpdateField = req.body as TUpdateField;
+            const result = await FieldService.updateField(body);
+            res.send(result);
+        } catch (error: any) {
+            console.log('🚀 ~ FieldController ~ addField ~ error:', error);
 
+            return res
+                .status(error.status || 500)
+                .json({ err_mes: error.message }); // Use error.message for clarity
+        }
+    }
     static async getSoccerField(req: Request, res: Response) {
         try {
             const query: TGetField = req.query as unknown as TGetField;

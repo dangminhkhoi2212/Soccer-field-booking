@@ -1,14 +1,11 @@
-import 'dart:io';
-
-import 'package:client_app/const/colors.dart';
-import 'package:client_app/models/model_user.dart';
 import 'package:client_app/services/service_upload_image.dart';
-import 'package:client_app/widgets/avatar.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class FormAvatar extends StatefulWidget {
   const FormAvatar({super.key});
@@ -82,19 +79,23 @@ class _FormAvatarState extends State<FormAvatar> {
       children: [
         ClipOval(
           child: _isUploading
-              ? const AvatarCustom(
-                  size: 60,
-                  child: SizedBox(
-                      child: CircularProgressIndicator(
-                    color: MyColor.secondary,
-                  )),
+              ? const SizedBox(
+                  height: 150,
+                  width: 150,
+                  child: CircleAvatar(
+                    child: Center(
+                      child: SizedBox(
+                          child: CircularProgressIndicator(
+                        color: MyColor.secondary,
+                      )),
+                    ),
+                  ),
                 )
-              : AvatarCustom(
-                  size: 60,
-                  child: Image.network(avatar!,
-                      height: double.infinity,
-                      width: double.infinity,
-                      fit: BoxFit.cover),
+              : MyImage(
+                  height: 150,
+                  width: 150,
+                  src: avatar.toString(),
+                  isAvatar: true,
                 ),
         ),
         Positioned(

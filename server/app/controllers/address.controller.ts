@@ -4,15 +4,12 @@ import AddressService from '../services/address.service';
 class AddressController {
     static async getAddress(req: Request, res: Response) {
         try {
-            const query = req.query;
+            const query = req.query as { userID?: string };
             console.log('🚀 ~ AddressController ~ getAddress ~ query:', query);
 
-            const userID = query.userID;
-            if (!userID)
-                return res.status(400).json({ msg: 'userID not found' });
-
-            const address = await AddressService.getAddress({ userID });
-            return res.send(address);
+            const addresses = await AddressService.getAddress(query);
+            if (addresses.length == 1) return res.send(addresses[0]);
+            return res.send(addresses);
         } catch (error: any) {
             return res
                 .status(error.status || 500)

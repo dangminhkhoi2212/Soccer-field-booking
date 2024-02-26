@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ksport_seller/const/colors.dart';
 import 'package:ksport_seller/pages/fields/widgets/field_filter.dart';
 import 'package:ksport_seller/pages/fields/widgets/field_list.dart';
 import 'package:ksport_seller/routes/route_path.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/const/colors.dart';
 
 class FieldsPage extends StatefulWidget {
   const FieldsPage({super.key});
@@ -17,11 +17,6 @@ class _FieldsPageState extends State<FieldsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Field Management'),
-        centerTitle: true,
-        backgroundColor: MyColor.secondary,
-      ),
       body: Container(
           decoration: const BoxDecoration(
             color: MyColor.secondary,

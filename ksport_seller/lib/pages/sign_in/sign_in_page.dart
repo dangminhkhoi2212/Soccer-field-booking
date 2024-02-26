@@ -1,4 +1,3 @@
-import 'package:ksport_seller/const/colors.dart';
 import 'package:ksport_seller/pages/sign_in/widgets/form_sign_in.dart';
 import 'package:ksport_seller/routes/route_path.dart';
 import 'package:ksport_seller/services/service_google_auth.dart';
@@ -6,6 +5,7 @@ import 'package:ksport_seller/store/store_user.dart';
 import 'package:ksport_seller/utils/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:widget_component/const/colors.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});

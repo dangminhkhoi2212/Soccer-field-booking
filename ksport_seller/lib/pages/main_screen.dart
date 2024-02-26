@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:ksport_seller/const/colors.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
 import 'package:ksport_seller/pages/history_order/history_order_page.dart';
 import 'package:ksport_seller/pages/home.dart';
@@ -7,6 +6,7 @@ import 'package:ksport_seller/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:widget_component/const/colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -22,12 +22,14 @@ class _MainScreenState extends State<MainScreen> {
     const HistoryOrderPage(),
     const UserPage()
   ];
-  late int _index;
+  late int _index = 0;
 
   @override
   void initState() {
     super.initState();
-    _index = Get.arguments['index'] ?? 0;
+    final par = Get.parameters;
+    print('params: $par');
+    _index = par['index'] == '1' ? 1 : 0;
     debugPrint(_index.toString());
   }
 

@@ -7,6 +7,8 @@ import TokenService from '../services/token.service';
 import AddressService from '../services/address.service';
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
+import { ROLE } from '../consts/user.const';
+import SellerService from '../services/seller.service';
 
 const BCRYPT_SECRET = Number.parseInt(process.env.BCRYPT_SECRET || '10');
 class AuthController {
@@ -40,11 +42,11 @@ class AuthController {
             console.log('🚀 ~ AuthController ~ login ~ userID:', userID);
 
             await user.save();
-            const address = await AddressService.getAddress({ userID });
-            console.log('🚀 ~ AuthController ~ login ~ address:', address);
+            const addresses = await AddressService.getAddress({ userID });
+            console.log('🚀 ~ AuthController ~ login ~ addresses:', addresses);
             let isUpdatedAddress = true;
-            if (address) {
-                isUpdatedAddress = address.latitude != null;
+            if (addresses.length) {
+                isUpdatedAddress = addresses[0].latitude != null;
             } else isUpdatedAddress = false;
             return res.send({
                 ...user.toJSON(),
@@ -106,7 +108,11 @@ class AuthController {
 
             user.refreshToken = refreshToken;
             const userID = user._id;
-
+            if (role == ROLE.seller) {
+                const startTime = '5:00';
+                const endTime = '23:00';
+                await SellerService.updateSeller(user._id, startTime, endTime);
+            }
             await user.save();
             const address = await AddressService.getAddress({ userID });
             let isUpdatedAddress = address != null;

@@ -4,17 +4,17 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:ksport_seller/const/colors.dart';
 import 'package:ksport_seller/models/model_user.dart';
 import 'package:ksport_seller/routes/route_path.dart';
 import 'package:ksport_seller/services/service_google_auth.dart';
 import 'package:ksport_seller/storage/storage_user.dart';
 import 'package:ksport_seller/store/store_user.dart';
-import 'package:ksport_seller/utils/loading.dart';
 import 'package:ksport_seller/utils/util_snackbar.dart';
 import 'package:ksport_seller/utils/validate.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
+import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/utils/loading.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

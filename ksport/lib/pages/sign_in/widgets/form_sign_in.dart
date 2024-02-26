@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
-import 'package:client_app/const/colors.dart';
 import 'package:client_app/routes/route_path.dart';
 import 'package:client_app/services/service_google_auth.dart';
 import 'package:client_app/utils/util_snackbar.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/const/colors.dart';
 
 class FromSignIn extends StatefulWidget {
   const FromSignIn({super.key});

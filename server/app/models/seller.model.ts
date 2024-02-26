@@ -10,6 +10,7 @@ interface TSeller extends Document {
     startTime: String;
     endTime: String;
     revenue: number;
+    isHalfHour: boolean;
 }
 const SellerSchema: Schema = new Schema({
     userID: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
@@ -20,5 +21,6 @@ const SellerSchema: Schema = new Schema({
     },
     endTime: { type: String, required: true, default: timeDefault(0, 0, 0, 0) },
     revenue: { type: Number, default: 0 },
+    isHalfHour: { type: Boolean, default: true },
 });
 export default model<TSeller>('Seller', SellerSchema);

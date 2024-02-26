@@ -1,5 +1,4 @@
 import 'package:ksport_seller/pages/edit_profile/widgets/form_avatar.dart';
-import 'package:ksport_seller/services/service_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -8,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ksport_seller/utils/validate.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/services/service_user.dart';
 
 class FromEditProfile extends StatefulWidget {
   const FromEditProfile({super.key});

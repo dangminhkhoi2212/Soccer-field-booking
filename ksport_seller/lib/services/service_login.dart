@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ksport_seller/config/api_config.dart';
 import 'package:ksport_seller/models/model_user.dart';
 import 'package:ksport_seller/routes/route_path.dart';
-import 'package:ksport_seller/services/service_address.dart';
 import 'package:ksport_seller/services/service_google_map.dart';
 import 'package:ksport_seller/storage/storage_user.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:widget_component/services/service_address.dart';
 
 class LoginService {
   final Dio _dio = Dio(ApiConfig.options);

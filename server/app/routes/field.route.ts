@@ -5,5 +5,6 @@ const router: Router = Router();
 router
     .route('/')
     .get(FieldController.getSoccerField)
-    .post(FieldController.addField);
+    .post(FieldController.addField)
+    .put(FieldController.updateField);
 export default router;

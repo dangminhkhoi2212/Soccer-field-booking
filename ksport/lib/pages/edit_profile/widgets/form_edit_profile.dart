@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:client_app/const/colors.dart';
 import 'package:client_app/pages/edit_profile/widgets/form_avatar.dart';
 import 'package:client_app/services/service_user.dart';
 import 'package:easy_loading_button/easy_loading_button.dart';

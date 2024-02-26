@@ -1,6 +1,6 @@
-import 'package:ksport_seller/widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class AvatarUser extends StatefulWidget {
   const AvatarUser({super.key});
@@ -17,9 +17,9 @@ class _AvatarUserState extends State<AvatarUser> {
 
   @override
   void initState() {
+    super.initState();
     initValue();
     listenValue();
-    super.initState();
   }
 
   void initValue() async {
@@ -28,6 +28,7 @@ class _AvatarUserState extends State<AvatarUser> {
 
   void listenValue() {
     _listenAvatar = _box.listenKey('avatar', (value) {
+      if (!mounted) return;
       setState(() {
         avatar = value;
       });

@@ -1,6 +1,4 @@
-import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:ksport_seller/const/colors.dart';
+
 import 'package:ksport_seller/firebase_options.dart';
 import 'package:ksport_seller/routes/get_route.dart';
 import 'package:ksport_seller/routes/route_path.dart';
@@ -9,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:widget_component/const/colors.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");

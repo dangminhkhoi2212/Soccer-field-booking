@@ -1,12 +1,10 @@
-import 'package:client_app/models/model_user.dart';
 import 'package:client_app/routes/route_path.dart';
 import 'package:client_app/services/service_google_auth.dart';
-import 'package:client_app/storage/storage_user.dart';
-import 'package:client_app/widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class DrawerProfile extends StatefulWidget {
   const DrawerProfile({super.key});
@@ -46,8 +44,8 @@ class _DrawerProfileState extends State<DrawerProfile> {
   ];
   @override
   void initState() {
-    initValue();
     super.initState();
+    initValue();
   }
 
   void listenChangeName() {
@@ -66,7 +64,6 @@ class _DrawerProfileState extends State<DrawerProfile> {
     name = _box.read('name');
     email = _box.read('email');
     avatar = _box.read('avatar');
-    setState(() {});
   }
 
   List<ListTile> _buildListMenu() {
@@ -95,14 +92,11 @@ class _DrawerProfileState extends State<DrawerProfile> {
             email,
             style: const TextStyle(color: Colors.black54),
           ),
-          currentAccountPicture: AvatarCustom(
-            size: 30,
-            child: Image.network(
-              avatar,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.fill,
-            ),
+          currentAccountPicture: MyImage(
+            height: 20,
+            width: 20,
+            src: avatar,
+            isAvatar: true,
           ),
           decoration: const BoxDecoration(
               image: DecorationImage(

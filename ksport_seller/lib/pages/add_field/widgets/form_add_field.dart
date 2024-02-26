@@ -5,14 +5,16 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ksport_seller/const/colors.dart';
 import 'package:ksport_seller/routes/route_path.dart';
-import 'package:ksport_seller/services/service_field.dart';
-import 'package:ksport_seller/services/service_upload_image.dart';
 import 'package:ksport_seller/utils/format.dart';
-import 'package:ksport_seller/utils/loading.dart';
 import 'package:ksport_seller/utils/util_snackbar.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:logger/logger.dart';
+import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/services/service_field.dart';
+import 'package:widget_component/services/service_upload_image.dart';
+import 'package:widget_component/utils/loading.dart';
+import 'package:widget_component/widgets/my_image/my_image.dart';
 
 enum TYPE {
   P5,
@@ -29,6 +31,7 @@ class FormAddField extends StatefulWidget {
 }
 
 class _FormAddFieldState extends State<FormAddField> {
+  final logger = Logger();
   late bool isUpdate = false;
   final _formKey = GlobalKey<FormBuilderState>();
   final GetStorage _box = GetStorage();
@@ -57,7 +60,10 @@ class _FormAddFieldState extends State<FormAddField> {
     _fieldID = Get.parameters['fieldID'];
     _userID = _box.read('id');
     debugPrint(_fieldID.toString());
-    _getFieldUpdate();
+
+    if (_fieldID != null) {
+      _getFieldUpdate();
+    }
   }
 
   Future _getFieldUpdate() async {
@@ -82,10 +88,9 @@ class _FormAddFieldState extends State<FormAddField> {
           'price': FormatUtil.formatNumber(data['price']).toString(),
           'description': data['description'],
           'coverImage': data['coverImage'],
-          'isLock': false,
-          'isRepair': false,
+          'isLock': data['isLock'],
+          'isRepair': data['isRepair'],
         };
-        setState(() {});
         _formKey.currentState?.fields['name']
             ?.didChange(data['name'].toString());
         _formKey.currentState?.fields['type']
@@ -114,6 +119,7 @@ class _FormAddFieldState extends State<FormAddField> {
 
   Future<void> _selectImage() async {
     try {
+      if (!mounted) return;
       setState(() {
         _loadingSelectCover = true;
       });
@@ -148,7 +154,72 @@ class _FormAddFieldState extends State<FormAddField> {
       setState(() {
         _isLoading = true;
       });
-      _formKey.currentState!.save();
+      _formKey.currentState!.saveAndValidate();
+      FocusScope.of(context).unfocus();
+      final Map<String, dynamic> data = _formKey.currentState!.value;
+      final Map<String, dynamic> errors = _formKey.currentState!.errors;
+
+      if (errors.isNotEmpty) return;
+
+      final num price = num.parse(data['price'].split(',').join(''));
+      final num width = num.parse(data['width'].split(',').join(''));
+      final num length = num.parse(data['length'].split(',').join(''));
+      final num type = num.parse(data['type']);
+      final String name = data['name'];
+      final bool isLock = data['isLock'];
+      final bool isRepair = data['isRepair'];
+      final String description = data['description'];
+      final String coverImage = data['coverImage'];
+
+      debugPrint('price: $price');
+      debugPrint('width: $width');
+      debugPrint('length: $length');
+      debugPrint('type: $type');
+      debugPrint('name: $name');
+      debugPrint('isLock: $isLock');
+      debugPrint('isRepair: $isRepair');
+      debugPrint('description: $description');
+      debugPrint('coverImage: $coverImage');
+      final result = await FieldService().addSoccerField(
+          userID: _box.read('id'),
+          price: price,
+          width: width,
+          length: length,
+          type: type,
+          name: name,
+          isLock: isLock,
+          isRepair: isRepair,
+          description: description,
+          coverImage: coverImage);
+      debugPrint(result.toString());
+      if (result != null) {
+        SnackbarUtil.getSnackBar(
+            title: 'Add new soccer field',
+            message: 'You were added a new field successfully');
+        return Get.offNamed(RoutePaths.mainScreen, parameters: {'index': '1'});
+      } else {
+        throw 'Cannot add a new field. Please try again.';
+      }
+    } catch (e) {
+      logger.e(error: e, 'Error');
+      SnackbarUtil.getSnackBar(
+          title: 'Add new soccer field',
+          message: 'Cannot add a new field. Please try again.');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _handleUpdateField() async {
+    try {
+      if (!mounted && _fieldID == null) return;
+      setState(() {
+        _isLoading = true;
+      });
+      _formKey.currentState!.saveAndValidate();
+
       FocusScope.of(context).unfocus();
       final Map<String, dynamic> data = _formKey.currentState!.value;
       final Map<String, dynamic> errors = _formKey.currentState!.errors;
@@ -173,9 +244,9 @@ class _FormAddFieldState extends State<FormAddField> {
         debugPrint('isRepair: $isRepair');
         debugPrint('description: $description');
         debugPrint('coverImage: $coverImage');
-        final result = await FieldService().addSoccerField(
-            fieldID: _fieldID,
+        final result = await FieldService().updateSoccerField(
             userID: _box.read('id'),
+            fieldID: _fieldID ?? '',
             price: price,
             width: width,
             length: length,
@@ -185,19 +256,18 @@ class _FormAddFieldState extends State<FormAddField> {
             isRepair: isRepair,
             description: description,
             coverImage: coverImage);
-        if (result.isNotEmpty) {
+        logger.i(result.toString());
+        if (result != null) {
           SnackbarUtil.getSnackBar(
-              title: _fieldID != null ? "Update field" : 'Add new soccer field',
-              message: _fieldID != null
-                  ? "Update field successfully"
-                  : 'You were added a new field successfully');
-          return Get.offNamed(RoutePaths.fields, arguments: {'index': '1'});
+              title: "Update field", message: "Update field successfully");
+          return Get.offAllNamed(RoutePaths.mainScreen,
+              parameters: {'index': '1'});
         } else {
           throw 'Cannot add a new field. Please try again.';
         }
       }
     } catch (e) {
-      print('e');
+      logger.e(error: e, 'Error update field');
       SnackbarUtil.getSnackBar(
           title: 'Add new soccer field',
           message: 'Cannot add a new field. Please try again.');
@@ -217,12 +287,8 @@ class _FormAddFieldState extends State<FormAddField> {
       );
     }
     if (_coverUrl.isNotEmpty) {
-      return Image.network(
-        _coverUrl,
-        width: double.infinity,
-        height: double.infinity,
-        fit: BoxFit.cover,
-      );
+      return MyImage(
+          width: double.infinity, height: double.infinity, src: _coverUrl);
     }
     return const LineIcon.camera();
   }
@@ -378,8 +444,10 @@ class _FormAddFieldState extends State<FormAddField> {
     );
   }
 
-  FormBuilderCheckbox _buildFieldIsRepair() {
-    return FormBuilderCheckbox(
+  FormBuilderSwitch _buildFieldIsRepair() {
+    return FormBuilderSwitch(
+      activeColor: MyColor.primary,
+      decoration: const InputDecoration(border: InputBorder.none),
       name: 'isRepair',
       title: const Text(
         'Repair',
@@ -388,8 +456,9 @@ class _FormAddFieldState extends State<FormAddField> {
     );
   }
 
-  FormBuilderCheckbox _buildFieldIsLock() {
-    return FormBuilderCheckbox(
+  FormBuilderSwitch _buildFieldIsLock() {
+    return FormBuilderSwitch(
+      activeColor: MyColor.primary,
       subtitle: const Text('This field will not show for everyone'),
       name: 'isLock',
       title: const Text(
@@ -442,7 +511,7 @@ class _FormAddFieldState extends State<FormAddField> {
     return InkWell(
       onTap: () {
         if (_loadingSelectCover || _isLoading) return;
-        _handleAddField();
+        _fieldID != null ? _handleUpdateField() : _handleAddField();
       },
       borderRadius: BorderRadius.circular(50),
       child: Ink(
@@ -473,7 +542,7 @@ class _FormAddFieldState extends State<FormAddField> {
     return FormBuilder(
       key: _formKey,
       initialValue: _initValue,
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: _isLoading
           ? Center(
               child: MyLoading.spinkit(size: 50),
@@ -491,6 +560,7 @@ class _FormAddFieldState extends State<FormAddField> {
                 _buildFieldPrice(),
                 const SizedBox(height: 10),
                 _buildFieldIsLock(),
+                const SizedBox(height: 10),
                 _buildFieldIsRepair(),
                 const SizedBox(height: 10),
                 _buildDescriptionField(),

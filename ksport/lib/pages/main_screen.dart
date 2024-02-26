@@ -1,4 +1,3 @@
-import 'package:client_app/const/colors.dart';
 import 'package:client_app/pages/field.dart';
 import 'package:client_app/pages/history_order/history_order_page.dart';
 import 'package:client_app/pages/home/home_page.dart';
@@ -6,6 +5,7 @@ import 'package:client_app/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:widget_component/const/colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

@@ -1,5 +1,5 @@
 import mongoose, { ObjectId, Schema, model } from 'mongoose';
-import { CUser } from '../consts/user.const';
+import { ROLE } from '../consts/user.const';
 
 export interface TUser {
     _id: string;
@@ -47,7 +47,7 @@ const UserSchema: Schema<TUser> = new Schema(
             },
             unique: true,
         },
-        role: { type: String, enum: CUser, default: CUser.CU1 },
+        role: { type: String, enum: ROLE, default: ROLE.user },
         refreshToken: { type: String, default: '' },
     },
     {

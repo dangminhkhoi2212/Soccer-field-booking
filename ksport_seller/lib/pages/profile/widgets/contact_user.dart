@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:ksport_seller/const/colors.dart';
-import 'package:ksport_seller/services/service_address.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/services/service_address.dart';
 
 class EditAddressPage extends StatefulWidget {
   const EditAddressPage({super.key});
@@ -61,10 +62,13 @@ class EditAddressPageState extends State<EditAddressPage> {
 
   Future<void> _getAddressApiAndInitializeMap() async {
     try {
+      if (!mounted) return;
       final String userID = _box.read('id').toString();
-      final result = await _addressService.getAddress(userID: userID);
-      if (result != null) {
-        myLatLng = LatLng(result['latitude'], result['longitude']);
+      final Response? response =
+          await _addressService.getAddress(userID: userID);
+      if (response!.statusCode == 200) {
+        final data = response.data;
+        myLatLng = LatLng(data['latitude'], data['longitude']);
         _createMarker();
         _kGooglePlex = CameraPosition(
           target: myLatLng ?? _defaultLatLag,

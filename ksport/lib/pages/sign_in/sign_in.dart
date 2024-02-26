@@ -1,4 +1,3 @@
-import 'package:client_app/const/colors.dart';
 import 'package:client_app/pages/sign_in/widgets/form_sign_in.dart';
 import 'package:client_app/routes/route_path.dart';
 import 'package:client_app/services/service_google_auth.dart';
@@ -6,6 +5,7 @@ import 'package:client_app/store/store_user.dart';
 import 'package:client_app/utils/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:widget_component/const/colors.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});

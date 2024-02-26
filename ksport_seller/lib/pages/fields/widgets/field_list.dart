@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:ksport_seller/pages/fields/widgets/field_card.dart';
-import 'package:ksport_seller/services/service_field.dart';
+import 'package:ksport_seller/routes/route_path.dart';
+import 'package:widget_component/services/service_field.dart';
+import 'package:widget_component/utils/loading.dart';
+import 'package:widget_component/widgets/field_card/field_card.dart';
 
 class SoccerFieldList extends StatefulWidget {
   const SoccerFieldList({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class SoccerFieldListState extends State<SoccerFieldList> {
   final GetStorage _box = GetStorage();
   String? _id;
   late var timer;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -31,8 +34,11 @@ class SoccerFieldListState extends State<SoccerFieldList> {
   }
 
   Future<void> _getSoccerFields() async {
+    if (!mounted) return;
     try {
-      if (!mounted) return;
+      setState(() {
+        _isLoading = true;
+      });
       _id = _box.read('id');
       if (_id!.isEmpty) return;
       final dynamic response =
@@ -48,6 +54,9 @@ class SoccerFieldListState extends State<SoccerFieldList> {
     } catch (e) {
       _soccerFields = [];
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -62,17 +71,29 @@ class SoccerFieldListState extends State<SoccerFieldList> {
       decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(topRight: Radius.circular(60))),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, mainAxisSpacing: 20, // Two columns
-          crossAxisSpacing: 20.0, childAspectRatio: 1 / 1, mainAxisExtent: 250,
-        ),
-        itemCount: _soccerFields!.length,
-        itemBuilder: (context, index) {
-          final field = _soccerFields![index];
-          return FieldCard(field: field);
-        },
-      ),
+      child: _isLoading
+          ? Center(
+              child: MyLoading.spinkit(),
+            )
+          : GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, mainAxisSpacing: 20, // Two columns
+                crossAxisSpacing: 20.0, childAspectRatio: 1 / 1,
+                mainAxisExtent: 250,
+              ),
+              itemCount: _soccerFields!.length,
+              itemBuilder: (context, index) {
+                final field = _soccerFields![index];
+                debugPrint(field.toString());
+                return FieldCard(
+                  field: field,
+                  onTap: () async {
+                    await Get.toNamed(RoutePaths.addField,
+                        parameters: {'fieldID': field['_id'].toString()});
+                  },
+                );
+              },
+            ),
     );
   }
 }

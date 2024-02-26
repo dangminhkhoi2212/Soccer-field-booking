@@ -23,7 +23,7 @@ class UserState extends State<UserPage> {
       body: Column(
         children: [
           const SizedBox(height: 10),
-          const AvatarUser(),
+          // const AvatarUser(),
           const SizedBox(height: 10),
           const InfoUser(),
           const SizedBox(height: 10),
