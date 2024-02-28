@@ -4,6 +4,7 @@ import 'package:client_app/pages/edit_profile/edit_profile_page.dart';
 import 'package:client_app/pages/home/home_page.dart';
 import 'package:client_app/pages/main_screen.dart';
 import 'package:client_app/pages/profile/profile_page.dart';
+import 'package:client_app/pages/seller/seller_page.dart';
 import 'package:client_app/pages/sign_up/sign_up_page.dart';
 import 'package:client_app/pages/sign_in/sign_in.dart';
 import 'package:client_app/routes/route_path.dart';
@@ -38,6 +39,10 @@ class GetRouter {
     {
       'name': RoutePaths.signUp,
       'page': const SignUpPage(),
+    },
+    {
+      'name': RoutePaths.seller,
+      'page': const SellerPage(),
     },
   ];
   static final List<GetPage> routes = pages

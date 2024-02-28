@@ -1,6 +1,7 @@
 class RoutePaths {
   static String home = '/';
   static String fields = '/fields';
+  static String seller = '/seller';
   static String user = '/profile';
   static String signIn = '/sign-in';
   static String signUp = '/sign-up';

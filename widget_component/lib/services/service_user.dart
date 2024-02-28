@@ -39,4 +39,24 @@ class UserService {
       return {'Error': e.message ?? ''};
     }
   }
+
+  Future<Response?> getUser({String? userID}) async {
+    try {
+      Response response =
+          await _dio.get(ApiConfig.userApiUrl, queryParameters: {
+        "userID": userID,
+      });
+      return response;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print('ERROR: ${e.response!.data}');
+        print('ERROR: ${e.response!.headers}');
+        print('ERROR: ${e.response!.requestOptions}');
+      } else {
+        print('ERROR: ${e.requestOptions}');
+        print('ERROR: ${e.message}');
+      }
+      return null;
+    }
+  }
 }

@@ -1,10 +1,11 @@
-import 'dart:async';
 import 'dart:ui';
 
+import 'package:client_app/routes/route_path.dart';
 import 'package:dio/src/response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icon.dart';
@@ -14,6 +15,7 @@ import 'package:widget_component/services/service_address.dart';
 import 'package:widget_component/services/service_google_map.dart';
 import 'package:widget_component/utils/loading.dart';
 import 'package:widget_component/utils/util_snackbar.dart';
+import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -51,7 +53,8 @@ class _HomePageState extends State<HomePage> {
     _mapController.dispose();
   }
 
-  Marker _buildMarker({required LatLng point, String? name}) {
+  Marker _buildMarker(
+      {required LatLng point, String? name, String? src, String? userID}) {
     return Marker(
       width: 40,
       height: 40,
@@ -61,10 +64,21 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (_) => <PopupMenuEntry>[
           PopupMenuItem(
             child: PopupMenuItem(
+                onTap: () {
+                  if (userID == null) return;
+                  Get.toNamed(RoutePaths.seller,
+                      parameters: {'userID': userID});
+                },
+                height: 20,
                 child: ListTile(
-              leading: const Icon(Icons.calculate_outlined),
-              title: Text(name ?? ''),
-            )),
+                  leading: MyImage(
+                    height: 50,
+                    width: 50,
+                    src: src ?? '',
+                    isAvatar: true,
+                  ),
+                  title: Text(name ?? ''),
+                )),
           ),
         ],
         child: SizedBox(
@@ -85,18 +99,24 @@ class _HomePageState extends State<HomePage> {
       final Response? response = await AddressService().getAddress();
       if (response!.statusCode == 200) {
         final dynamic data = response.data;
+        logger.d(data);
         if (data is List) {
           for (var address in data) {
             final LatLng point =
                 LatLng(address['latitude'], address['longitude']);
-            final Marker marker =
-                _buildMarker(point: point, name: address['userID']['name']);
+            final Marker marker = _buildMarker(
+                point: point,
+                name: address['userID']['name'],
+                src: address['userID']['avatar'],
+                userID: address['userID']['_id']);
             _markers.add(marker);
           }
         } else {
           final LatLng point = LatLng(data['latitude'], data['longitude']);
-          final Marker marker =
-              _buildMarker(point: point, name: data['userID']['name']);
+          final Marker marker = _buildMarker(
+              point: point,
+              name: data['userID']['name'],
+              userID: data['userID']['_id']);
           _markers.add(marker);
         }
       }

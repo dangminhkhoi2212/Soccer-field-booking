@@ -23,16 +23,16 @@ class MyImage extends StatelessWidget {
 
   FadeInImage _fadeInImage(String src) {
     return FadeInImage(
-      placeholder: const AssetImage(
-        'assets/images/loading.gif',
-      ),
-      image: NetworkImage(src),
-      fit: BoxFit.cover,
-      height: double.infinity,
-      width: double.infinity,
-      imageErrorBuilder: (context, error, stackTrace) =>
-          Image.asset('assets/images/image_error.png'),
-    );
+        placeholder: const AssetImage(
+          'assets/images/loading.gif',
+        ),
+        image: NetworkImage(src),
+        fit: BoxFit.cover,
+        height: double.infinity,
+        width: double.infinity,
+        imageErrorBuilder: (context, error, stackTrace) {
+          return Image.asset('assets/images/image_error.png');
+        });
   }
 
   @override

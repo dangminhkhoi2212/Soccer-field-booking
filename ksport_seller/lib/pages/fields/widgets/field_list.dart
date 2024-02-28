@@ -65,12 +65,14 @@ class SoccerFieldListState extends State<SoccerFieldList> {
       padding: const EdgeInsets.only(
         left: 10,
         right: 10,
-        top: 60,
+        top: 40,
         bottom: 20,
       ),
       decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(topRight: Radius.circular(60))),
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topRight: Radius.circular(40), topLeft: Radius.circular(40)),
+      ),
       child: _isLoading
           ? Center(
               child: MyLoading.spinkit(),
