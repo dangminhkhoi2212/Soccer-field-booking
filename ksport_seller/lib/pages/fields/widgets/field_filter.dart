@@ -1,15 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:ksport_seller/pages/fields/widgets/time_button.dart';
-import 'package:ksport_seller/utils/screen.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/services/service_seller.dart';
-import 'package:widget_component/utils/loading.dart';
-import 'package:widget_component/widgets/time_range_picker/time_range_picker.dart';
+import 'package:widget_component/my_library.dart';
 
 class FieldFilter extends StatefulWidget {
   const FieldFilter({Key? key}) : super(key: key);
@@ -31,43 +28,29 @@ class _FieldFilterState extends State<FieldFilter> {
   Map<String, dynamic>? _endTime;
   String? startTime;
   String? endTime;
-  final List<TimeOfDay?> _disableTimes = [];
+  List<TimeOfDay?> _disableTimes = [];
   bool _isLoading = false;
   TimeRangePickerState timeRangePicker = TimeRangePickerState();
+  @override
+  void setState(VoidCallback fn) {
+    if (!mounted) return;
+    super.setState(fn);
+  }
 
   @override
   void initState() {
     super.initState();
     _userID = _box.read('id');
     _getOperatingTime();
+    _generateDisableTime();
   }
 
-  List<Map<String, dynamic>> generateTimeIntervals({
-    required int start,
-    required int end,
-  }) {
-    List<Map<String, dynamic>> timeIntervals = [];
-    int id = 0;
-    for (int hour = start; hour < end; hour++) {
-      if (_isHalfHour) {
-        for (int minute = 0; minute < 60; minute += 30) {
-          timeIntervals.add({
-            'id': id,
-            'active': false,
-            'time': TimeOfDay(hour: hour, minute: minute),
-          });
-          id++;
-        }
-      } else {
-        timeIntervals.add({
-          'id': id,
-          'active': false,
-          'time': TimeOfDay(hour: hour, minute: 0),
-        });
-        id++;
-      }
-    }
-    return timeIntervals;
+  void _generateDisableTime() {
+    _disableTimes = DateTimeUtil.generateTime(
+        startTime: const TimeOfDay(hour: 7, minute: 0),
+        endTime: const TimeOfDay(hour: 10, minute: 30),
+        isHalfHour: true);
+    setState(() {});
   }
 
   Future<void> _getOperatingTime() async {
@@ -76,15 +59,19 @@ class _FieldFilterState extends State<FieldFilter> {
       setState(() {
         _isLoading = true;
       });
-      final response = await SellerService().getSeller(userID: _userID);
+      final response = await SellerService().getOneSeller(userID: _userID);
 
       if (response!.statusCode == 200) {
-        final data = response.data[0];
+        final data = response.data;
 
         startTime = data['startTime'];
         endTime = data['endTime'];
         _isHalfHour = data['isHalfHour'] ?? false;
-        _disableTimes.add(const TimeOfDay(hour: 11, minute: 0));
+        // _disableTimes = [
+        //   const TimeOfDay(hour: 11, minute: 0),
+        //   const TimeOfDay(hour: 11, minute: 30),
+        //   const TimeOfDay(hour: 20, minute: 30)
+        // ];
       }
     } catch (e) {
       logger.e(error: e, 'Error _getOperatingTime');
@@ -92,67 +79,6 @@ class _FieldFilterState extends State<FieldFilter> {
     setState(() {
       _isLoading = false;
     });
-  }
-
-  void _handleTimeButton(int index) {
-    for (var item in _listTime) {
-      item['active'] = false;
-    }
-    final Map<String, dynamic> timeItem = _listTime[index];
-    debugPrint(timeItem.toString());
-
-    if (_startTime != null && _endTime != null) {
-      _startTime = timeItem;
-
-      _endTime = null;
-    } else if (_startTime == null) {
-      _startTime = timeItem;
-    } else {
-      _endTime = timeItem;
-    }
-    timeItem['active'] = true;
-
-    if (_startTime != null && _endTime != null) {
-      int idStart = _startTime!['id'];
-      int idEnd = _endTime!['id'];
-      if (idStart > idEnd) {
-        int temp = idStart;
-        idStart = idEnd;
-        idEnd = temp;
-      }
-      for (int i = idStart; i <= idEnd; i++) {
-        _listTime[i]['active'] = true;
-      }
-    }
-
-    setState(() {});
-  }
-
-  Widget _buildListTime() {
-    List<Widget> timeButtons = [];
-    for (int i = 0; i < _listTime.length; i++) {
-      Map<String, dynamic> timeItem = _listTime[i];
-      final timeButton = GestureDetector(
-        onTap: () {
-          _handleTimeButton(i);
-        },
-        child:
-            TimeButton(timeItem: timeItem, onTap: () => _handleTimeButton(i)),
-      );
-
-      timeButtons.add(timeButton);
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: SingleChildScrollView(
-        child: Wrap(
-          spacing: 5,
-          runSpacing: 5,
-          children: timeButtons,
-        ),
-      ),
-    );
   }
 
   @override
@@ -166,6 +92,8 @@ class _FieldFilterState extends State<FieldFilter> {
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 width: ScreenUtil.getWidth(context) / 2,
+                height: 40,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(color: MyColor.primary, width: 2),
@@ -174,28 +102,23 @@ class _FieldFilterState extends State<FieldFilter> {
                 child: FormBuilder(
                   key: _formKey,
                   initialValue: _initValue,
-                  child: Column(
-                    children: [
-                      FormBuilderDateTimePicker(
-                        name: 'date',
-                        showCursor: true,
-                        inputType: InputType.date,
-                        keyboardType: TextInputType.datetime,
-                        format: DateFormat('dd/MM/yyyy'),
-                        decoration: const InputDecoration(
-                          prefixIcon: LineIcon.calendar(),
-                          contentPadding: EdgeInsets.symmetric(vertical: 10),
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          focusColor: MyColor.third,
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(strokeAlign: 2),
+                  child: FormBuilderDateTimePicker(
+                    name: 'date',
+                    showCursor: true,
+                    inputType: InputType.date,
+                    keyboardType: TextInputType.datetime,
+                    format: DateFormat('dd/MM/yyyy'),
+                    decoration: const InputDecoration(
+                      prefixIcon: LineIcon.calendar(),
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      focusColor: MyColor.third,
+                      border: OutlineInputBorder(
+                          // borderSide: BorderSide(strokeAlign: 2),
                           ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

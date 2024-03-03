@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ksport_seller/routes/route_path.dart';
-import 'package:widget_component/services/service_field.dart';
-import 'package:widget_component/utils/loading.dart';
-import 'package:widget_component/widgets/field_card/field_card.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/my_library.dart';
 
 class SoccerFieldList extends StatefulWidget {
   const SoccerFieldList({Key? key}) : super(key: key);
@@ -65,37 +64,89 @@ class SoccerFieldListState extends State<SoccerFieldList> {
       padding: const EdgeInsets.only(
         left: 10,
         right: 10,
-        top: 40,
+        top: 10,
         bottom: 20,
       ),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: MyColor.background,
         borderRadius: BorderRadius.only(
-            topRight: Radius.circular(40), topLeft: Radius.circular(40)),
+            topRight: Radius.circular(30), topLeft: Radius.circular(30)),
       ),
-      child: _isLoading
-          ? Center(
-              child: MyLoading.spinkit(),
-            )
-          : GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, mainAxisSpacing: 20, // Two columns
-                crossAxisSpacing: 20.0, childAspectRatio: 1 / 1,
-                mainAxisExtent: 250,
-              ),
-              itemCount: _soccerFields!.length,
-              itemBuilder: (context, index) {
-                final field = _soccerFields![index];
-                debugPrint(field.toString());
-                return FieldCard(
-                  field: field,
-                  onTap: () async {
-                    await Get.toNamed(RoutePaths.addField,
-                        parameters: {'fieldID': field['_id'].toString()});
-                  },
-                );
-              },
+      child: Column(
+        children: [
+          _buildButton(),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(child: _buildListField())
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListField() {
+    if (_isLoading) {
+      return Center(
+        child: MyLoading.spinkit(),
+      );
+    }
+
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, mainAxisSpacing: 20, // Two columns
+        crossAxisSpacing: 20.0, childAspectRatio: 1 / 1,
+        mainAxisExtent: 250,
+      ),
+      itemCount: _soccerFields!.length,
+      itemBuilder: (context, index) {
+        final FieldModel field = FieldModel.fromJson(_soccerFields![index]);
+        debugPrint(field.toString());
+        return FieldCard(
+          field: field,
+          onTap: () async {
+            await Get.toNamed(RoutePaths.addField,
+                parameters: {'fieldID': field.sId.toString()});
+          },
+        );
+      },
+    );
+  }
+
+  Container _buildButton() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(
+          Radius.circular(50),
+        ),
+      ),
+      child: Flex(
+        mainAxisAlignment: MainAxisAlignment.end,
+        direction: Axis.horizontal,
+        // mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Text(
+            'Add new field',
+            style: TextStyle(fontSize: 13),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.toNamed(RoutePaths.addField);
+            },
+            style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                backgroundColor: MyColor.primary,
+                padding: const EdgeInsets.all(5)),
+            // backgroundColor: MyColor.primary,
+            // shape:
+            child: const LineIcon.plus(
+              size: 30,
+              color: Colors.white,
             ),
+          ),
+        ],
+      ),
     );
   }
 }

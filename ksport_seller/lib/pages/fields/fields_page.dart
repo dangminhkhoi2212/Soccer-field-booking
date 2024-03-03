@@ -18,27 +18,14 @@ class _FieldsPageState extends State<FieldsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          decoration: const BoxDecoration(
-            color: MyColor.secondary,
-          ),
-          child: const Column(
-            children: [
-              Expanded(flex: 1, child: FieldFilter()),
-              Expanded(flex: 2, child: SoccerFieldList()),
-            ],
-          )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed(RoutePaths.addField);
-        },
-        backgroundColor: MyColor.primary,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-              Radius.circular(50)), // Adjust the value as needed
+        decoration: const BoxDecoration(
+          color: MyColor.secondary,
         ),
-        child: const LineIcon.plus(
-          size: 30,
-          color: Colors.white,
+        child: const Column(
+          children: [
+            Expanded(flex: 1, child: FieldFilter()),
+            Expanded(flex: 2, child: SoccerFieldList()),
+          ],
         ),
       ),
     );

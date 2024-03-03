@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import FieldModel from '../models/field.model';
-
+import MongooseUtil from '../utils/mongoose.util';
+const mongooseUtil = new MongooseUtil();
 class FieldService {
     static async createField(fieldData: {
         userID: string;
@@ -57,6 +58,10 @@ class FieldService {
                 },
             ],
         });
+    }
+    static async getOneSoccerField(data: { fieldID: string }) {
+        const fieldID = mongooseUtil.createOjectID(data.fieldID);
+        return await FieldModel.findOne({ _id: fieldID });
     }
 }
 export default FieldService;

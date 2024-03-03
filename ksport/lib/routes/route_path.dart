@@ -12,4 +12,5 @@ class RoutePaths {
   static String editAddress = '/profile/edit-address';
   static String editOperatingTime = '/profile/edit-operating-time';
   static String addField = '/fields/add-field';
+  static String fieldBooking = '/fields/field-booking';
 }

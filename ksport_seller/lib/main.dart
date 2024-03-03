@@ -1,4 +1,3 @@
-
 import 'package:ksport_seller/firebase_options.dart';
 import 'package:ksport_seller/routes/get_route.dart';
 import 'package:ksport_seller/routes/route_path.dart';
@@ -49,13 +48,6 @@ class MyApp extends StatelessWidget {
               ),
             )),
       ),
-      builder: (context, router) {
-        return SafeArea(
-          child: Scaffold(
-            body: router,
-          ),
-        );
-      },
     );
   }
 }

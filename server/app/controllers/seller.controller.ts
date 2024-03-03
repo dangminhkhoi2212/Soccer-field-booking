@@ -46,5 +46,18 @@ class SellerController {
                 .json({ msg: error.message || error });
         }
     }
+    static async getOneSeller(req: Request, res: Response) {
+        try {
+            const params: any = req.query;
+            if (params.isInfo) params.isInfo = params.isInfo == 'true';
+            console.log('🚀 ~ SellerController ~ getSeller ~ params:', params);
+            const result = await SellerService.getOneSeller(params);
+            res.send(result);
+        } catch (error: any) {
+            return res
+                .status(error.status || 500)
+                .json({ msg: error.message || error });
+        }
+    }
 }
 export default SellerController;

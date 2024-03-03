@@ -7,12 +7,31 @@ class SellerService {
   Future<Response?> getSeller(
       {String? sellerID, String? userID, bool? isInfo = false}) async {
     try {
-      final Response response = await _dio.get(ApiConfig.sellerUrl,
+      final Response response = await _dio.get('${ApiConfig.sellerUrl}/all',
           queryParameters: {
             "sellerID": sellerID,
             'userID': userID,
             'isInfo': isInfo
           });
+      return response;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        debugPrint(e.response!.data.toString());
+        debugPrint(e.response!.headers.toString());
+        debugPrint(e.response!.requestOptions.toString());
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        debugPrint(e.requestOptions.toString());
+        debugPrint(e.message.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<Response?> getOneSeller({String? userID, bool? isInfo = false}) async {
+    try {
+      final Response response = await _dio.get(ApiConfig.sellerUrl,
+          queryParameters: {'userID': userID, 'isInfo': isInfo});
       return response;
     } on DioException catch (e) {
       if (e.response != null) {

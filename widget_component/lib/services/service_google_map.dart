@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapService {
   Future<bool> getLocationServiceEnabled() async {
-    return await Geolocator.isLocationServiceEnabled() != null;
+    return await Geolocator.isLocationServiceEnabled() == true;
   }
 
   Future<Position?> determinePosition() async {

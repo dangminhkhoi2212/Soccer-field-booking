@@ -1,6 +1,7 @@
 import 'package:client_app/middlewares/router.dart';
 import 'package:client_app/pages/edit_address/edit_address.dart';
 import 'package:client_app/pages/edit_profile/edit_profile_page.dart';
+import 'package:client_app/pages/field_booking/field_booking_page.dart';
 import 'package:client_app/pages/home/home_page.dart';
 import 'package:client_app/pages/main_screen.dart';
 import 'package:client_app/pages/profile/profile_page.dart';
@@ -43,6 +44,10 @@ class GetRouter {
     {
       'name': RoutePaths.seller,
       'page': const SellerPage(),
+    },
+    {
+      'name': RoutePaths.fieldBooking,
+      'page': const FieldBooking(),
     },
   ];
   static final List<GetPage> routes = pages

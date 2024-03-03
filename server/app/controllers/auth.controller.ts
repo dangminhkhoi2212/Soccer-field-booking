@@ -22,8 +22,7 @@ class AuthController {
                 return res.status(400).json({ err_mes: 'email is required' });
             }
 
-            let user = await UserService.getUser({ email });
-
+            let user = await UserService.getOneUser({ email });
             if (!user) {
                 user = await AuthService.create({ email, name, imageUrl });
             }
@@ -72,12 +71,12 @@ class AuthController {
                 return res.status(400).json({ err_mes: 'Email is required' });
             }
 
-            let user = await UserService.getUser({ email });
+            let user = await UserService.getOneUser({ email });
             if (user)
                 return res
                     .status(400)
                     .json({ err_mes: 'This email is existed.' });
-            const checkPhone = await UserService.getUser({ phone });
+            const checkPhone = await UserService.getOneUser({ phone });
             if (checkPhone)
                 return res
                     .status(400)

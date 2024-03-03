@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:widget_component/utils/screen.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/services/service_seller.dart';
 import 'package:widget_component/widgets/time_range_picker/widget/time_button.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/utils/util_snackbar.dart';
@@ -14,8 +10,8 @@ class TimeRangePicker extends StatefulWidget {
   final String startTime;
   final String endTime;
   final bool isHalfHour;
-  final Function(String) onStartTimePickChange;
-  final Function(String) onEndTimePickChange;
+  final Function(TimeOfDay) onStartTimePickChange;
+  final Function(TimeOfDay) onEndTimePickChange;
   late List<TimeOfDay?>? disableTimes;
   TimeRangePicker({
     Key? key,
@@ -165,12 +161,10 @@ class TimeRangePickerState extends State<TimeRangePicker> {
       }
     }
     if (_startTime != null) {
-      widget.onStartTimePickChange(
-          _startTime!['time']!.toString()); // Call callback
+      widget.onStartTimePickChange(_startTime!['time']!); // Call callback
     }
     if (_endTime != null) {
-      widget
-          .onEndTimePickChange(_endTime!['time']!.toString()); // Call callback
+      widget.onEndTimePickChange(_endTime!['time']!); // Call callback
     }
     setState(() {});
   }

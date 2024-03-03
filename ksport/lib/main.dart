@@ -49,13 +49,6 @@ class MyApp extends StatelessWidget {
               ),
             )),
       ),
-      builder: (context, router) {
-        return SafeArea(
-          child: Scaffold(
-            body: router,
-          ),
-        );
-      },
     );
   }
 }

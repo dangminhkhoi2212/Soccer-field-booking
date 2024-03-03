@@ -34,8 +34,10 @@ class AddressService {
 
   Future<Response?> getAddress({String? userID}) async {
     try {
-      final Response response = await _dio
-          .get(ApiConfig.addressApiUrl, queryParameters: {'userID': userID});
+      final Response response =
+          await _dio.get(ApiConfig.addressApiUrl, queryParameters: {
+        'userID': userID,
+      });
       return response;
     } on DioException catch (e) {
       // The request was made and the server responded with a status code

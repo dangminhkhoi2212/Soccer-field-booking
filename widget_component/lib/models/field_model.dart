@@ -1,63 +1,78 @@
-class UserJson {
-  String? avatar;
+class FieldModel {
   Lock? lock;
   String? sId;
+  String? userID;
   String? name;
-  String? email;
+  int? views;
+  int? price;
+  String? coverImage;
+  int? type;
   bool? isPublic;
-  String? phone;
-  String? refreshToken;
+  bool? isLock;
+  bool? isRepair;
+  String? description;
+  int? length;
+  int? width;
   String? createdAt;
   String? updatedAt;
-  String? role;
-  String? accessToken;
 
-  UserJson(
-      {this.avatar,
-      this.lock,
+  FieldModel(
+      {this.lock,
       this.sId,
+      this.userID,
       this.name,
-      this.email,
+      this.views,
+      this.price,
+      this.coverImage,
+      this.type,
       this.isPublic,
-      this.phone,
-      this.refreshToken,
+      this.isLock,
+      this.isRepair,
+      this.description,
+      this.length,
+      this.width,
       this.createdAt,
-      this.updatedAt,
-      this.role,
-      this.accessToken});
+      this.updatedAt});
 
-  UserJson.fromJson(Map<String, dynamic> json) {
-    avatar = json['avatar'];
+  FieldModel.fromJson(Map<String, dynamic> json) {
     lock = json['lock'] != null ? Lock.fromJson(json['lock']) : null;
     sId = json['_id'];
+    userID = json['userID'];
     name = json['name'];
-    email = json['email'];
+    views = json['views'];
+    price = json['price'];
+    coverImage = json['coverImage'];
+    type = json['type'];
     isPublic = json['isPublic'];
-    phone = json['phone'];
-    refreshToken = json['refreshToken'];
+    isLock = json['isLock'];
+    isRepair = json['isRepair'];
+    description = json['description'];
+    length = json['length'];
+    width = json['width'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    role = json['role'];
-    accessToken = json['accessToken'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-
     if (lock != null) {
       data['lock'] = lock!.toJson();
     }
-    data['avatar'] = avatar;
     data['_id'] = sId;
+    data['userID'] = userID;
     data['name'] = name;
-    data['email'] = email;
+    data['views'] = views;
+    data['price'] = price;
+    data['coverImage'] = coverImage;
+    data['type'] = type;
     data['isPublic'] = isPublic;
-    data['phone'] = phone;
-    data['refreshToken'] = refreshToken;
+    data['isLock'] = isLock;
+    data['isRepair'] = isRepair;
+    data['description'] = description;
+    data['length'] = length;
+    data['width'] = width;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
-    data['role'] = role;
-    data['accessToken'] = accessToken;
     return data;
   }
 }

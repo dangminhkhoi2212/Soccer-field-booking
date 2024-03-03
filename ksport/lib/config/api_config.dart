@@ -9,7 +9,7 @@ class ApiConfig {
   // connectTimeout
   static const int connectionTimeout = 60 * 1000;
 
-  static final String authApiUrl = '$baseUrl/auth/';
+  static final String authApiUrl = '$baseUrl/auth';
   static final String userApiUrl = '$baseUrl/user';
   static final String addressApiUrl = '$baseUrl/address';
   static final String fieldUrl = '$baseUrl/field';

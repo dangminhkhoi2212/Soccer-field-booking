@@ -30,9 +30,9 @@ class TimeButton extends StatelessWidget {
     return GestureDetector(
       onTap: enable ? onTap : null, // Enable onTap only if enable is true
       child: Container(
-        width: 55,
+        width: 65,
         height: 40,
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
         decoration: BoxDecoration(
           color: _buildColorButton(),
           borderRadius: const BorderRadius.all(Radius.circular(6)),

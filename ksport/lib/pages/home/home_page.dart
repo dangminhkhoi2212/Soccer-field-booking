@@ -11,6 +11,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/my_library.dart';
 import 'package:widget_component/services/service_address.dart';
 import 'package:widget_component/services/service_google_map.dart';
 import 'package:widget_component/utils/loading.dart';
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   Logger logger = Logger();
   final _box = GetStorage();
   final LatLng _defaultLatLag = const LatLng(10.045162, 105.746857);
-  late Marker _myMarker = _buildMarker(point: _defaultLatLag);
+  late Marker _myMarker;
   late final MapController _mapController = MapController();
   final double _zoom = 14.5;
   late LatLng _currentLatlag;
@@ -37,8 +38,9 @@ class _HomePageState extends State<HomePage> {
   late String _address = '';
   late String _userID;
   bool _isSubmitting = false;
-  late List _addresses;
+  late List<AddressModel?> _addresses;
   final List<Marker> _markers = [];
+  final GoogleMapService _googleMapService = GoogleMapService();
   @override
   void initState() {
     super.initState();
@@ -49,66 +51,84 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    super.dispose();
     _mapController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   Marker _buildMarker(
-      {required LatLng point, String? name, String? src, String? userID}) {
+      {required LatLng point,
+      String? name,
+      String? src,
+      String? userID,
+      bool? isMyLocation = false}) {
     return Marker(
       width: 40,
       height: 40,
       rotate: true,
       point: point,
-      child: PopupMenuButton(
-        itemBuilder: (_) => <PopupMenuEntry>[
-          PopupMenuItem(
-            child: PopupMenuItem(
-                onTap: () {
-                  if (userID == null) return;
-                  Get.toNamed(RoutePaths.seller,
-                      parameters: {'userID': userID});
-                },
-                height: 20,
-                child: ListTile(
-                  leading: MyImage(
-                    height: 50,
-                    width: 50,
-                    src: src ?? '',
-                    isAvatar: true,
-                  ),
-                  title: Text(name ?? ''),
-                )),
-          ),
-        ],
-        child: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Image.asset('assets/images/marker.png', fit: BoxFit.cover),
-        ),
-      ),
+      child: isMyLocation == false
+          ? PopupMenuButton(
+              itemBuilder: (_) => <PopupMenuEntry>[
+                    PopupMenuItem(
+                      child: PopupMenuItem(
+                          onTap: () {
+                            if (userID == null) return;
+                            Get.toNamed(RoutePaths.seller,
+                                parameters: {'userID': userID});
+                          },
+                          height: 20,
+                          child: ListTile(
+                            leading: MyImage(
+                              height: 50,
+                              width: 50,
+                              src: src ?? '',
+                              isAvatar: true,
+                            ),
+                            title: Text(name ?? ''),
+                          )),
+                    ),
+                  ],
+              child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child:
+                    Image.asset('assets/images/marker.png', fit: BoxFit.cover),
+              ))
+          : SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child:
+                  Image.asset('assets/images/my_marker.png', fit: BoxFit.cover),
+            ),
     );
   }
 
   Future _getAddressSeller() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = true;
-      });
       final Response? response = await AddressService().getAddress();
       if (response!.statusCode == 200) {
         final dynamic data = response.data;
         logger.d(data);
         if (data is List) {
-          for (var address in data) {
-            final LatLng point =
-                LatLng(address['latitude'], address['longitude']);
+          for (var temp in data) {
+            AddressModel address = AddressModel.fromJson(temp);
+            final LatLng point = LatLng(address.latitude!, address.longitude!);
             final Marker marker = _buildMarker(
                 point: point,
-                name: address['userID']['name'],
-                src: address['userID']['avatar'],
-                userID: address['userID']['_id']);
+                name: address.userID?.name!,
+                src: address.userID?.avatar!,
+                userID: address.userID?.sId!);
             _markers.add(marker);
           }
         } else {
@@ -130,11 +150,12 @@ class _HomePageState extends State<HomePage> {
 
   Future _setLocation(
       {required LatLng point, bool isMoveCamera = false}) async {
-    String? address = await GoogleMapService().getAddressFromLatLng(
+    if (!mounted) return;
+    String? address = await _googleMapService.getAddressFromLatLng(
         latitude: point.latitude, longitude: point.longitude);
     _address = address ?? '';
     _currentLatlag = point;
-    _myMarker = _buildMarker(point: point);
+    _myMarker = _buildMarker(point: point, isMyLocation: true);
     _markers.add(_myMarker);
     if (isMoveCamera) {
       _mapController.move(point, _zoom);
@@ -147,7 +168,7 @@ class _HomePageState extends State<HomePage> {
       _isLoading = true;
     });
     try {
-      Position? location = await GoogleMapService().determinePosition();
+      Position? location = await _googleMapService.determinePosition();
 
       if (location != null) {
         LatLng myPoint = LatLng(location.latitude, location.longitude);
@@ -158,26 +179,30 @@ class _HomePageState extends State<HomePage> {
         await _setLocation(point: _currentLatlag, isMoveCamera: true);
       }
     } catch (e) {
-      logger.e(e);
+      logger.e(error: e, 'Error _detectMyLocation');
     }
-
-    _isLoading = false;
-    setState(() {});
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future _returnMyLocation() async {
+    if (!mounted) return;
     await _setLocation(point: _myLatlag, isMoveCamera: true);
     setState(() {});
   }
 
   Future _setNewPoint(LatLng point) async {
+    if (!mounted) return;
+
     await _setLocation(point: point);
     setState(() {});
   }
 
   Future _handleSaveAddress() async {
+    if (_userID.isEmpty || !mounted) return;
     try {
-      if (_userID.isEmpty) return;
       setState(() {
         _isSubmitting = true;
       });
@@ -207,7 +232,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget _buildButton() {
     return Positioned(
-        bottom: 10,
+        bottom: 100,
         right: 5,
         child: Column(
           children: [
@@ -241,12 +266,6 @@ class _HomePageState extends State<HomePage> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              onMapReady: () {
-                _mapController.mapEventStream.listen((evt) {
-                  // logger.d(evt);
-                });
-                // And any other `MapController` dependent non-movement methods
-              },
               initialZoom: _zoom,
             ),
             children: [

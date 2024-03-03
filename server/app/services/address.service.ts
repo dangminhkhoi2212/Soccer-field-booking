@@ -25,7 +25,7 @@ class AddressService {
         );
         return result;
     }
-    static async getAddress(query: { userID?: string }) {
+    static async getAddress(query: { userID?: string; isInfo?: boolean }) {
         const queryParams: any = {};
         if (query.userID)
             queryParams.userID = new mongoose.Types.ObjectId(query.userID);

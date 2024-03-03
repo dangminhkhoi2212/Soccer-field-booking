@@ -17,20 +17,6 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final StoreUser storeUser = Get.put(StoreUser());
 
-  Future<void> _login(BuildContext context) async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-                child: CircularProgressIndicator(
-              color: MyColor.secondary,
-            )));
-    final res = await AuthService().signInWithGoogle();
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -4,7 +4,7 @@ import mongoose, { ObjectId } from 'mongoose';
 import userModel from '../models/user.model';
 
 class UserController {
-    static async updateUser(req: Request, res: Response) {
+    async updateUser(req: Request, res: Response) {
         try {
             const body = req.body;
             const userID: string = body.userID;
@@ -28,10 +28,22 @@ class UserController {
                 .json({ msg: error.message || error });
         }
     }
-    static async getOneUser(req: Request, res: Response) {
+    async getOneUser(req: Request, res: Response) {
         try {
             const query: any = req.query;
-            const result = await UserService.getUser(query);
+            const result = await UserService.getOneUser(query);
+            return res.send(result);
+        } catch (error: any) {
+            return res
+                .status(error.status || 500)
+                .json({ msg: error.message || error });
+        }
+    }
+    async getUsers(req: Request, res: Response) {
+        try {
+            const query: any = req.query;
+            console.log('🚀 ~ UserController ~ getUsers ~ query:', query);
+            const result = await UserService.getUsers(query);
             return res.send(result);
         } catch (error: any) {
             return res

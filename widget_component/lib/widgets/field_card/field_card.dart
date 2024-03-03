@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/my_library.dart';
 import 'package:widget_component/utils/format.dart';
 import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class FieldCard extends StatelessWidget {
-  final Map<String, dynamic> field;
+  final FieldModel field;
   final Function onTap;
 
   const FieldCard({Key? key, required this.field, required this.onTap})
@@ -20,16 +19,9 @@ class FieldCard extends StatelessWidget {
       child: Container(
         clipBehavior: Clip.hardEdge,
         decoration: const BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: MyColor.secondary,
-                blurRadius: 8,
-                offset: Offset(1, 1),
-              ),
-            ],
             borderRadius: BorderRadius.all(
-              Radius.circular(12),
-            )
+          Radius.circular(12),
+        )
             // border: Border.all(
             //     color: Colors.green,
             //     ),
@@ -45,7 +37,7 @@ class FieldCard extends StatelessWidget {
                   child: MyImage(
                       width: double.infinity,
                       height: double.infinity,
-                      src: field['coverImage'] ?? '')),
+                      src: field.coverImage ?? '')),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -53,7 +45,7 @@ class FieldCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      field['name'] ?? '',
+                      field.name ?? '',
                       style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -61,11 +53,11 @@ class FieldCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                        'Price: ${FormatUtil.formatNumber(field['price']).toString()} vnd'),
+                        'Price: ${FormatUtil.formatNumber(field.price!).toString()} vnd'),
                     Text(
-                        'Width: ${FormatUtil.formatNumber(field['width']).toString()} m'),
+                        'Width: ${FormatUtil.formatNumber(field.width!).toString()} m'),
                     Text(
-                        'Length: ${FormatUtil.formatNumber(field['length']).toString()} m'),
+                        'Length: ${FormatUtil.formatNumber(field.length!).toString()} m'),
                   ],
                 ),
               ),

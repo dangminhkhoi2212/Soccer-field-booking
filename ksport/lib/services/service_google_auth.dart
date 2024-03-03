@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:client_app/config/api_config.dart';
@@ -12,12 +12,14 @@ import 'package:client_app/services/service_login.dart';
 import 'package:client_app/storage/storage_user.dart';
 import 'package:client_app/store/store_user.dart';
 import 'package:client_app/utils/util_snackbar.dart';
+import 'package:logger/logger.dart';
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final StoreUser storeUser = Get.put(StoreUser());
   final Dio _dio = Dio(ApiConfig.options);
   final box = GetStorage();
+  final Logger _logger = Logger();
   final StorageUser _storageUser = StorageUser();
   Future<UserCredential?> signInWithGoogle() async {
     try {
@@ -54,23 +56,25 @@ class AuthService {
     return null;
   }
 
-  Future signInWithEmailAndPassword(
+  Future<Response?> signInWithEmailAndPassword(
       {required String email, required String password}) async {
     try {
       final response = await _dio.post('${ApiConfig.authApiUrl}/sign-in',
           data: {"email": email, "password": password});
       return response;
-    } on DioException catch (e) {
-      if (e.response != null) {
-        debugPrint(e.response!.data.toString());
-        debugPrint(e.response!.headers.toString());
-        debugPrint(e.response!.requestOptions.toString());
-      } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        debugPrint(e.requestOptions.toString());
-        debugPrint(e.message.toString());
-      }
+    } catch (e) {
+      // if (e.response != null) {
+      //   debugPrint(e.response!.data.toString());
+      //   debugPrint(e.response!.headers.toString());
+      //   debugPrint(e.response!.requestOptions.toString());
+      // } else {
+      //   // Something happened in setting up or sending the request that triggered an Error
+      //   debugPrint(e.requestOptions.toString());
+      //   debugPrint(e.message.toString());
+      // }
+      _logger.e(error: e, 'Error sign in');
     }
+    return null;
   }
 
   Future signUp(

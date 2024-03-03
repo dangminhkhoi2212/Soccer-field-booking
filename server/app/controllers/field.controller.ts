@@ -64,6 +64,19 @@ class FieldController {
                 .json({ err_mes: error.message }); // Use error.message for clarity
         }
     }
+    static async getOneSoccerFile(req: Request, res: Response) {
+        try {
+            const query = req.query as { fieldID: string };
+            if (!query.fieldID)
+                return res.status(400).json({ err_mes: 'fieldID not found' });
+            const result = await FieldService.getOneSoccerField(query);
+            res.send(result);
+        } catch (error: any) {
+            return res
+                .status(error.status || 500)
+                .json({ err_mes: error.message }); // Use error.message for clarity
+        }
+    }
 }
 
 export default FieldController;

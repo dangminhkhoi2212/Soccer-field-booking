@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:client_app/services/service_address.dart';
 import 'package:client_app/utils/util_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:line_icons/line_icon.dart';

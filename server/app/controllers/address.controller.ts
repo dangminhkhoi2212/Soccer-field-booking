@@ -1,3 +1,4 @@
+import { Query } from 'mongoose';
 import { Request, Response } from 'express';
 import AddressService from '../services/address.service';
 
@@ -5,7 +6,6 @@ class AddressController {
     static async getAddress(req: Request, res: Response) {
         try {
             const query = req.query as { userID?: string };
-            console.log('🚀 ~ AddressController ~ getAddress ~ query:', query);
 
             const addresses = await AddressService.getAddress(query);
             if (addresses.length == 1) return res.send(addresses[0]);

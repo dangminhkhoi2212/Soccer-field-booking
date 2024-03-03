@@ -1,7 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:client_app/routes/route_path.dart';
 import 'package:client_app/services/service_google_auth.dart';
 import 'package:client_app/utils/util_snackbar.dart';
@@ -38,9 +39,9 @@ class _FromSignInState extends State<FromSignIn> {
       }
       String email = data['email'];
       String password = data['password'];
-      final response = await AuthService().signInWithEmailAndPassword(
+      final Response? response = await AuthService().signInWithEmailAndPassword(
           email: email.toString(), password: password);
-      final result = response.data;
+      final result = response!.data;
       if (response.statusCode == 200) {
         AuthService().setUserLocal(result);
         await Get.offNamed(RoutePaths.mainScreen);

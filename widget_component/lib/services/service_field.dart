@@ -71,8 +71,27 @@ class FieldService {
 
   Future<Response?> getSoccerField({String? userID, String? fieldID}) async {
     try {
-      final Response response = await _dio.get(ApiConfig.fieldUrl,
+      final Response response = await _dio.get('${ApiConfig.fieldUrl}/all',
           queryParameters: {"userID": userID, "fieldID": fieldID});
+      return response;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        debugPrint(e.response!.data.toString());
+        debugPrint(e.response!.headers.toString());
+        debugPrint(e.response!.requestOptions.toString());
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        debugPrint(e.requestOptions.toString());
+        debugPrint(e.message.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<Response?> getOneSoccerField({required String fieldID}) async {
+    try {
+      final Response response = await _dio
+          .get(ApiConfig.fieldUrl, queryParameters: {"fieldID": fieldID});
       return response;
     } on DioException catch (e) {
       if (e.response != null) {

@@ -1,5 +1,3 @@
-library widget_component;
-
 import 'package:flutter/material.dart';
 import 'package:widget_component/const/colors.dart';
 
@@ -40,6 +38,7 @@ class MyImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(radius)),
       child: Center(
         child: isAvatar

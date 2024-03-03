@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:client_app/pages/edit_profile/widgets/form_avatar.dart';
-import 'package:client_app/services/service_user.dart';
 import 'package:easy_loading_button/easy_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +12,7 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:widget_component/services/service_user.dart';
 
 class FromEditProfile extends StatefulWidget {
   const FromEditProfile({super.key});
@@ -24,7 +24,7 @@ class FromEditProfile extends StatefulWidget {
 class _FromEditProfileState extends State<FromEditProfile> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _box = GetStorage();
-  final UserService _serviceUser = UserService();
+  final UserService _userService = UserService();
   final Map<String, dynamic> _initValue = {
     'name': '',
     'email': '',
@@ -95,7 +95,7 @@ class _FromEditProfileState extends State<FromEditProfile> {
 
       final userID = _box.read('id');
 
-      final Map<String, dynamic> result = await _serviceUser.updateUser(
+      final Map<String, dynamic> result = await _userService.updateUser(
           userID: userID,
           name: name,
           phone: phone,
