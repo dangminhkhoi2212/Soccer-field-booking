@@ -120,10 +120,7 @@ class EditAddressPageState extends State<EditAddressPage> {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
           _currentLatLag!.latitude, _currentLatLag!.longitude);
-      // print('address: $placemarks');
-      // for (var i = 0; i < placemarks.length; i++) {
-      //   print('$i : ${placemarks[i].toString()}');
-      // }
+
       Placemark placemark = placemarks[0];
       String? country = placemark.country;
       String? ward = placemarks[3].name;

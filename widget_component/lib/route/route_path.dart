@@ -1,3 +1,5 @@
+// part of widget_component;
+
 class RoutePaths {
   static String home = '/';
   static String fields = '/fields';
@@ -13,4 +15,5 @@ class RoutePaths {
   static String editOperatingTime = '/profile/edit-operating-time';
   static String addField = '/fields/add-field';
   static String fieldBooking = '/fields/field-booking';
+  static String orderDetail = '/orderDetail';
 }

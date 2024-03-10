@@ -14,6 +14,7 @@ class ApiConfig {
   static final String addressApiUrl = '$baseUrl/address';
   static final String fieldUrl = '$baseUrl/field';
   static final String sellerUrl = '$baseUrl/seller';
+  static final String orderUrl = '$baseUrl/order';
 
   static final options = BaseOptions(
     headers: {

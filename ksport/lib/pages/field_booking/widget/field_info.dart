@@ -119,6 +119,7 @@ class FieldInfo extends StatelessWidget {
                 MyImage(
                   width: double.infinity,
                   height: 150,
+                  radius: 12,
                   src: field.coverImage ?? "",
                 ),
                 const SizedBox(

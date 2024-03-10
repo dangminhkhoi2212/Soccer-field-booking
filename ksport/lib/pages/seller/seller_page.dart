@@ -1,5 +1,5 @@
-import 'package:client_app/pages/seller/widget/field_list.dart';
-import 'package:client_app/pages/seller/widget/owner_info.dart';
+// import 'package:client_app/pages/seller/widget/field_list.dart';
+// import 'package:client_app/pages/seller/widget/owner_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
@@ -102,8 +102,8 @@ class _SellerPageState extends State<SellerPage> {
         ), // Removed Expanded wrapper
         const SizedBox(height: 20), // Added spacing between widgets
         SoccerFieldList(
-          userID: _user!.sId ?? '',
-        ), // Removed Expanded wrapper
+            userID: _user!.sId ?? '',
+            isOnTap: true), // Removed Expanded wrapper
       ],
     );
   }

@@ -1,12 +1,11 @@
 import 'package:ksport_seller/firebase_options.dart';
-import 'package:ksport_seller/routes/get_route.dart';
-import 'package:ksport_seller/routes/route_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:widget_component/const/colors.dart';
+import 'package:ksport_seller/routes/get_route.dart';
+import 'package:widget_component/my_library.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -48,6 +47,7 @@ class MyApp extends StatelessWidget {
               ),
             )),
       ),
+      builder: (context, child) => SafeArea(child: child!),
     );
   }
 }

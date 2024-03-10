@@ -1,5 +1,5 @@
-export const COrder = {
-    CO1: 'pending',
-    CO2: 'ordered',
-    CO3: 'cancel',
-};
+export enum COrder {
+    pending = 'pending',
+    ordered = 'ordered',
+    cancel = 'canceled',
+}

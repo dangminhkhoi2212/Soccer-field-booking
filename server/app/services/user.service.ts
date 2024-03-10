@@ -37,7 +37,33 @@ class UserService {
             if (!query[key]) delete query[key];
         });
 
-        return await UserModel.find(query).select(query.select || USER_JSON);
+        // return await UserModel.find(query).select(query.select || USER_JSON);
+        const result = await UserModel.aggregate([
+            {
+                $search: {
+                    index: 'search_user',
+                    text: {
+                        query: query.textSearch,
+                        path: {
+                            wildcard: '*',
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    phone: 1,
+                    role: 1,
+                    avatar: 1,
+                    lock: 1,
+                    isPublic: 1,
+                },
+            },
+        ]);
+        return result;
     }
     static async updateUser({
         userID,

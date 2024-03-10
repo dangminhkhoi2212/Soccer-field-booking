@@ -1,11 +1,9 @@
-import 'package:client_app/services/service_upload_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icon.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/widgets/my_image/my_image.dart';
+import 'package:widget_component/my_library.dart';
 
 class FormAvatar extends StatefulWidget {
   const FormAvatar({super.key});

@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import 'package:client_app/pages/field_booking/widget/field_info.dart';
-
-import 'package:client_app/routes/route_path.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
@@ -13,10 +10,13 @@ import 'package:widget_component/my_library.dart';
 
 class SoccerFieldList extends StatefulWidget {
   final String userID;
-  const SoccerFieldList({
-    super.key,
-    required this.userID,
-  });
+  final bool isOnTap;
+  final bool isSeller;
+  const SoccerFieldList(
+      {super.key,
+      required this.userID,
+      this.isOnTap = false,
+      this.isSeller = false});
 
   @override
   State<SoccerFieldList> createState() => SoccerFieldListState();
@@ -30,11 +30,15 @@ class SoccerFieldListState extends State<SoccerFieldList> {
   bool _isLoading = false;
   final bool _isGettingOwner = false;
   final Logger _logger = Logger();
+  bool _isOnTap = false;
+  bool _isSeller = false;
 
   @override
   void initState() {
     super.initState();
     _userID = widget.userID;
+    _isOnTap = widget.isOnTap;
+    _isSeller = widget.isSeller;
     _getSoccerFields();
   }
 
@@ -102,6 +106,12 @@ class SoccerFieldListState extends State<SoccerFieldList> {
         return FieldCard(
           field: field,
           onTap: () async {
+            if (_isSeller) {
+              return await Get.toNamed(
+                RoutePaths.addField,
+                parameters: {'fieldID': field.sId ?? ''},
+              );
+            }
             await Get.toNamed(RoutePaths.fieldBooking, parameters: {
               'userID': field.userID ?? '',
               'fieldID': field.sId ?? ''

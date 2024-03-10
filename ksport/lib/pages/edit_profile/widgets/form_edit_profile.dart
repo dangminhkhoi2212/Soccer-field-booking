@@ -1,18 +1,12 @@
-import 'dart:math';
-
 import 'package:client_app/pages/edit_profile/widgets/form_avatar.dart';
-import 'package:easy_loading_button/easy_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_phone_field/form_builder_phone_field.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
-import 'package:get/utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:line_icons/line_icon.dart';
-import 'package:widget_component/services/service_user.dart';
+import 'package:widget_component/my_library.dart';
 
 class FromEditProfile extends StatefulWidget {
   const FromEditProfile({super.key});

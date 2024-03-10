@@ -10,8 +10,8 @@ class TimeRangePicker extends StatefulWidget {
   final String startTime;
   final String endTime;
   final bool isHalfHour;
-  final Function(TimeOfDay) onStartTimePickChange;
-  final Function(TimeOfDay) onEndTimePickChange;
+  final Function(TimeOfDay?) onStartTimePickChange;
+  final Function(TimeOfDay?) onEndTimePickChange;
   late List<TimeOfDay?>? disableTimes;
   TimeRangePicker({
     Key? key,
@@ -130,10 +130,10 @@ class TimeRangePickerState extends State<TimeRangePicker> {
 
     if (_startTime != null && _endTime != null) {
       _startTime = timeItem;
-
       _endTime = null;
     } else if (_startTime == null) {
       _startTime = timeItem;
+      _endTime = null;
     } else {
       _endTime = timeItem;
     }
@@ -148,6 +148,10 @@ class TimeRangePickerState extends State<TimeRangePicker> {
         int temp = idStart;
         idStart = idEnd;
         idEnd = temp;
+
+        Map<String, dynamic>? tempTime = _startTime;
+        _startTime = _endTime;
+        _endTime = tempTime;
       }
 
       if (_checkValidTime(idStartTime: idStart, idEndTime: idEnd) == false) {
@@ -160,12 +164,8 @@ class TimeRangePickerState extends State<TimeRangePicker> {
         _listTime[i]!['active'] = true;
       }
     }
-    if (_startTime != null) {
-      widget.onStartTimePickChange(_startTime!['time']!); // Call callback
-    }
-    if (_endTime != null) {
-      widget.onEndTimePickChange(_endTime!['time']!); // Call callback
-    }
+    widget.onStartTimePickChange(_startTime?['time']); // Call callback
+    widget.onEndTimePickChange(_endTime?['time']); // Call callback
     setState(() {});
   }
 

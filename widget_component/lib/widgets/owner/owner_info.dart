@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:widget_component/my_library.dart';
-import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class InfoOwner extends StatelessWidget {
   final UserModel user;
@@ -43,7 +42,7 @@ class InfoOwner extends StatelessWidget {
           ],
         ),
         const SizedBox(
-          height: 10,
+          height: 2,
         ),
         Row(
           children: [
@@ -61,7 +60,7 @@ class InfoOwner extends StatelessWidget {
           ],
         ),
         const SizedBox(
-          height: 10,
+          height: 2,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -82,7 +81,7 @@ class InfoOwner extends StatelessWidget {
           ],
         ),
         const SizedBox(
-          height: 10,
+          height: 2,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,

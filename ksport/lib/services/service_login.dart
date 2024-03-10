@@ -1,13 +1,9 @@
-import 'package:client_app/models/model_user.dart';
-import 'package:client_app/config/api_config.dart';
-import 'package:client_app/routes/route_path.dart';
-import 'package:client_app/services/service_address.dart';
-import 'package:client_app/services/service_google_map.dart';
 import 'package:client_app/storage/storage_user.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:widget_component/my_library.dart';
 
 class LoginService {
   final Dio _dio = Dio(ApiConfig.options);
@@ -40,7 +36,7 @@ class LoginService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = response.data;
         print(data);
-        final UserJson user = UserJson.fromJson(data);
+        final UserModel user = UserModel.fromJson(data);
 
         _storageUser.setTokenLocal(
             accessToken: user.accessToken ?? '',

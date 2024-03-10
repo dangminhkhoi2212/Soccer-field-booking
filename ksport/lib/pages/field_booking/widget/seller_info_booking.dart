@@ -1,4 +1,3 @@
-import 'package:client_app/routes/route_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icon.dart';

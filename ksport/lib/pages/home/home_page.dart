@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:client_app/routes/route_path.dart';
 import 'package:dio/src/response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -10,13 +9,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
-import 'package:widget_component/const/colors.dart';
 import 'package:widget_component/my_library.dart';
-import 'package:widget_component/services/service_address.dart';
-import 'package:widget_component/services/service_google_map.dart';
-import 'package:widget_component/utils/loading.dart';
-import 'package:widget_component/utils/util_snackbar.dart';
-import 'package:widget_component/widgets/my_image/my_image.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -119,7 +112,6 @@ class _HomePageState extends State<HomePage> {
       final Response? response = await AddressService().getAddress();
       if (response!.statusCode == 200) {
         final dynamic data = response.data;
-        logger.d(data);
         if (data is List) {
           for (var temp in data) {
             AddressModel address = AddressModel.fromJson(temp);

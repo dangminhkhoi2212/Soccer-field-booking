@@ -92,7 +92,10 @@ class _EditOperatingTimeState extends State<EditOperatingTime> {
             endTime: valueEndTime,
             isHalfHour: isHalfHour);
 
-        debugPrint(response?.data.toString());
+        if (response!.statusCode == 200) {
+          SnackbarUtil.getSnackBar(
+              title: 'Update operating time', message: "Updated successfully");
+        }
       }
     } catch (e) {
       debugPrint(e.toString());

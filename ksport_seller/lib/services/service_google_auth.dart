@@ -4,14 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ksport_seller/config/api_config.dart';
 import 'package:ksport_seller/models/model_user.dart';
-import 'package:ksport_seller/routes/route_path.dart';
-import 'package:ksport_seller/services/service_google_map.dart';
 import 'package:ksport_seller/services/service_login.dart';
 import 'package:ksport_seller/storage/storage_user.dart';
 import 'package:ksport_seller/store/store_user.dart';
-import 'package:ksport_seller/utils/util_snackbar.dart';
+import 'package:widget_component/my_library.dart';
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();

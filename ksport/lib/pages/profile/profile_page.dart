@@ -2,9 +2,9 @@ import 'package:client_app/pages/profile/widgets/appbar_profile.dart';
 import 'package:client_app/pages/profile/widgets/avatar_user.dart';
 import 'package:client_app/pages/profile/widgets/drawer_profile.dart';
 import 'package:client_app/pages/profile/widgets/info_user.dart';
-import 'package:client_app/routes/route_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:widget_component/my_library.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});

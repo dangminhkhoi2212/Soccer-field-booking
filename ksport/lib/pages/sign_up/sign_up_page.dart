@@ -4,16 +4,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:client_app/models/model_user.dart';
-import 'package:client_app/routes/route_path.dart';
 import 'package:client_app/services/service_google_auth.dart';
 import 'package:client_app/storage/storage_user.dart';
-import 'package:client_app/store/store_user.dart';
-import 'package:client_app/utils/util_snackbar.dart';
-import 'package:client_app/utils/validate.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
-import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/my_library.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -51,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
           final Map<String, dynamic> data = response.data;
           debugPrint(data.toString());
-          final UserJson user = UserJson.fromJson(data);
+          final UserModel user = UserModel.fromJson(data);
 
           _storageUser.setTokenLocal(
               accessToken: user.accessToken ?? '',

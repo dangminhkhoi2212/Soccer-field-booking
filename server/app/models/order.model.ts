@@ -1,19 +1,37 @@
-import { Schema, Types, model } from 'mongoose';
+import { Schema, Types, model, ObjectId } from 'mongoose';
 import { COrder } from '../consts/order.const';
 
-const OrderSchema: Schema = new Schema(
+export interface TOrder {
+    userID: ObjectId;
+    sellerID: ObjectId;
+    fieldID: ObjectId;
+    total: number;
+    isPay: boolean;
+    startTime: string;
+    endTime: string;
+    date: string;
+    status: string;
+}
+const OrderSchema: Schema<TOrder> = new Schema(
     {
         userID: { type: Types.ObjectId, ref: 'User' },
-        ownerID: { type: Types.ObjectId, ref: 'User' },
+        sellerID: { type: Types.ObjectId, ref: 'User' },
         fieldID: { type: Types.ObjectId, ref: 'Field' },
         total: { type: Number, default: 0 },
-        paid: { type: Boolean, default: true },
+        isPay: { type: Boolean, default: true },
+        startTime: { type: String, required: true },
+        endTime: { type: String, required: true },
+        date: {
+            type: String,
+            required: true,
+            default: new Date().toISOString(),
+        },
         status: {
             type: String,
-            enum: [COrder.CO1, COrder.CO2, COrder.CO3],
-            default: COrder.CO1,
+            enum: [COrder.pending, COrder.ordered, COrder.cancel],
+            default: COrder.pending,
         },
     },
     { timestamps: true, versionKey: false }
 );
-export default model('Order', OrderSchema);
+export default model<TOrder>('Order', OrderSchema);

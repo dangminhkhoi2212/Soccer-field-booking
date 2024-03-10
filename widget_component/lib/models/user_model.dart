@@ -7,6 +7,8 @@ class UserModel {
   bool? isPublic;
   String? phone;
   String? role;
+  String? accessToken;
+  String? refreshToken;
 
   UserModel(
       {this.lock,
@@ -27,6 +29,8 @@ class UserModel {
     isPublic = json['isPublic'];
     phone = json['phone'];
     role = json['role'];
+    accessToken = json['accessToken'];
+    refreshToken = json['refreshToken'];
   }
 
   Map<String, dynamic> toJson() {
@@ -41,6 +45,8 @@ class UserModel {
     data['isPublic'] = isPublic;
     data['phone'] = phone;
     data['role'] = role;
+    data['accessToken'] = accessToken;
+    data['refreshToken'] = refreshToken;
     return data;
   }
 }

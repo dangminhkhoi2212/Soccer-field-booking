@@ -46,51 +46,51 @@ class _FilterSellerListState extends State<FilterSellerList> {
             const Divider(
               height: 20,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
-                    onTap: () {
-                      // Xử lý khi nhấp vào
-                    },
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 15),
-                          child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                LineIcon.alternateArrowsVertical(size: 18),
-                                SizedBox(width: 10),
-                                Text('Name')
-                              ])),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey[200],
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        // Xử lý khi nhấp vào
-                      },
-                      child: const Center(child: Text('Name')),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //   children: [
+            //     Expanded(
+            //       child: InkWell(
+            //         borderRadius: BorderRadius.circular(10),
+            //         onTap: () {
+            //           // Xử lý khi nhấp vào
+            //         },
+            //         child: Ink(
+            //           decoration: BoxDecoration(
+            //             color: Colors.grey[200],
+            //             borderRadius: BorderRadius.circular(10),
+            //           ),
+            //           child: Container(
+            //               padding: const EdgeInsets.symmetric(
+            //                   vertical: 8, horizontal: 15),
+            //               child: const Row(
+            //                   mainAxisAlignment: MainAxisAlignment.center,
+            //                   children: [
+            //                     LineIcon.alternateArrowsVertical(size: 18),
+            //                     SizedBox(width: 10),
+            //                     Text('Name')
+            //                   ])),
+            //         ),
+            //       ),
+            //     ),
+            //     const SizedBox(width: 10),
+            //     Expanded(
+            //       child: Container(
+            //         padding: const EdgeInsets.symmetric(vertical: 8),
+            //         decoration: BoxDecoration(
+            //           borderRadius: BorderRadius.circular(10),
+            //           color: Colors.grey[200],
+            //         ),
+            //         child: InkWell(
+            //           onTap: () {
+            //             // Xử lý khi nhấp vào
+            //           },
+            //           child: const Center(child: Text('Name')),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

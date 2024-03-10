@@ -124,15 +124,12 @@ class _FieldFilterState extends State<FieldFilter> {
               ),
               Expanded(
                   child: TimeRangePicker(
-                endTime: endTime!,
-                startTime: startTime!,
                 isHalfHour: _isHalfHour,
-                disableTimes: _disableTimes,
-                onEndTimePickChange: (String endTime) {
-                  print('end Time $endTime');
+                onEndTimePickChange: (TimeOfDay? endTime) {
+                  // print('end Time $endTime');
                 },
-                onStartTimePickChange: (String startTime) {
-                  print('start Time $startTime');
+                onStartTimePickChange: (TimeOfDay? startTime) {
+                  // print('start Time $startTime');
                 },
               )),
             ],

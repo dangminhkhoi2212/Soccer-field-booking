@@ -2,8 +2,8 @@ import 'package:ksport_seller/pages/profile/widgets/appbar_profile.dart';
 import 'package:ksport_seller/pages/profile/widgets/avatar_user.dart';
 import 'package:ksport_seller/pages/profile/widgets/drawer_profile.dart';
 import 'package:ksport_seller/pages/profile/widgets/info_user.dart';
-import 'package:ksport_seller/routes/route_path.dart';
 import 'package:flutter/material.dart';
+import 'package:widget_component/my_library.dart';
 import 'package:get/get.dart';
 
 class UserPage extends StatefulWidget {

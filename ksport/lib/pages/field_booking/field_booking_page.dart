@@ -30,7 +30,7 @@ class _FieldBookingState extends State<FieldBooking> {
   late String? _fieldID;
   final _logger = Logger();
   bool _isLoading = false;
-  String _title = 'Loading...';
+  String? _title;
   @override
   void setState(VoidCallback fn) {
     if (!mounted) return;
@@ -108,17 +108,17 @@ class _FieldBookingState extends State<FieldBooking> {
   }
 
   Widget _buildBody() {
+    if (_isLoading) {
+      return Center(
+        child: MyLoading.spinkit(),
+      );
+    }
     if (_userID == null || _fieldID == null || _field == null) {
       return const Center(
         child: Text("Can not find this field"),
       );
     }
 
-    if (_isLoading) {
-      return Center(
-        child: MyLoading.spinkit(),
-      );
-    }
     return SingleChildScrollView(
       child: Column(children: [
         Container(
@@ -147,11 +147,9 @@ class _FieldBookingState extends State<FieldBooking> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          backgroundColor: MyColor.background,
-          appBar: AppBar(title: Text(_title)),
-          body: _buildBody()),
-    );
+    return Scaffold(
+        backgroundColor: MyColor.background,
+        appBar: AppBar(title: Text(_title ?? '')),
+        body: _buildBody());
   }
 }

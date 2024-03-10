@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
 import 'package:ksport_seller/pages/history_order/history_order_page.dart';
 import 'package:ksport_seller/pages/home.dart';
+import 'package:ksport_seller/pages/order_list/order_list_page.dart';
 import 'package:ksport_seller/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
@@ -19,17 +20,17 @@ class _MainScreenState extends State<MainScreen> {
   final List pages = [
     const HomePage(),
     const FieldsPage(),
-    const HistoryOrderPage(),
+    const OrderList(),
     const UserPage()
   ];
-  late int _index = 0;
+  int? _index;
 
   @override
   void initState() {
     super.initState();
     final par = Get.parameters;
     print('params: $par');
-    _index = par['index'] == '1' ? 1 : 0;
+    _index = par['index'] == '1' ? 1 : null;
     debugPrint(_index.toString());
   }
 
@@ -77,42 +78,42 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: MyColor.background,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        resizeToAvoidBottomInset: false,
-        extendBody: true,
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: List.generate(pages.length, (index) => pages[index]),
-        ),
-        bottomNavigationBar: (pages.length <= maxCount)
-            ? AnimatedNotchBottomBar(
-                /// Provide NotchBottomBarController
-                notchBottomBarController: _controller,
-                color: Colors.white,
-                showLabel: false,
-                shadowElevation: 5,
-                kBottomRadius: 28.0,
-
-                notchColor: MyColor.secondary,
-
-                /// restart app if you change removeMargins
-                removeMargins: false,
-                bottomBarWidth: 500,
-                durationInMilliSeconds: 300,
-                bottomBarItems: _bottomBarItems(),
-                onTap: (index) {
-                  /// perform action on tab change and to update pages you can update pages without pages
-                  // log('current selected index $index');
-                  _pageController.jumpToPage(index);
-                },
-                kIconSize: 24.0,
-              )
-            : null,
+    return Scaffold(
+      backgroundColor: MyColor.background,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      resizeToAvoidBottomInset: false,
+      extendBody: true,
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: _index != null
+            ? pages[_index!]
+            : List.generate(pages.length, (index) => pages[index]),
       ),
+      bottomNavigationBar: (pages.length <= maxCount)
+          ? AnimatedNotchBottomBar(
+              /// Provide NotchBottomBarController
+              notchBottomBarController: _controller,
+              color: Colors.white,
+              showLabel: false,
+              shadowElevation: 5,
+              kBottomRadius: 28.0,
+
+              notchColor: MyColor.secondary,
+
+              /// restart app if you change removeMargins
+              removeMargins: false,
+              bottomBarWidth: 500,
+              durationInMilliSeconds: 300,
+              bottomBarItems: _bottomBarItems(),
+              onTap: (index) {
+                /// perform action on tab change and to update pages you can update pages without pages
+                // log('current selected index $index');
+                _pageController.jumpToPage(index);
+              },
+              kIconSize: 24.0,
+            )
+          : null,
     );
   }
 }

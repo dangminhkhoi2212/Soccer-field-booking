@@ -5,23 +5,9 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ksport_seller/routes/route_path.dart';
-import 'package:ksport_seller/utils/format.dart';
-import 'package:ksport_seller/utils/util_snackbar.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/services/service_field.dart';
-import 'package:widget_component/services/service_upload_image.dart';
-import 'package:widget_component/utils/loading.dart';
-import 'package:widget_component/widgets/my_image/my_image.dart';
-
-enum TYPE {
-  P5,
-  P6,
-  P7,
-  P11,
-}
+import 'package:widget_component/my_library.dart';
 
 class FormAddField extends StatefulWidget {
   const FormAddField({Key? key}) : super(key: key);

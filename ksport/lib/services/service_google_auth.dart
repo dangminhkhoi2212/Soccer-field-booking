@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:client_app/config/api_config.dart';
 import 'package:client_app/models/model_user.dart';
-import 'package:client_app/routes/route_path.dart';
-import 'package:client_app/services/service_google_map.dart';
 import 'package:client_app/services/service_login.dart';
 import 'package:client_app/storage/storage_user.dart';
 import 'package:client_app/store/store_user.dart';
-import 'package:client_app/utils/util_snackbar.dart';
 import 'package:logger/logger.dart';
+import 'package:widget_component/my_library.dart';
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();

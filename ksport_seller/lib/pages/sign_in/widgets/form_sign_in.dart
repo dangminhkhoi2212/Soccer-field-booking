@@ -4,13 +4,9 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ksport_seller/routes/route_path.dart';
 import 'package:ksport_seller/services/service_google_auth.dart';
-import 'package:ksport_seller/services/service_google_map.dart';
-import 'package:ksport_seller/utils/util_snackbar.dart';
 import 'package:line_icons/line_icon.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/services/service_address.dart';
+import 'package:widget_component/my_library.dart';
 
 class FromSignIn extends StatefulWidget {
   const FromSignIn({Key? key}) : super(key: key);
@@ -56,8 +52,8 @@ class _FromSignInState extends State<FromSignIn> {
               await GoogleMapService().determinePosition();
           double lat = position!.latitude;
           double long = position.longitude;
-          final String address = await GoogleMapService()
-              .getAddressFromLatLng(latLng: LatLng(lat, long));
+          final String? address = await GoogleMapService()
+              .getAddressFromLatLng(latitude: lat, longitude: long);
 
           debugPrint(address.toString());
 
