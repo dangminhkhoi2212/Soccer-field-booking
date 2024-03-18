@@ -52,20 +52,25 @@ dependencies:
   flutter_dotenv: ^5.1.0
   cloudinary: ^1.2.0
   firebase_storage: ^11.6.0
-  image_picker: ^1.0.7
   intl: ^0.18.0
   flutter_spinkit: ^5.2.0
   number_text_input_formatter: ^1.0.0+8
   giffy_dialog: ^2.0.0+2
   logger: ^2.0.2+1
-  
+  empty_widget: ^0.0.5
   flutter_map: ^6.1.0
   latlong2:  ^0.9.0
   flutter_map_cancellable_tile_provider: ^2.0.0
   animated_notch_bottom_bar: ^1.0.1
   custom_pop_up_menu: ^1.2.4
+  flutter_rating_bar: ^4.0.1
+  form_builder_image_picker: ^4.0.0
+  infinite_scroll_pagination: ^4.0.0
+
+
   widget_component:
     path: '../widget_component'
+  # image_picker: ^0.8.9
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +83,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^3.0.1
   flutter_launcher_icons: '^0.13.1'
+  # image_picker: ^0.8.9
   
 
 flutter_launcher_icons:

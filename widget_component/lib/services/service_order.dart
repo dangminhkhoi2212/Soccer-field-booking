@@ -58,13 +58,21 @@ class OrderService {
     return null;
   }
 
-  Future<Response?> getAllOrder(
-      {String? userID, String? sellerID, String? status}) async {
+  Future<Response?> getAllOrder({
+    String? userID,
+    String? sellerID,
+    String? status,
+    String? date,
+    String? sortBy,
+  }) async {
     try {
       Response response =
           await _dio.get('${ApiConfig.orderUrl}/all', queryParameters: {
         'sellerID': sellerID,
         'userID': userID,
+        'status': status,
+        'date': date,
+        'sortBy': sortBy,
       });
       return response;
     } on DioException catch (e) {
@@ -86,6 +94,26 @@ class OrderService {
       Response response = await _dio.get(ApiConfig.orderUrl, queryParameters: {
         'orderID': orderID,
       });
+      return response;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        debugPrint(e.response!.data.toString());
+        debugPrint(e.response!.headers.toString());
+        debugPrint(e.response!.requestOptions.toString());
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        debugPrint(e.requestOptions.toString());
+        debugPrint(e.message.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<Response?> getOrderedTime(
+      {required String fieldID, required String date}) async {
+    try {
+      Response response = await _dio.get('${ApiConfig.orderUrl}/time',
+          queryParameters: {'fieldID': fieldID, 'date': date});
       return response;
     } on DioException catch (e) {
       if (e.response != null) {

@@ -10,6 +10,7 @@ import userRouter from './app/routes/user.route';
 import fieldRoute from './app/routes/field.route';
 import sellerRoute from './app/routes/seller.route';
 import orderRoute from './app/routes/order.route';
+import feedbackRoute from './app/routes/feedback.route';
 dotenv.config();
 
 const app: Application = express();
@@ -26,6 +27,7 @@ app.use('/api/user', userRouter);
 app.use('/api/field', fieldRoute);
 app.use('/api/seller', sellerRoute);
 app.use('/api/order', orderRoute);
+app.use('/api/feedback', feedbackRoute);
 
 //handle error
 app.use((req: Request, res: Response, next: NextFunction) => {

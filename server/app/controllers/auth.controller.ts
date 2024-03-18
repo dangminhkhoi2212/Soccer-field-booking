@@ -1,4 +1,3 @@
-import mongoose, { ObjectId } from 'mongoose';
 import { Request, Response } from 'express';
 import UserModel from '../models/user.model';
 import UserService from '../services/user.service';
@@ -12,7 +11,16 @@ import SellerService from '../services/seller.service';
 
 const BCRYPT_SECRET = Number.parseInt(process.env.BCRYPT_SECRET || '10');
 class AuthController {
-    static async login(req: Request, res: Response) {
+    private static instance: AuthController;
+
+    // singleton design pattern
+    static getInstance() {
+        if (!AuthController.instance) {
+            AuthController.instance = new AuthController();
+        }
+        return AuthController.instance;
+    }
+    async login(req: Request, res: Response) {
         try {
             const email: string = req.body.email;
             const imageUrl: string = req.body.imageUrl;
@@ -58,7 +66,7 @@ class AuthController {
                 .json({ err_mes: error.message || error });
         }
     }
-    static async signUp(req: Request, res: Response) {
+    async signUp(req: Request, res: Response) {
         try {
             const email: string = req.body.email;
             const avatar: string = req.body.avatar;
@@ -127,7 +135,7 @@ class AuthController {
                 .json({ err_mes: error.message || error });
         }
     }
-    static async signIn(req: Request, res: Response) {
+    async signIn(req: Request, res: Response) {
         try {
             const email: string = req.body.email;
             const password: string = req.body.password;
@@ -174,4 +182,4 @@ class AuthController {
     }
 }
 
-export default AuthController;
+export default AuthController.getInstance();

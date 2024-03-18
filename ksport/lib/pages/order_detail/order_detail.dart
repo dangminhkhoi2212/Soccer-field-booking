@@ -72,48 +72,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Column(
+        child: Row(
           children: [
-            const Text('Do you want to accept this order?'),
-            const SizedBox(
-              height: 15,
+            const Text(
+              'Please leave a feedback',
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade100,
-                    ),
-                    onPressed: () {
-                      _handleCancel();
-                    },
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.w600),
-                    ),
-                  ),
+            const SizedBox(
+              width: 15,
+            ),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MyColor.litePrimary,
                 ),
-                const SizedBox(
-                  width: 15,
+                onPressed: () {
+                  Get.toNamed(RoutePaths.feedback,
+                      parameters: {'orderID': _order!.sId!});
+                },
+                child: const Text(
+                  'Feedback',
+                  style: TextStyle(
+                      color: MyColor.primary, fontWeight: FontWeight.w600),
                 ),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyColor.litePrimary,
-                    ),
-                    onPressed: () {
-                      _handleAccept();
-                    },
-                    child: const Text(
-                      'Accept',
-                      style: TextStyle(
-                          color: MyColor.primary, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -167,7 +148,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       body: Container(
           padding: const EdgeInsets.all(15),
           child: Column(
-            children: [_buildBody(), _buildButton()],
+            children: [
+              _buildBody(),
+              _buildButton(),
+            ],
           )),
     );
   }

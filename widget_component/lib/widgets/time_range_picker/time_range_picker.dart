@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get_storage/get_storage.dart';
@@ -40,7 +41,7 @@ class TimeRangePickerState extends State<TimeRangePicker> {
   late String _userID;
   Map<String, dynamic>? _startTime;
   Map<String, dynamic>? _endTime;
-  List<TimeOfDay?>? _disableTimes;
+  List<TimeOfDay?> _disableTimes = [];
 
   @override
   void initState() {
@@ -53,7 +54,8 @@ class TimeRangePickerState extends State<TimeRangePicker> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.startTime != widget.startTime ||
         oldWidget.endTime != widget.endTime ||
-        oldWidget.isHalfHour != widget.isHalfHour) {
+        oldWidget.isHalfHour != widget.isHalfHour ||
+        !listEquals(oldWidget.disableTimes, widget.disableTimes)) {
       _defineValue();
     }
   }
@@ -100,7 +102,7 @@ class TimeRangePickerState extends State<TimeRangePicker> {
     }
     for (int i = 0; i < timeIntervals.length; i++) {
       TimeOfDay time = timeIntervals[i]['time'];
-      bool check = _disableTimes!.contains(time);
+      bool check = _disableTimes.contains(time);
       if (check) {
         timeIntervals[i]['enable'] = false;
       }

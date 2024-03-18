@@ -2,7 +2,15 @@ import { Request, Response } from 'express';
 import UserService from '../services/user.service';
 import mongoose, { ObjectId } from 'mongoose';
 import userModel from '../models/user.model';
-
+export interface TGetUsers {
+    textSearch?: string;
+    role?: string;
+}
+export interface TGetOneUser {
+    userID?: string;
+    email?: string;
+    phone?: string;
+}
 class UserController {
     async updateUser(req: Request, res: Response) {
         try {
@@ -30,7 +38,7 @@ class UserController {
     }
     async getOneUser(req: Request, res: Response) {
         try {
-            const query: any = req.query;
+            const query: any = req.query as unknown as TGetOneUser;
             const result = await UserService.getOneUser(query);
             return res.send(result);
         } catch (error: any) {
@@ -41,7 +49,7 @@ class UserController {
     }
     async getUsers(req: Request, res: Response) {
         try {
-            const query: any = req.query;
+            const query: any = req.query as unknown as TGetUsers;
             console.log('🚀 ~ UserController ~ getUsers ~ query:', query);
             const result = await UserService.getUsers(query);
             return res.send(result);

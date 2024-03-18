@@ -1,4 +1,4 @@
-import 'package:client_app/pages/field_booking/widget/feedback.dart';
+import 'package:client_app/pages/field_booking/widget/feedback_info.dart';
 import 'package:client_app/pages/field_booking/widget/field_info.dart';
 import 'package:client_app/pages/field_booking/widget/form_booking.dart';
 import 'package:client_app/pages/field_booking/widget/seller_info_booking.dart';
@@ -26,7 +26,7 @@ class _FieldBookingState extends State<FieldBooking> {
   UserModel? _user;
   SellerModel? _seller;
   AddressModel? _address;
-  late String? _userID;
+  late String? _sellerID;
   late String? _fieldID;
   final _logger = Logger();
   bool _isLoading = false;
@@ -40,15 +40,15 @@ class _FieldBookingState extends State<FieldBooking> {
   @override
   void initState() {
     super.initState();
-    _userID = Get.parameters['userID'];
+    _sellerID = Get.parameters['sellerID'];
     _fieldID = Get.parameters['fieldID'];
-    _logger.d(_userID);
+    _logger.d(_sellerID);
     _initValue();
   }
 
   Future _getUser() async {
     try {
-      Response? response = await _userService.getOneUser(userID: _userID);
+      Response? response = await _userService.getOneUser(userID: _sellerID);
       if (response!.statusCode == 200) {
         final data = response.data;
         _user = UserModel.fromJson(data);
@@ -60,7 +60,7 @@ class _FieldBookingState extends State<FieldBooking> {
 
   Future _getSeller() async {
     try {
-      Response? response = await _sellerService.getOneSeller(userID: _userID);
+      Response? response = await _sellerService.getOneSeller(userID: _sellerID);
       if (response!.statusCode == 200) {
         final data = response.data;
         _seller = SellerModel.fromJson(data);
@@ -72,7 +72,7 @@ class _FieldBookingState extends State<FieldBooking> {
 
   Future _getAddress() async {
     try {
-      Response? response = await _addressService.getAddress(userID: _userID);
+      Response? response = await _addressService.getAddress(userID: _sellerID);
       if (response!.statusCode == 200) {
         final data = response.data;
 
@@ -113,7 +113,7 @@ class _FieldBookingState extends State<FieldBooking> {
         child: MyLoading.spinkit(),
       );
     }
-    if (_userID == null || _fieldID == null || _field == null) {
+    if (_sellerID == null || _fieldID == null || _field == null) {
       return const Center(
         child: Text("Can not find this field"),
       );
@@ -121,26 +121,16 @@ class _FieldBookingState extends State<FieldBooking> {
 
     return SingleChildScrollView(
       child: Column(children: [
-        Container(
-            padding: const EdgeInsets.all(8), child: FieldInfo(field: _field!)),
-        Container(
-            padding: const EdgeInsets.all(8),
-            child: SellerInfoBooking(
-              user: _user!,
-              address: _address!,
-            )),
-        Container(
-          padding: const EdgeInsets.all(8),
-          child: FormBooking(
-            field: _field!,
-            seller: _seller!,
-          ),
+        FieldInfo(field: _field!),
+        SellerInfoBooking(
+          user: _user!,
+          address: _address!,
         ),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(8),
-          child: const FeedbackField(),
+        FormBooking(
+          field: _field!,
+          seller: _seller!,
         ),
+        FeedbackField(fieldID: _fieldID!),
       ]),
     );
   }
@@ -150,6 +140,9 @@ class _FieldBookingState extends State<FieldBooking> {
     return Scaffold(
         backgroundColor: MyColor.background,
         appBar: AppBar(title: Text(_title ?? '')),
-        body: _buildBody());
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildBody(),
+        ));
   }
 }

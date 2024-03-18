@@ -58,6 +58,9 @@ dependencies:
   latlong2: ^0.9.0
   flutter_map_cancellable_tile_provider: ^2.0.0
   animated_notch_bottom_bar: ^1.0.1
+  empty_widget: ^0.0.5
+  form_builder_image_picker: ^4.0.0
+
   widget_component:
     path: '../widget_component'
 dev_dependencies:

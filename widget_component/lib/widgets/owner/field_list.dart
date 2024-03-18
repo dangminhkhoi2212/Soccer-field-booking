@@ -113,7 +113,7 @@ class SoccerFieldListState extends State<SoccerFieldList> {
               );
             }
             await Get.toNamed(RoutePaths.fieldBooking, parameters: {
-              'userID': field.userID ?? '',
+              'sellerID': field.userID ?? '',
               'fieldID': field.sId ?? ''
             });
           },

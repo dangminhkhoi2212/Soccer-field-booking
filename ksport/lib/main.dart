@@ -48,6 +48,18 @@ class MyApp extends StatelessWidget {
               borderSide: const BorderSide(
                 color: Colors.grey,
               ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: const BorderSide(
+                color: Colors.grey,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(
+                color: Colors.red.shade900,
+              ),
             )),
       ),
       builder: (context, child) => SafeArea(child: child!),

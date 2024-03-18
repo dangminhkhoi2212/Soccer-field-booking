@@ -1,9 +1,11 @@
 import 'package:client_app/middlewares/router.dart';
 import 'package:client_app/pages/edit_address/edit_address.dart';
 import 'package:client_app/pages/edit_profile/edit_profile_page.dart';
+import 'package:client_app/pages/feedback/feedback_page.dart';
 import 'package:client_app/pages/field_booking/field_booking_page.dart';
 import 'package:client_app/pages/home/home_page.dart';
 import 'package:client_app/pages/main_screen.dart';
+import 'package:client_app/pages/order_detail/order_detail.dart';
 import 'package:client_app/pages/profile/profile_page.dart';
 import 'package:client_app/pages/seller/seller_page.dart';
 import 'package:client_app/pages/sign_in/sign_in.dart';
@@ -48,6 +50,14 @@ class GetRouter {
     {
       'name': RoutePaths.fieldBooking,
       'page': const FieldBooking(),
+    },
+    {
+      'name': RoutePaths.orderDetail,
+      'page': const OrderDetailPage(),
+    },
+    {
+      'name': RoutePaths.feedback,
+      'page': const FeedbackPage(),
     },
   ];
   static final List<GetPage> routes = pages

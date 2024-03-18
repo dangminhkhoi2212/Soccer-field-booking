@@ -1,9 +1,17 @@
-import { Query } from 'mongoose';
 import { Request, Response } from 'express';
 import AddressService from '../services/address.service';
 
 class AddressController {
-    static async getAddress(req: Request, res: Response) {
+    private static instance: AddressController;
+
+    static getInstance(): AddressController {
+        if (!AddressController.instance) {
+            AddressController.instance = new AddressController();
+        }
+        return AddressController.instance;
+    }
+
+    async getAddress(req: Request, res: Response) {
         try {
             const query = req.query as { userID?: string };
 
@@ -16,7 +24,8 @@ class AddressController {
                 .json({ msg: error.message || error });
         }
     }
-    static async updateAddress(req: Request, res: Response) {
+
+    async updateAddress(req: Request, res: Response) {
         try {
             const body = req.body;
             console.log('🚀 ~ AddressController ~ updateAddress ~ body:', body);
@@ -47,4 +56,5 @@ class AddressController {
         }
     }
 }
-export default AddressController;
+
+export default AddressController.getInstance();

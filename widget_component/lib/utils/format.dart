@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:number_text_input_formatter/number_text_input_formatter.dart';
 import 'package:intl/intl.dart';
 
@@ -23,5 +24,15 @@ class FormatUtil {
       decimalDigits: 0,
     );
     return formatter.format(n);
+  }
+
+  static String formatDate(DateTime date) {
+    final format = DateFormat('dd/MM/yyyy');
+    return format.format(date);
+  }
+
+  static String formatTime(DateTime time) {
+    final format = DateFormat('HH:mm');
+    return format.format(time);
   }
 }

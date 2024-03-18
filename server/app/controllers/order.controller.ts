@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, query } from 'express';
 import OrderService from '../services/order.service';
 export interface TCreateOrder {
     userID: string;
@@ -16,6 +16,9 @@ export interface TUpdateOrder {
 export interface TGetAllOrder {
     userID: string;
     sellerID: string;
+    date?: string;
+    status?: string;
+    sortBy?: string;
 }
 export interface TGetOneOrder {
     orderID: string;
@@ -23,6 +26,12 @@ export interface TGetOneOrder {
 export interface TGetOrderedTime {
     fieldID: string;
     date: string;
+}
+export interface TGetFieldOrdered {
+    sellerID: string;
+    date: string;
+    startTime: string;
+    endTime: string;
 }
 class OrderController {
     async createOrder(req: Request, res: Response) {
@@ -73,7 +82,22 @@ class OrderController {
     async getOrderedTime(req: Request, res: Response) {
         try {
             const query = req.query as unknown as TGetOrderedTime;
+            console.log(
+                '🚀 ~ OrderController ~ getOrderedTime ~ query:',
+                query
+            );
             const result = await OrderService.getOrderedTime(query);
+            return res.send(result);
+        } catch (error: any) {
+            return res
+                .status(error.status || 500)
+                .json({ err_mes: error.message });
+        }
+    }
+    async getFieldOrdered(req: Request, res: Response) {
+        try {
+            const query = req.query as unknown as TGetFieldOrdered;
+            const result = await OrderService.getFieldOrdered(query);
             return res.send(result);
         } catch (error: any) {
             return res

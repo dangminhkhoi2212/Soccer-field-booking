@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DateTimeUtil {
-  static List<TimeOfDay> generateTime({
+  static List<TimeOfDay> generateTimeRange({
     required TimeOfDay startTime,
     required TimeOfDay endTime,
     bool isHalfHour = false,

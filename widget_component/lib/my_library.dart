@@ -14,6 +14,7 @@ export 'package:widget_component/models/address_model.dart';
 export 'package:widget_component/models/order_model.dart';
 export 'package:widget_component/models/seller_model.dart';
 export 'package:widget_component/models/ordered_time_model.dart';
+export 'package:widget_component/models/feedback_model.dart';
 
 //route
 export 'package:widget_component/route/route_path.dart';
@@ -26,6 +27,7 @@ export 'package:widget_component/services/service_seller.dart';
 export 'package:widget_component/services/service_upload_image.dart';
 export 'package:widget_component/services/service_user.dart';
 export 'package:widget_component/services/service_order.dart';
+export 'package:widget_component/services/service_feedback.dart';
 
 //util
 export 'package:widget_component/utils/format.dart';
@@ -42,3 +44,6 @@ export 'package:widget_component/widgets/time_range_picker/time_range_picker.dar
 export 'package:widget_component/widgets/owner/field_list.dart';
 export 'package:widget_component/widgets/owner/owner_info.dart';
 export 'package:widget_component/widgets/order/order_card.dart';
+export 'package:widget_component/widgets/order/order_filter.dart';
+export 'package:widget_component/widgets/order/order_filter_sort.dart';
+export 'package:widget_component/widgets/order/order_info.dart';

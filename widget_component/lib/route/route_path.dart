@@ -7,7 +7,6 @@ class RoutePaths {
   static String user = '/profile';
   static String signIn = '/sign-in';
   static String signUp = '/sign-up';
-  static String fieldDetail = '/field/field-detail';
   static String mainScreen = '/main-screen';
   static String order = '/order';
   static String editProfile = '/profile/edit-profile';
@@ -16,4 +15,5 @@ class RoutePaths {
   static String addField = '/fields/add-field';
   static String fieldBooking = '/fields/field-booking';
   static String orderDetail = '/orderDetail';
+  static String feedback = '/feedback';
 }

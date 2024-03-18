@@ -2,13 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 class UploadImageService {
   final storage = FirebaseStorage.instance;
 
   Future<String?> uploadImage(
-      {required XFile file, required String folder}) async {
+      {required dynamic file, required String folder}) async {
     try {
       File image = File(file.path);
       final fileType = image.path.split('.').last.toLowerCase();

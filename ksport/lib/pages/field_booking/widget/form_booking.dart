@@ -28,12 +28,15 @@ class _FormBookingState extends State<FormBooking> {
   late FieldModel _field;
   late String? _userID;
   late SellerModel _seller;
-  final _format = DateFormat('dd/MM/yyyy');
+
   final Logger _logger = Logger();
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
   late double _priceOrder = 0;
   bool _isLoading = false;
+
+  List<TimeOfDay?> _disableTimes = [];
+
   @override
   void setState(VoidCallback fn) {
     if (!mounted) return;
@@ -46,6 +49,7 @@ class _FormBookingState extends State<FormBooking> {
     _field = widget.field;
     _seller = widget.seller;
     _userID = _box.read('id');
+    _getOrderedTime(date: DateTime.now());
   }
 
   void _calculatePrice() {
@@ -58,6 +62,39 @@ class _FormBookingState extends State<FormBooking> {
     _priceOrder = pricePerMinute * minutes;
   }
 
+  Future _getOrderedTime({required DateTime date}) async {
+    try {
+      Response? response = await _orderService.getOrderedTime(
+          fieldID: _field.sId!, date: FormatUtil.formatDate(date).toString());
+      if (response!.statusCode == 200) {
+        final OrderedTimeModel data = OrderedTimeModel.fromJson(response.data);
+        if (data.times == null) {
+          _disableTimes = [];
+        } else {
+          final List<Times?>? times = data.times;
+
+          for (var time in times!) {
+            final TimeOfDay startTime = TimeOfDay.fromDateTime(
+                DateFormat('HH:mm').parse(time!.startTime!));
+            final TimeOfDay endTime = TimeOfDay.fromDateTime(
+                DateFormat('HH:mm').parse(time.endTime!));
+
+            _disableTimes = [
+              ..._disableTimes,
+              ...DateTimeUtil.generateTimeRange(
+                  startTime: startTime,
+                  endTime: endTime,
+                  isHalfHour: _seller.isHalfHour!)
+            ];
+          }
+        }
+      }
+    } catch (e) {
+      _logger.e(error: e, '_getOrderedTime');
+    }
+    setState(() {});
+  }
+
   Widget _buildSelectDateTime() {
     return FormBuilder(
       key: _formKey,
@@ -65,6 +102,11 @@ class _FormBookingState extends State<FormBooking> {
         children: [
           FormBuilderDateTimePicker(
             name: 'date',
+            onChanged: (DateTime? date) {
+              if (date != null) {
+                _getOrderedTime(date: date);
+              }
+            },
             showCursor: true,
             initialValue: DateTime.now(),
             firstDate: DateTime.now(),
@@ -92,14 +134,15 @@ class _FormBookingState extends State<FormBooking> {
             ),
             padding: const EdgeInsets.all(8.0),
             child: TimeRangePicker(
+              disableTimes: _disableTimes,
               onStartTimePickChange: (TimeOfDay? startTime) {
-                _logger.d(error: startTime, 'startime');
+                // _logger.d(error: startTime, 'startime');
                 setState(() {
                   _startTime = startTime;
                 });
               },
               onEndTimePickChange: (TimeOfDay? endTime) {
-                _logger.d(error: endTime, 'endTime');
+                // _logger.d(error: endTime, 'endTime');
 
                 setState(() {
                   _endTime = endTime;
@@ -141,15 +184,16 @@ class _FormBookingState extends State<FormBooking> {
     });
   }
 
-  void _showDialog() async {
+  DateTime _getFormDate() {
     _formKey.currentState!.save();
-    final data = _formKey.currentState!.value;
-    if (data['date'] == null) {
-      SnackbarUtil.getSnackBar(
-          title: 'Booking a field', message: 'Please select a date');
-      return;
-    }
-    final date = _format.format(data['date']);
+    final Map<String, dynamic> data = _formKey.currentState!.value;
+    return data['date'];
+  }
+
+  void _showDialog() async {
+    final DateTime formDate = _getFormDate();
+
+    final date = FormatUtil.formatDate(formDate);
     if (_startTime == null || _endTime == null) {
       SnackbarUtil.getSnackBar(
           title: 'Booking a field',

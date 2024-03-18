@@ -46,7 +46,7 @@ class _FieldFilterState extends State<FieldFilter> {
   }
 
   void _generateDisableTime() {
-    _disableTimes = DateTimeUtil.generateTime(
+    _disableTimes = DateTimeUtil.generateTimeRange(
         startTime: const TimeOfDay(hour: 7, minute: 0),
         endTime: const TimeOfDay(hour: 10, minute: 30),
         isHalfHour: true);

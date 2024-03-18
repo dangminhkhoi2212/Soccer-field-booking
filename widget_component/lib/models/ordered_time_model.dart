@@ -1,10 +1,10 @@
-class OrderedTime {
+class OrderedTimeModel {
   List<Times>? times;
   String? date;
 
-  OrderedTime({this.times, this.date});
+  OrderedTimeModel({this.times, this.date});
 
-  OrderedTime.fromJson(Map<String, dynamic> json) {
+  OrderedTimeModel.fromJson(Map<String, dynamic> json) {
     if (json['times'] != null) {
       times = <Times>[];
       json['times'].forEach((v) {
