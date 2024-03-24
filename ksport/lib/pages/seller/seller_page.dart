@@ -29,7 +29,6 @@ class _SellerPageState extends State<SellerPage> {
     // TODO: implement initState
     super.initState();
     _userID = Get.parameters['userID'];
-    _logger.i(_userID);
     _initValue();
   }
 
@@ -52,7 +51,6 @@ class _SellerPageState extends State<SellerPage> {
       if (response!.statusCode == 200) {
         final data = response.data;
         _seller = SellerModel.fromJson(data);
-        _logger.d(error: _seller, '_getSeller');
       }
     } catch (e) {
       _logger.e(error: e, '_getSeller');

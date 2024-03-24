@@ -32,6 +32,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Poppins',
         primarySwatch: Colors.green,
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: ButtonStyle(
+            side: MaterialStatePropertyAll(
+                BorderSide(color: Colors.grey.shade500, width: 1)),
+            backgroundColor: const MaterialStatePropertyAll(Colors.white),
+            textStyle: const MaterialStatePropertyAll<TextStyle>(
+              TextStyle(
+                color: MyColor.primary,
+              ),
+            ),
+          ),
+        ),
         inputDecorationTheme: InputDecorationTheme(
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(

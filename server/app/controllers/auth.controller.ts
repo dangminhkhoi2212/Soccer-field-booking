@@ -6,7 +6,7 @@ import TokenService from '../services/token.service';
 import AddressService from '../services/address.service';
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
-import { ROLE } from '../consts/user.const';
+import { ROLE } from '../const/user.const';
 import SellerService from '../services/seller.service';
 
 const BCRYPT_SECRET = Number.parseInt(process.env.BCRYPT_SECRET || '10');

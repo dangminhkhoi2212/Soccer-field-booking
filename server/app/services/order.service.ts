@@ -1,21 +1,33 @@
-import { query } from 'express';
+import { PipelineStage } from 'mongoose';
 import {
     TCreateOrder,
-    TGetAllOrder,
     TGetFieldOrdered,
-    TGetOneOrder,
     TGetOrderedTime,
     TUpdateOrder,
 } from '../controllers/order.controller';
 import OrderModel from '../models/order.model';
-import MongooseUtil from '../utils/mongoose.util';
-const mongooseUtil = new MongooseUtil();
+import MongooseUtil, { TOjectID } from '../utils/mongoose.util';
+import FeedbackService from './feedback.service';
+interface TGetAllOrder {
+    userID?: TOjectID;
+    sellerID?: TOjectID;
+    date?: string;
+    status?: string;
+    sortBy?: string;
+}
 class OrderService {
-    static async createOrder(data: TCreateOrder) {
+    private static instance: OrderService;
+    static getInstance() {
+        if (!this.instance) {
+            this.instance = new OrderService();
+        }
+        return this.instance;
+    }
+    async createOrder(data: TCreateOrder) {
         const result = await OrderModel.create(data);
         return result;
     }
-    static async updateStatusOrder(data: TUpdateOrder) {
+    async updateStatusOrder(data: TUpdateOrder) {
         const result = await OrderModel.findByIdAndUpdate(
             data.orderID,
             { status: data.status },
@@ -23,59 +35,212 @@ class OrderService {
         );
         return result;
     }
-    static async getAllOrder(query: TGetAllOrder) {
+    async getAllOrder(query: TGetAllOrder) {
         const { sellerID, userID, date, status, sortBy } = query;
 
-        let newQuery: any = {};
-        let sort: any = {};
-        if (sellerID && userID) {
-            newQuery = {
-                $and: [{ sellerID: sellerID }, { userID: userID }],
-            };
-        } else if (sellerID) {
-            newQuery.sellerID = sellerID;
+        const aggPipeline: PipelineStage[] = [];
+        let sortStage: PipelineStage | undefined = undefined;
+        aggPipeline.push(
+            {
+                $lookup: {
+                    from: 'fields',
+                    localField: 'fieldID',
+                    foreignField: '_id',
+                    as: 'field',
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                coverImage: 1,
+                                userID: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'user',
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                email: 1,
+                                phone: 1,
+                                avatar: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'seller',
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                email: 1,
+                                phone: 1,
+                                avatar: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            { $unwind: '$field' },
+            { $unwind: '$user' },
+            { $unwind: '$seller' }
+        );
+        if (sellerID) {
+            aggPipeline.push(
+                { $match: { 'field.userID': sellerID } },
+                {
+                    $project: {
+                        userID: 0,
+                        fieldID: 0,
+                    },
+                }
+            );
         } else {
-            newQuery.userID = userID;
+            aggPipeline.push({ $match: { userID: userID } });
         }
 
         if (date) {
-            newQuery.date = date;
-        }
-        if (status) {
-            newQuery.status = status;
-        }
-        switch (sortBy) {
-            case 'time_asc':
-                sort.startTime = 1;
-                break;
-            case 'time_desc':
-                sort.startTime = -1;
-                break;
-            case 'total_asc':
-                sort.total = 1;
-                break;
-            case 'total_desc':
-                sort.total = -1;
-                break;
+            aggPipeline.push({
+                $match: {
+                    $expr: {
+                        $eq: [
+                            {
+                                $dateToString: {
+                                    format: '%d-%m-%Y',
+                                    date: '$date',
+                                },
+                            },
+                            date,
+                        ],
+                    },
+                },
+            });
         }
 
-        console.log('🚀 ~ OrderService ~ getAllOrder ~ newQuery:', newQuery);
-        const result = await OrderModel.find(newQuery)
-            .populate('userID', 'name email phone avatar')
-            .populate('sellerID', 'name email phone avatar')
-            .populate('fieldID', 'name coverImage')
-            .sort(sort);
+        if (status) {
+            aggPipeline.push({ $match: { status: status } });
+        }
+
+        switch (sortBy) {
+            case 'time_asc':
+                sortStage = { $sort: { startTime: 1 } };
+                break;
+            case 'time_desc':
+                sortStage = { $sort: { startTime: -1 } };
+                break;
+            case 'total_asc':
+                sortStage = { $sort: { total: 1 } };
+                break;
+            case 'total_desc':
+                sortStage = { $sort: { total: -1 } };
+                break;
+        }
+        if (sortBy && sortStage) aggPipeline.push(sortStage);
+
+        const result = await OrderModel.aggregate(aggPipeline).exec();
+        console.log(
+            '🚀 ~ OrderService ~ getAllOrder ~ aggPipeline:',
+            aggPipeline
+        );
         return result;
     }
-    static async getOneOrder(query: TGetOneOrder) {
-        const result = await OrderModel.findById(query.orderID)
-            .populate('userID', 'name email phone avatar')
-            .populate('sellerID', 'name email phone avatar')
-            .populate('fieldID', 'name coverImage');
-        return result;
+
+    async getOneOrder(query: { userID: TOjectID; orderID: TOjectID }) {
+        const { userID, orderID } = query;
+
+        const agg: PipelineStage[] = [];
+        agg.push(
+            {
+                $match: {
+                    _id: orderID,
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'user',
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                email: 1,
+                                phone: 1,
+                                avatar: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            { $unwind: '$user' },
+            {
+                $lookup: {
+                    from: 'fields',
+                    localField: 'fieldID',
+                    foreignField: '_id',
+                    as: 'field',
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                coverImage: 1,
+                                userID: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            { $unwind: '$field' },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'field.userID',
+                    foreignField: '_id',
+                    as: 'seller',
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                email: 1,
+                                phone: 1,
+                                avatar: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            { $unwind: '$seller' },
+            {
+                $project: {
+                    userID: 0,
+                    fieldID: 0,
+                },
+            }
+        );
+        const [result, isFeedback] = await Promise.all([
+            OrderModel.aggregate(agg),
+            FeedbackService.isFeedback({ userID, orderID }),
+        ]);
+        return { ...result[0], isFeedback };
     }
-    static async getOrderedTime(query: TGetOrderedTime) {
-        const fieldID = mongooseUtil.createOjectID(query.fieldID);
+
+    async getOrderedTime(query: TGetOrderedTime) {
+        const fieldID = MongooseUtil.createOjectID(query.fieldID);
         const result = await OrderModel.aggregate([
             {
                 $match: {
@@ -83,13 +248,32 @@ class OrderService {
                         {
                             fieldID: fieldID,
                         },
-                        { date: query.date },
+                        {
+                            $expr: {
+                                $eq: [
+                                    {
+                                        $dateToString: {
+                                            format: '%d-%m-%Y',
+                                            date: '$date',
+                                        },
+                                    },
+                                    query.date,
+                                ],
+                            },
+                        },
                     ],
                 },
             },
             {
                 $group: {
-                    _id: { date: '$date' },
+                    _id: {
+                        date: {
+                            $dateToString: {
+                                format: '%d-%m-%Y',
+                                date: '$date',
+                            },
+                        },
+                    },
                     times: {
                         $push: {
                             startTime: '$startTime',
@@ -109,17 +293,17 @@ class OrderService {
         if (result.length == 1) return result[0];
         return {};
     }
-    static async getFieldOrdered(query: TGetFieldOrdered) {
-        const sellerID = mongooseUtil.createOjectID(query.sellerID);
-        var startTimeParts = query.startTime.split(':');
-        var startTimeDate = new Date();
-        startTimeDate.setHours(parseInt(startTimeParts[0]));
-        startTimeDate.setMinutes(parseInt(startTimeParts[1]));
+    async getOrderedField(query: TGetFieldOrdered) {
+        const sellerID = MongooseUtil.createOjectID(query.sellerID);
+        // var startTimeParts = query.startTime.split(':');
+        // var startTimeDate = new Date();
+        // startTimeDate.setHours(parseInt(startTimeParts[0]));
+        // startTimeDate.setMinutes(parseInt(startTimeParts[1]));
 
-        var endTimeParts = query.endTime.split(':');
-        var endTimeDate = new Date();
-        endTimeDate.setHours(parseInt(endTimeParts[0]));
-        endTimeDate.setMinutes(parseInt(endTimeParts[1]));
+        // var endTimeParts = query.endTime.split(':');
+        // var endTimeDate = new Date();
+        // endTimeDate.setHours(parseInt(endTimeParts[0]));
+        // endTimeDate.setMinutes(parseInt(endTimeParts[1]));
         const result = await OrderModel.find({
             $and: [
                 { sellerID },
@@ -132,4 +316,4 @@ class OrderService {
         return result;
     }
 }
-export default OrderService;
+export default OrderService.getInstance();

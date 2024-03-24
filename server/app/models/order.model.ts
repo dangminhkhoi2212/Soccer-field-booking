@@ -1,5 +1,5 @@
 import { Schema, Types, model, ObjectId } from 'mongoose';
-import { COrder } from '../consts/order.const';
+import { COrder } from '../const/order.const';
 
 export interface TOrder {
     userID: ObjectId;
@@ -7,24 +7,23 @@ export interface TOrder {
     fieldID: ObjectId;
     total: number;
     isPay: boolean;
-    startTime: string;
-    endTime: string;
-    date: string;
+    startTime: Date;
+    endTime: Date;
+    date: Date;
     status: string;
 }
 const OrderSchema: Schema<TOrder> = new Schema(
     {
         userID: { type: Types.ObjectId, ref: 'User' },
-        sellerID: { type: Types.ObjectId, ref: 'User' },
         fieldID: { type: Types.ObjectId, ref: 'Field' },
         total: { type: Number, default: 0 },
         isPay: { type: Boolean, default: true },
-        startTime: { type: String, required: true },
-        endTime: { type: String, required: true },
+        startTime: { type: Date, required: true },
+        endTime: { type: Date, required: true },
         date: {
-            type: String,
+            type: Date,
             required: true,
-            default: new Date().toISOString(),
+            default: new Date(),
         },
         status: {
             type: String,

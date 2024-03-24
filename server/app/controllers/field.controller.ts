@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import FieldService from '../services/field.service';
 import { Query } from 'mongoose';
+import mongooseUtil, { TOjectID } from '../utils/mongoose.util';
+import feedbackService from '../services/feedback.service';
 
 interface TAddField {
     userID: string;
@@ -50,13 +52,28 @@ class FieldController {
                 .json({ err_mes: error.message }); // Use error.message for clarity
         }
     }
-    static async getSoccerField(req: Request, res: Response) {
+    static async getSoccerFields(req: Request, res: Response) {
         try {
             const query: TGetField = req.query as unknown as TGetField;
             const userID = query.userID;
-            const fieldID = query.fieldID;
+            if (!userID)
+                return res.status(400).json({ err_mes: 'userID not found' });
+            const validUserID = mongooseUtil.createOjectID(userID);
+            const fields = await FieldService.getSoccerFields({
+                userID: validUserID,
+            });
+            const mapAPI = fields.map((field) =>
+                feedbackService.getAvgStar(field._id as TOjectID)
+            );
 
-            const result = await FieldService.getSoccerField(query);
+            const starAvg = await Promise.all(mapAPI);
+            const result: any = [];
+            for (let i = 0; i < fields.length; i++) {
+                result.push({
+                    ...fields[i].toJSON(),
+                    ...{ avgStar: starAvg[i].avgStar },
+                });
+            }
             res.send(result);
         } catch (error: any) {
             return res

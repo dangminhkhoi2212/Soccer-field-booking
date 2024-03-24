@@ -2,13 +2,9 @@ import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
 import UserModel, { TUser } from '../models/user.model';
 import 'dotenv/config';
 import MongooseUtil from '../utils/mongoose.util';
-import SellerModel from '../models/seller.model';
-import addressModel from '../models/address.model';
 import { TGetOneUser, TGetUsers } from '../controllers/user.controller';
-import { ROLE } from '../consts/user.const';
 const USER_JSON: string = process.env.USER_JSON?.toString() || '';
 
-const mongooseUtil = new MongooseUtil();
 class UserService {
     static async getOneUser(params: TGetOneUser) {
         const query: any = params;
@@ -17,7 +13,7 @@ class UserService {
         });
 
         if (query.userID) {
-            const userID = mongooseUtil.createOjectID(query.userID);
+            const userID = MongooseUtil.createOjectID(query.userID);
             const result = await UserModel.findById(
                 userID,
                 '-password -refreshToken -createdAt -updatedAt'

@@ -36,10 +36,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           horizontal: 10,
         ),
         // margin: const EdgeInsets.all(10),
-        child: const SingleChildScrollView(
-          reverse: true,
-          child: FromEditProfile(),
-        ),
+        child: const FromEditProfile(),
       ),
     );
   }

@@ -7,7 +7,6 @@ import { TGetSeller } from '../controllers/seller.controller';
 import { refreshToken } from 'firebase-admin/app';
 import { query } from 'express';
 const USER_JSON = '_id name avatar role';
-const mongooseUtil = new MongooseUtil();
 class SellerService {
     static async updateSeller(
         userID: string,
@@ -43,7 +42,6 @@ class SellerService {
         return fields;
     }
     static async getSeller(params: any) {
-        const mongooseUtil = new MongooseUtil();
         const pipeline = [];
 
         // Initialize the query object with isInfo parameter
@@ -53,7 +51,7 @@ class SellerService {
         if (params.sellerID) {
             pipeline.push({
                 $match: {
-                    _id: mongooseUtil.createOjectID(params.sellerID),
+                    _id: MongooseUtil.createOjectID(params.sellerID),
                 },
             });
         }
@@ -62,7 +60,7 @@ class SellerService {
         else if (params.userID) {
             pipeline.push({
                 $match: {
-                    userID: mongooseUtil.createOjectID(params.userID),
+                    userID: MongooseUtil.createOjectID(params.userID),
                 },
             });
         } else pipeline.push({ $match: {} });
@@ -130,7 +128,7 @@ class SellerService {
         return result;
     }
     static async getOneSeller(query: { userID: string }) {
-        const userID = mongooseUtil.createOjectID(query.userID);
+        const userID = MongooseUtil.createOjectID(query.userID);
         const result = await SellerModel.findOne({ userID });
         return result;
     }

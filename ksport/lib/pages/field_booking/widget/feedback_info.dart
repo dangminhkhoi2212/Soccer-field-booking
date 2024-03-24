@@ -1,8 +1,10 @@
-import 'package:client_app/pages/field_booking/widget/feedback_card.dart';
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
@@ -12,17 +14,20 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class FeedbackField extends StatefulWidget {
   final String fieldID;
-  const FeedbackField({super.key, required this.fieldID});
+  final StatisticFeedbackModel statistic;
+  const FeedbackField(
+      {super.key, required this.fieldID, required this.statistic});
 
   @override
   State<FeedbackField> createState() => _FieldInfoState();
 }
 
 class _FieldInfoState extends State<FeedbackField> {
-  int _groupValue = 0;
+  final int _groupValue = 0;
   bool _isLoading = false;
   late String _fieldID;
   final _logger = Logger();
+  StatisticFeedbackModel _statistic = StatisticFeedbackModel();
   FeedbackModel? _feedback = FeedbackModel.fromJson({});
   final FeedbackService _feedbackService = FeedbackService();
 
@@ -31,42 +36,8 @@ class _FieldInfoState extends State<FeedbackField> {
   void initState() {
     super.initState();
     _fieldID = widget.fieldID;
+    _statistic = widget.statistic;
     _getFeedbacks();
-  }
-
-  void _showOptionStar() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-            decoration: const BoxDecoration(color: Colors.white),
-            width: double.infinity,
-            child: GiffyBottomSheet(
-              giffy: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Select a star to view'),
-                  RatingBar.builder(
-                    initialRating: 5,
-                    minRating: 1,
-                    direction: Axis.horizontal, tapOnlyMode: true,
-                    allowHalfRating: false,
-                    itemCount: 5.toInt(),
-                    // itemPadding: const EdgeInsets.symmetric(horizontal: 1.0),
-                    itemBuilder: (context, _) => const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 12,
-                    ),
-                    onRatingUpdate: (value) {
-                      print(value.toString());
-                    },
-                  ),
-                ],
-              ),
-            ));
-      },
-    );
   }
 
   Future _getFeedbacks() async {
@@ -75,11 +46,10 @@ class _FieldInfoState extends State<FeedbackField> {
     });
     try {
       final Response? response =
-          await _feedbackService.getFeedbacks(fieldID: _fieldID);
+          await _feedbackService.getFeedbacks(fieldID: _fieldID, limit: 5);
       if (response!.statusCode == 200) {
         final data = response.data;
         _feedback = FeedbackModel.fromJson(data);
-        _logger.d(_feedback!.feedbacks.toString(), error: '_getFeedbacks');
       } else {
         throw response.data;
       }
@@ -91,49 +61,71 @@ class _FieldInfoState extends State<FeedbackField> {
     });
   }
 
-  Future _handleButtonChoice(int value) async {
-    try {
-      setState(() {
-        _groupValue = value ?? 0;
-      });
-    } catch (e) {}
-  }
-
-  Widget _buildButtonChoice() {
-    final tabs = {
-      0: const Text('All'),
-      1: const Text('Newest'),
-      2: const Text('Star'),
-    };
-    return SizedBox(
-      width: double.infinity,
-      child: CupertinoSlidingSegmentedControl(
-        children: tabs,
-        groupValue: _groupValue,
-        thumbColor: MyColor.primary,
-        onValueChanged: (value) {
-          _handleButtonChoice(value!);
-        },
+  Widget _buildStar() {
+    return RatingBar.builder(
+      initialRating: 5,
+      minRating: 1,
+      direction: Axis.horizontal,
+      allowHalfRating: false,
+      tapOnlyMode: false,
+      itemCount: 5,
+      ignoreGestures: true,
+      itemPadding: EdgeInsets.zero,
+      itemBuilder: (context, _) => const Icon(
+        Icons.star,
+        color: Colors.amber,
       ),
+      itemSize: 20,
+      onRatingUpdate: (rating) {},
     );
   }
 
-  Widget _buildElevatedButton(String text, VoidCallback onPressed) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(text),
-      ),
-    );
-  }
-
-  Widget _buildStarButton() {
-    return ElevatedButton(
-      onPressed: () {
-        _showOptionStar();
+  Widget _buildTitle() {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(RoutePaths.feedback, parameters: {'fieldID': _fieldID});
       },
-      child: const Text('Star'),
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        width: ScreenUtil.getWidth(context),
+        decoration: const BoxDecoration(boxShadow: [
+          BoxShadow(
+            blurRadius: 20,
+            spreadRadius: 10,
+            blurStyle: BlurStyle.outer,
+            color: Colors.black12,
+          ),
+        ], borderRadius: BorderRadius.all(Radius.circular(12))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Wrap(
+              direction: Axis.vertical,
+              spacing: 5,
+              children: [
+                const Text(
+                  'Feedback',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Wrap(spacing: 10, children: [
+                  _buildStar(),
+                  Text('(${_statistic.totalFeedback ?? 0})')
+                ]),
+              ],
+            ),
+            const SizedBox(
+              height: 35,
+              child: LineIcon.angleRight(
+                size: 18,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -147,17 +139,17 @@ class _FieldInfoState extends State<FeedbackField> {
         hideBackgroundAnimation: true,
       );
     }
-    return SizedBox(
-      height: 400,
-      width: ScreenUtil.getWidth(context),
+    return Container(
+      padding: const EdgeInsets.all(10),
       child: ListView.separated(
           shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             final fb = feedbackList[index];
             return FeedbackCard(feedback: fb);
           },
           separatorBuilder: (context, index) => const Divider(thickness: .4),
-          itemCount: feedbackList.length),
+          itemCount: min(feedbackList.length, 5)),
     );
   }
 
@@ -165,20 +157,18 @@ class _FieldInfoState extends State<FeedbackField> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
+      clipBehavior: Clip.hardEdge,
       color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Feedback',
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
-            ),
-            _buildButtonChoice(),
-            _buildFeedbacks()
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTitle(),
+          const SizedBox(
+            height: 10,
+          ),
+          Flexible(child: _buildFeedbacks())
+        ],
       ),
     );
   }

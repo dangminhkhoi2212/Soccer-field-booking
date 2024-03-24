@@ -42,13 +42,11 @@ class _SellerListState extends State<SellerList> {
       );
       if (response!.statusCode == 200) {
         final List data = response.data;
-        _logger.d(data);
 
         _sellerList = data.map((seller) {
           final temp = UserModel.fromJson(seller!);
           return temp;
         }).toList();
-        _logger.d(_sellerList);
       }
     } catch (e) {
       _logger.e(error: e, 'Error _getSellers');

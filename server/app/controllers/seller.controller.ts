@@ -30,7 +30,7 @@ class SellerController {
         } catch (error: any) {
             return res
                 .status(error.status || 500)
-                .json({ msg: error.message || error });
+                .json({ err_msg: error.message || error });
         }
     }
     static async getSeller(req: Request, res: Response) {
@@ -43,7 +43,7 @@ class SellerController {
         } catch (error: any) {
             return res
                 .status(error.status || 500)
-                .json({ msg: error.message || error });
+                .json({ err_msg: error.message || error });
         }
     }
     static async getOneSeller(req: Request, res: Response) {
@@ -56,7 +56,7 @@ class SellerController {
         } catch (error: any) {
             return res
                 .status(error.status || 500)
-                .json({ msg: error.message || error });
+                .json({ err_msg: error.message || error });
         }
     }
 }

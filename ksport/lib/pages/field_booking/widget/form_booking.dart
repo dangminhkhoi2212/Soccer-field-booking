@@ -66,21 +66,24 @@ class _FormBookingState extends State<FormBooking> {
     try {
       Response? response = await _orderService.getOrderedTime(
           fieldID: _field.sId!, date: FormatUtil.formatDate(date).toString());
+
       if (response!.statusCode == 200) {
-        final OrderedTimeModel data = OrderedTimeModel.fromJson(response.data);
-        if (data.times == null) {
+        final dataResponse = response.data;
+        if (dataResponse['times'] == null || dataResponse['times'].isEmpty) {
           _disableTimes = [];
         } else {
+          final OrderedTimeModel data = OrderedTimeModel.fromJson(dataResponse);
           final List<Times?>? times = data.times;
 
           for (var time in times!) {
-            final TimeOfDay startTime = TimeOfDay.fromDateTime(
-                DateFormat('HH:mm').parse(time!.startTime!));
-            final TimeOfDay endTime = TimeOfDay.fromDateTime(
-                DateFormat('HH:mm').parse(time.endTime!));
+            final startTimeParse = DateTime.parse(time!.startTime!);
+            final endTimeParse = DateTime.parse(time.endTime!);
+            final TimeOfDay startTime = TimeOfDay(
+                hour: startTimeParse.hour, minute: startTimeParse.minute);
+            final TimeOfDay endTime =
+                TimeOfDay(hour: endTimeParse.hour, minute: endTimeParse.minute);
 
             _disableTimes = [
-              ..._disableTimes,
               ...DateTimeUtil.generateTimeRange(
                   startTime: startTime,
                   endTime: endTime,
@@ -157,24 +160,37 @@ class _FormBookingState extends State<FormBooking> {
     );
   }
 
-  Future _handlePlace(String date) async {
+  Future _handlePlace(DateTime date) async {
     setState(() {
       _isLoading = true;
     });
     try {
       if (_userID == null) return;
+      final String utcDate =
+          date.toUtc().add(const Duration(hours: 7)).toIso8601String();
+      final String utcStartTime = DateTime(date.year, date.month, date.day,
+              _startTime!.hour, _startTime!.minute)
+          .toUtc()
+          .add(const Duration(hours: 7))
+          .toIso8601String();
+      final String utcEndTime = DateTime(
+              date.year, date.month, date.day, _endTime!.hour, _endTime!.minute)
+          .toUtc()
+          .add(const Duration(hours: 7))
+          .toIso8601String();
       Response? response = await _orderService.createOrder(
           userID: _userID!,
-          sellerID: _field.userID!,
-          date: date,
+          date: utcDate,
           fieldID: _field.sId!,
-          startTime: '${_startTime!.hour}:${_startTime!.minute}',
-          endTime: '${_endTime!.hour}:${_endTime!.minute}',
+          startTime: utcStartTime,
+          endTime: utcEndTime,
           total: _priceOrder);
       if (response!.statusCode == 200) {
         Navigator.pop(context, 'CANCEL');
         SnackbarUtil.getSnackBar(
             title: 'Book a field', message: 'Booked successfully');
+      } else {
+        throw response.data;
       }
     } catch (e) {
       _logger.e(error: e, '_handlePlace');
@@ -193,7 +209,7 @@ class _FormBookingState extends State<FormBooking> {
   void _showDialog() async {
     final DateTime formDate = _getFormDate();
 
-    final date = FormatUtil.formatDate(formDate);
+    final date = formDate;
     if (_startTime == null || _endTime == null) {
       SnackbarUtil.getSnackBar(
           title: 'Booking a field',

@@ -5,7 +5,7 @@ const router: Router = Router();
 const orderController = new OrderController();
 
 router.route('/time').get(orderController.getOrderedTime);
-router.route('/field').get(orderController.getFieldOrdered);
+router.route('/field').get(orderController.getOrderedField);
 router.route('/all').get(orderController.getAllOrder);
 router
     .route('/')

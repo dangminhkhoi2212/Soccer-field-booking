@@ -11,10 +11,11 @@ import fieldRoute from './app/routes/field.route';
 import sellerRoute from './app/routes/seller.route';
 import orderRoute from './app/routes/order.route';
 import feedbackRoute from './app/routes/feedback.route';
+import statisticRoute from './app/routes/statistic.route';
 dotenv.config();
 
 const app: Application = express();
-const PORT: number = Number(process.env.PROT) || 8000;
+const PORT: number = Number(process.env.PORT) || 8000;
 
 app.use(cors());
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use('/api/field', fieldRoute);
 app.use('/api/seller', sellerRoute);
 app.use('/api/order', orderRoute);
 app.use('/api/feedback', feedbackRoute);
+app.use('/api/statistic', statisticRoute);
 
 //handle error
 app.use((req: Request, res: Response, next: NextFunction) => {

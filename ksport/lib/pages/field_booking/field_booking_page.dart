@@ -6,6 +6,7 @@ import 'package:client_app/pages/field_booking/widget/seller_info_booking.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
@@ -22,10 +23,12 @@ class _FieldBookingState extends State<FieldBooking> {
   final UserService _userService = UserService();
   final SellerService _sellerService = SellerService();
   final AddressService _addressService = AddressService();
+  final FeedbackService _feedbackService = FeedbackService();
   FieldModel? _field;
   UserModel? _user;
   SellerModel? _seller;
   AddressModel? _address;
+  StatisticFeedbackModel? _statistic = StatisticFeedbackModel();
   late String? _sellerID;
   late String? _fieldID;
   final _logger = Logger();
@@ -42,7 +45,6 @@ class _FieldBookingState extends State<FieldBooking> {
     super.initState();
     _sellerID = Get.parameters['sellerID'];
     _fieldID = Get.parameters['fieldID'];
-    _logger.d(_sellerID);
     _initValue();
   }
 
@@ -83,6 +85,19 @@ class _FieldBookingState extends State<FieldBooking> {
     }
   }
 
+  Future _getStatisticFeedback() async {
+    try {
+      Response? response =
+          await _feedbackService.getStatisticFeedback(fieldID: _fieldID);
+      if (response!.statusCode == 200) {
+        final data = response.data;
+        _statistic = StatisticFeedbackModel.fromJson(data);
+      }
+    } catch (e) {
+      _logger.e(e, error: '_getStatisticFeedback');
+    }
+  }
+
   Future _getField() async {
     try {
       final Response? response =
@@ -101,7 +116,13 @@ class _FieldBookingState extends State<FieldBooking> {
     setState(() {
       _isLoading = true;
     });
-    await Future.wait([_getField(), _getAddress(), _getUser(), _getSeller()]);
+    await Future.wait([
+      _getField(),
+      _getAddress(),
+      _getUser(),
+      _getSeller(),
+      _getStatisticFeedback()
+    ]);
     setState(() {
       _isLoading = false;
     });
@@ -120,7 +141,7 @@ class _FieldBookingState extends State<FieldBooking> {
     }
 
     return SingleChildScrollView(
-      child: Column(children: [
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
         FieldInfo(field: _field!),
         SellerInfoBooking(
           user: _user!,
@@ -130,7 +151,10 @@ class _FieldBookingState extends State<FieldBooking> {
           field: _field!,
           seller: _seller!,
         ),
-        FeedbackField(fieldID: _fieldID!),
+        FeedbackField(
+          fieldID: _fieldID!,
+          statistic: _statistic!,
+        ),
       ]),
     );
   }

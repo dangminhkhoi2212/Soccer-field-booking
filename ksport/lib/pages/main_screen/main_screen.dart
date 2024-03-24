@@ -5,7 +5,9 @@ import 'package:client_app/pages/order_list/order_list_page.dart';
 import 'package:client_app/pages/profile/profile_page.dart';
 import 'package:client_app/pages/seller_list/seller_list_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
 class MainScreen extends StatefulWidget {
@@ -16,6 +18,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final _logger = Logger();
   final List pages = [
     const HomePage(),
     const SellerListPage(),
@@ -44,13 +47,21 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    int? index = Get.parameters['index'] != null
+        ? int.parse(Get.parameters['index']!)
+        : null;
+    _logger.d(index, error: 'main screen');
+    if (index != null) {
+      _buildPage(index);
+    }
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _pageController.dispose();
+  //   _controller.dispose();
+  //   super.dispose();
+  // }
 
   List<BottomBarItem> _bottomBarItems() {
     return _iconList
@@ -69,10 +80,27 @@ class _MainScreenState extends State<MainScreen> {
         .toList();
   }
 
+  void _buildPage(int index) {
+    try {
+      _controller.jumpTo(0);
+      // if (_pageController.hasClients) {
+      // _pageController.animateToPage(
+      //   1,
+      //   duration: Durations.extralong1,
+      //   curve: Curves.bounceIn,
+      // );
+      // }
+      _pageController.jumpTo(0.0);
+
+      _pageController.jumpToPage(index);
+    } catch (e) {
+      _logger.e(error: e, '_buildPage');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       resizeToAvoidBottomInset: false,
       extendBody: true,
       body: PageView(

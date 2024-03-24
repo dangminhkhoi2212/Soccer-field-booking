@@ -1,5 +1,5 @@
 import mongoose, { ObjectId, Schema, model } from 'mongoose';
-import { ROLE } from '../consts/user.const';
+import { ROLE } from '../const/user.const';
 
 export interface TUser {
     _id: string;

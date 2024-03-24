@@ -53,7 +53,6 @@ class _OrderPageState extends State<OrderListPage> {
         for (int i = 0; i < data.length; i++) {
           _orders.add(OrderModel.fromJson(data[i]));
         }
-        _logger.d(error: data, '_getOrders');
       }
     } catch (e) {
       _logger.e(error: e, '_getOrders');
@@ -65,6 +64,11 @@ class _OrderPageState extends State<OrderListPage> {
 
   @override
   Widget _buildShowOrder() {
+    if (_isLoading) {
+      return Center(
+        child: MyLoading.spinkit(),
+      );
+    }
     if (_orders.isEmpty) {
       return Container(
         decoration: const BoxDecoration(
@@ -80,42 +84,50 @@ class _OrderPageState extends State<OrderListPage> {
         ),
       );
     }
-    return ListView.separated(
-        shrinkWrap: true,
-        physics: const ScrollPhysics(),
-        itemBuilder: (context, index) {
-          final OrderModel? order = _orders[index];
-          return OrderCard(
-            date: order!.date ?? '',
-            startTime: order.startTime ?? '',
-            endTime: order.endTime ?? '',
-            fieldName: order.fieldID!.name ?? "",
-            total: order.total!.toDouble() ?? 0.0,
-            status: order.status ?? '',
-            onTap: () {
-              Get.toNamed(RoutePaths.orderDetail,
-                  parameters: {'orderID': order.sId!});
-            },
-          );
-        },
-        separatorBuilder: (context, index) => const SizedBox(
-              height: 10,
-            ),
-        itemCount: _orders.length);
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final OrderModel? order = _orders[index];
+            return OrderCard(
+              date: order!.date ?? '',
+              startTime: order.startTime ?? '',
+              endTime: order.endTime ?? '',
+              fieldName: order.field!.name ?? "",
+              total: order.total!.toDouble() ?? 0.0,
+              status: order.status ?? '',
+              onTap: () {
+                Get.toNamed(RoutePaths.orderDetail,
+                    parameters: {'orderID': order.sId!});
+              },
+            );
+          },
+          separatorBuilder: (context, index) => const SizedBox(
+                height: 10,
+              ),
+          itemCount: _orders.length),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-      child: Column(
-        children: [
-          FilterOrder(onFilterChange: _getOrders),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(child: _buildShowOrder())
-        ],
+    return Scaffold(
+      backgroundColor: MyColor.background,
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        child: Column(
+          children: [
+            FilterOrder(onFilterChange: _getOrders),
+            const SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: _buildShowOrder(),
+            )
+          ],
+        ),
       ),
     );
   }

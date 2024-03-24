@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
@@ -14,6 +15,8 @@ class OrderDetailPage extends StatefulWidget {
 class _OrderDetailPageState extends State<OrderDetailPage> {
   String? _orderID;
   OrderModel? _order;
+  String? _userID;
+  final _box = GetStorage();
   final _logger = Logger();
   final OrderService _orderService = OrderService();
   bool _isLoading = false;
@@ -22,6 +25,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     // TODO: implement initState
     super.initState();
     _orderID = Get.parameters['orderID'];
+    _userID = _box.read('id');
     print(_orderID);
     _getOrder();
   }
@@ -39,9 +43,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     });
     try {
       final Response? response =
-          await _orderService.getOneOrder(orderID: _orderID!);
+          await _orderService.getOneOrder(orderID: _orderID!, userID: _userID!);
       if (response!.statusCode == 200) {
         _order = OrderModel.fromJson(response.data);
+        _logger.d(_order.toString());
       }
     } catch (e) {
       _logger.e(error: e, '_getOrder');
@@ -62,12 +67,28 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         child: Text('Order not found'),
       );
     }
+    // return Container();
     return OrderInfo(order: _order!);
   }
 
   Widget _buildButton() {
     if (_order == null) return const SizedBox();
-    if (_order!.status != 'pending') return const SizedBox();
+
+    if (_order!.isFeedback!) {
+      return const Card(
+        elevation: 0,
+        child: Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('You provided feedback this order'),
+            ],
+          ),
+        ),
+      );
+    }
     return Card(
       elevation: 0,
       child: Padding(
@@ -86,7 +107,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   backgroundColor: MyColor.litePrimary,
                 ),
                 onPressed: () {
-                  Get.toNamed(RoutePaths.feedback,
+                  Get.toNamed(RoutePaths.feedbackForm,
                       parameters: {'orderID': _order!.sId!});
                 },
                 child: const Text(
@@ -144,12 +165,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColor.background,
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Order detail'),
+      ),
       body: Container(
           padding: const EdgeInsets.all(15),
           child: Column(
             children: [
-              _buildBody(),
+              Flexible(child: _buildBody()),
               _buildButton(),
             ],
           )),

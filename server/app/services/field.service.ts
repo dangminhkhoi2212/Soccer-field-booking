@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 import FieldModel from '../models/field.model';
-import MongooseUtil from '../utils/mongoose.util';
-const mongooseUtil = new MongooseUtil();
+import MongooseUtil, { TOjectID } from '../utils/mongoose.util';
 class FieldService {
-    static async createField(fieldData: {
+    private static instance: FieldService;
+    static getInstance() {
+        if (!this.instance) this.instance = new FieldService();
+        return this.instance;
+    }
+    async createField(fieldData: {
         userID: string;
         coverImage: string;
         name: string;
@@ -19,7 +23,7 @@ class FieldService {
             userID: new mongoose.Types.ObjectId(fieldData.userID),
         });
     }
-    static async updateField(fieldData: {
+    async updateField(fieldData: {
         userID: string;
         coverImage: string;
         name: string;
@@ -43,25 +47,13 @@ class FieldService {
             }
         );
     }
-    static async getSoccerField(data: { userID?: string; fieldID?: string }) {
-        return await FieldModel.find({
-            $or: [
-                {
-                    userID: data.userID
-                        ? new mongoose.Types.ObjectId(data.userID)
-                        : null,
-                },
-                {
-                    _id: data.fieldID
-                        ? new mongoose.Types.ObjectId(data.fieldID)
-                        : null,
-                },
-            ],
-        });
+    async getSoccerFields(data: { userID: TOjectID }) {
+        const { userID } = data;
+        return await FieldModel.find({ userID });
     }
-    static async getOneSoccerField(data: { fieldID: string }) {
-        const fieldID = mongooseUtil.createOjectID(data.fieldID);
+    async getOneSoccerField(data: { fieldID: string }) {
+        const fieldID = MongooseUtil.createOjectID(data.fieldID);
         return await FieldModel.findOne({ _id: fieldID });
     }
 }
-export default FieldService;
+export default FieldService.getInstance();
