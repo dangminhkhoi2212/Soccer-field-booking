@@ -30,49 +30,8 @@ class MyApp extends StatelessWidget {
       initialRoute: RoutePaths.mainScreen,
       home: const HomePage(),
       theme: ThemeData(
-        fontFamily: 'Poppins',
-        primarySwatch: Colors.green,
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: ButtonStyle(
-            side: MaterialStatePropertyAll(
-                BorderSide(color: Colors.grey.shade500, width: 1)),
-            backgroundColor: const MaterialStatePropertyAll(Colors.white),
-            textStyle: const MaterialStatePropertyAll<TextStyle>(
-              TextStyle(
-                color: MyColor.primary,
-              ),
-            ),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-            focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(
-                color: MyColor.primary,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            labelStyle: const TextStyle(
-              color: Colors.black87,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(
-                color: Colors.grey,
-              ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(
-                color: Colors.grey,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(
-                color: Colors.red.shade900,
-              ),
-            )),
+        scaffoldBackgroundColor: MyColor.background,
+        colorSchemeSeed: PrimaryColor.primary,
       ),
       builder: (context, child) => SafeArea(child: child!),
     );

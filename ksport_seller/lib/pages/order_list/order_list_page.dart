@@ -88,7 +88,7 @@ class _OrderPageState extends State<OrderList> {
             date: order!.date ?? '',
             startTime: order.startTime ?? '',
             endTime: order.endTime ?? '',
-            fieldName: order.fieldID!.name ?? "",
+            fieldName: order.field!.name ?? "",
             total: order.total!.toDouble() ?? 0.0,
             status: order.status ?? '',
             onTap: () {

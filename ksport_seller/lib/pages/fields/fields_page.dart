@@ -85,9 +85,11 @@ class _FieldsPageState extends State<FieldsPage> {
                         height: 10,
                       ),
                       Expanded(
-                        child: SoccerFieldList(
-                          userID: _userID,
-                          isSeller: true,
+                        child: SingleChildScrollView(
+                          child: SoccerFieldList(
+                            userID: _userID,
+                            isSeller: true,
+                          ),
                         ),
                       ),
                     ],

@@ -5,7 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ksport_seller/routes/get_route.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'package:widget_component/my_library.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -25,28 +27,16 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       getPages: GetRouter.routes,
-      initialRoute: RoutePaths.mainScreen,
       theme: ThemeData(
-        fontFamily: 'Poppins',
-        primarySwatch: Colors.green,
-        inputDecorationTheme: InputDecorationTheme(
-            focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(
-                color: MyColor.primary,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            labelStyle: const TextStyle(
-              color: Colors.black87,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(
-                color: Colors.grey,
-              ),
-            )),
+        scaffoldBackgroundColor: MyColor.background,
+        colorSchemeSeed: PrimaryColor.primary,
       ),
+      initialRoute: RoutePaths.mainScreen,
+      localizationsDelegates: const [
+        GlobalWidgetsLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        MonthYearPickerLocalizations.delegate,
+      ],
       builder: (context, child) => SafeArea(child: child!),
     );
   }

@@ -4,7 +4,7 @@ import 'package:ksport_seller/pages/edit_address/edit_address.dart';
 import 'package:ksport_seller/pages/edit_operating_time/edit_operating_time_page.dart';
 import 'package:ksport_seller/pages/edit_profile/edit_profile_page.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
-import 'package:ksport_seller/pages/home.dart';
+import 'package:ksport_seller/pages/home/home_page.dart';
 import 'package:ksport_seller/pages/main_screen.dart';
 import 'package:ksport_seller/pages/order_detail/order_detail.dart';
 import 'package:ksport_seller/pages/order_list/order_list_page.dart';

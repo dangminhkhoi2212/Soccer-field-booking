@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
@@ -17,12 +18,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   final _logger = Logger();
   final OrderService _orderService = OrderService();
   bool _isLoading = false;
+  String? _userID;
+  final _box = GetStorage();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _orderID = Get.parameters['orderID'];
-    print(_orderID);
+    _userID = _box.read('id');
     _getOrder();
   }
 
@@ -39,7 +42,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     });
     try {
       final Response? response =
-          await _orderService.getOneOrder(orderID: _orderID!);
+          await _orderService.getOneOrder(orderID: _orderID!, userID: _userID!);
       if (response!.statusCode == 200) {
         _order = OrderModel.fromJson(response.data);
       }

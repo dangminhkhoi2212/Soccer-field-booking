@@ -63,15 +63,15 @@ class _FormBookingState extends State<FormBooking> {
   }
 
   Future _getOrderedTime({required DateTime date}) async {
+    _disableTimes.clear();
     try {
       Response? response = await _orderService.getOrderedTime(
           fieldID: _field.sId!, date: FormatUtil.formatDate(date).toString());
 
       if (response!.statusCode == 200) {
         final dataResponse = response.data;
-        if (dataResponse['times'] == null || dataResponse['times'].isEmpty) {
-          _disableTimes = [];
-        } else {
+        _logger.d(dataResponse);
+        if (dataResponse['times'] != null) {
           final OrderedTimeModel data = OrderedTimeModel.fromJson(dataResponse);
           final List<Times?>? times = data.times;
 
@@ -84,6 +84,7 @@ class _FormBookingState extends State<FormBooking> {
                 TimeOfDay(hour: endTimeParse.hour, minute: endTimeParse.minute);
 
             _disableTimes = [
+              ..._disableTimes,
               ...DateTimeUtil.generateTimeRange(
                   startTime: startTime,
                   endTime: endTime,
@@ -137,16 +138,13 @@ class _FormBookingState extends State<FormBooking> {
             ),
             padding: const EdgeInsets.all(8.0),
             child: TimeRangePicker(
-              disableTimes: _disableTimes,
+              disableTimes: List.from(_disableTimes),
               onStartTimePickChange: (TimeOfDay? startTime) {
-                // _logger.d(error: startTime, 'startime');
                 setState(() {
                   _startTime = startTime;
                 });
               },
               onEndTimePickChange: (TimeOfDay? endTime) {
-                // _logger.d(error: endTime, 'endTime');
-
                 setState(() {
                   _endTime = endTime;
                   _calculatePrice();
@@ -283,7 +281,7 @@ class _FormBookingState extends State<FormBooking> {
                       height: 15,
                     ),
                     Text(
-                      'Date:  ${date.toString()}',
+                      'Date: ${FormatUtil.formatDate(date)}',
                       style: const TextStyle(fontSize: 16),
                     ),
                     Text(

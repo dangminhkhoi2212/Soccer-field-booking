@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import statisticService from '../services/statistic.service';
+import mongooseUtil from '../utils/mongoose.util';
 
-export interface TGetRevenue {
+interface TGetRevenue {
+    sellerID: string;
     date?: string;
-    month?: number;
-    year?: number;
+    month?: string;
+    year?: string;
 }
 class StatisticController {
     private static instance: StatisticController;
@@ -15,8 +17,18 @@ class StatisticController {
     async getRevenue(req: Request, res: Response) {
         try {
             const query = req.query as unknown as TGetRevenue;
-            const { date, month, year } = query;
+            const { date, sellerID, month, year } = query;
+            console.log(
+                '🚀 ~ StatisticController ~ getRevenue ~ query:',
+                query
+            );
+            if (!sellerID)
+                return res
+                    .status(400)
+                    .json({ err_mes: 'sellerID is required' });
+            const validSellerID = mongooseUtil.createOjectID(sellerID);
             const result = await statisticService.getRevenue({
+                sellerID: validSellerID,
                 date,
                 month,
                 year,

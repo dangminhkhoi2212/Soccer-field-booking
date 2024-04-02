@@ -1,8 +1,7 @@
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:get/get.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
-import 'package:ksport_seller/pages/history_order/history_order_page.dart';
-import 'package:ksport_seller/pages/home.dart';
+import 'package:ksport_seller/pages/home/home_page.dart';
 import 'package:ksport_seller/pages/order_list/order_list_page.dart';
 import 'package:ksport_seller/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
