@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -139,6 +138,7 @@ class _EditOperatingTimeState extends State<EditOperatingTime> {
         title: const Text('Operating time'),
       ),
       body: Container(
+        decoration: const BoxDecoration(color: Colors.white),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: FormBuilder(
             initialValue: _initValue,

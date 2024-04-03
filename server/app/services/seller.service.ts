@@ -3,12 +3,14 @@ import SellerModel from '../models/seller.model';
 import 'dotenv/config';
 import '../utils/mongoose.util';
 import MongooseUtil from '../utils/mongoose.util';
-import { TGetSeller } from '../controllers/seller.controller';
-import { refreshToken } from 'firebase-admin/app';
-import { query } from 'express';
 const USER_JSON = '_id name avatar role';
 class SellerService {
-    static async updateSeller(
+    private static instance: SellerService;
+    static getInstance() {
+        if (!this.instance) this.instance = new SellerService();
+        return this.instance;
+    }
+    async updateSeller(
         userID: string,
         startTime: string,
         endTime: string,
@@ -21,7 +23,7 @@ class SellerService {
             { new: true, upsert: true }
         );
     }
-    static convertStringToProjectFields(fieldsString: string): any {
+    convertStringToProjectFields(fieldsString: string): any {
         const fields: any = {};
 
         fieldsString.split(' ').forEach((field) => {
@@ -41,7 +43,7 @@ class SellerService {
 
         return fields;
     }
-    static async getSeller(params: any) {
+    async getSeller(params: any) {
         const pipeline = [];
 
         // Initialize the query object with isInfo parameter
@@ -88,9 +90,7 @@ class SellerService {
         }
         if (params.select)
             pipeline.push({
-                $project: SellerService.convertStringToProjectFields(
-                    params.select
-                ),
+                $project: this.convertStringToProjectFields(params.select),
             });
         pipeline.push({
             $project: {
@@ -127,10 +127,10 @@ class SellerService {
         });
         return result;
     }
-    static async getOneSeller(query: { userID: string }) {
+    async getOneSeller(query: { userID: string }) {
         const userID = MongooseUtil.createOjectID(query.userID);
         const result = await SellerModel.findOne({ userID });
         return result;
     }
 }
-export default SellerService;
+export default SellerService.getInstance();

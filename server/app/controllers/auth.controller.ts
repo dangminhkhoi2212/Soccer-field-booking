@@ -7,8 +7,7 @@ import AddressService from '../services/address.service';
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
 import { ROLE } from '../const/user.const';
-import SellerService from '../services/seller.service';
-
+import sellerService from '../services/seller.service';
 const BCRYPT_SECRET = Number.parseInt(process.env.BCRYPT_SECRET || '10');
 class AuthController {
     private static instance: AuthController;
@@ -118,7 +117,7 @@ class AuthController {
             if (role == ROLE.seller) {
                 const startTime = '5:00';
                 const endTime = '23:00';
-                await SellerService.updateSeller(user._id, startTime, endTime);
+                await sellerService.updateSeller(user._id, startTime, endTime);
             }
             await user.save();
             const address = await AddressService.getAddress({ userID });

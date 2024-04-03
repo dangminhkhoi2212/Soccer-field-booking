@@ -168,7 +168,7 @@ class StatisticService {
         }
 
         result = await orderModel.aggregate(agg);
-        console.log('🚀 ~ StatisticService ~ getRevenue ~ agg:', agg);
+
         return { typeID, values: result };
     }
 }

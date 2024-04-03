@@ -5,7 +5,7 @@ import 'package:ksport_seller/pages/edit_operating_time/edit_operating_time_page
 import 'package:ksport_seller/pages/edit_profile/edit_profile_page.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
 import 'package:ksport_seller/pages/home/home_page.dart';
-import 'package:ksport_seller/pages/main_screen.dart';
+import 'package:ksport_seller/pages/main_screen/main_screen.dart';
 import 'package:ksport_seller/pages/order_detail/order_detail.dart';
 import 'package:ksport_seller/pages/order_list/order_list_page.dart';
 import 'package:ksport_seller/pages/sign_up/sign_up_page.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ksport_seller/pages/add_field/widgets/form_add_field.dart';
-import 'package:ksport_seller/widgets/my_scaffold.dart';
 
 class AddFieldPage extends StatefulWidget {
   const AddFieldPage({super.key});
@@ -21,13 +20,21 @@ class _AddFieldPageState extends State<AddFieldPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
+    return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
               _fieldID != null ? 'Update soccer field' : 'Add soccer field'),
         ),
-        child: SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(
+                Radius.circular(12),
+              ),
+              color: Colors.white,
+            ),
             child: const FormAddField(),
           ),
         ));

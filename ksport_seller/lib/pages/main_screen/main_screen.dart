@@ -2,10 +2,12 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 import 'package:get/get.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
 import 'package:ksport_seller/pages/home/home_page.dart';
+import 'package:ksport_seller/pages/main_screen/main_screen_state.dart';
 import 'package:ksport_seller/pages/order_list/order_list_page.dart';
 import 'package:ksport_seller/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
 class MainScreen extends StatefulWidget {
@@ -20,17 +22,34 @@ class _MainScreenState extends State<MainScreen> {
     const HomePage(),
     const FieldsPage(),
     const OrderList(),
-    const UserPage()
+    const ProfilePage()
   ];
   int? _index;
+  final _logger = Logger();
+  final _pageController = PageController(
+    initialPage: 0,
+  );
+  final MainScreenState _mainScreenState = Get.put(MainScreenState());
+  final _controller = NotchBottomBarController(index: 0);
 
+  int maxCount = 4;
+  late Worker worker;
   @override
   void initState() {
     super.initState();
-    final par = Get.parameters;
-    print('params: $par');
-    _index = par['index'] == '1' ? 1 : null;
-    debugPrint(_index.toString());
+
+    ever(
+      _mainScreenState.indexPage,
+      (index) {
+        if (index != _mainScreenState.initValue && _pageController.hasClients) {
+          _pageController.jumpToPage(index);
+          _controller.jumpTo(index);
+          _mainScreenState.resetValue();
+
+          Navigator.of(context).pop();
+        }
+      },
+    );
   }
 
   final _iconList = [
@@ -41,16 +60,6 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   /// Controller to handle PageView and also handles initial page
-  final _pageController = PageController(
-    initialPage: 0,
-  );
-
-  /// Controller to handle bottom nav bar and also handles initial page
-  final _controller = NotchBottomBarController(
-    index: 0,
-  );
-
-  int maxCount = 4;
 
   @override
   void dispose() {
@@ -85,29 +94,21 @@ class _MainScreenState extends State<MainScreen> {
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: _index != null
-            ? pages[_index!]
-            : List.generate(pages.length, (index) => pages[index]),
+        children: List.generate(pages.length, (index) => pages[index]),
       ),
       bottomNavigationBar: (pages.length <= maxCount)
           ? AnimatedNotchBottomBar(
-              /// Provide NotchBottomBarController
               notchBottomBarController: _controller,
               color: Colors.white,
               showLabel: false,
               shadowElevation: 5,
               kBottomRadius: 28.0,
-
               notchColor: MyColor.secondary,
-
-              /// restart app if you change removeMargins
               removeMargins: false,
               bottomBarWidth: 500,
               durationInMilliSeconds: 300,
               bottomBarItems: _bottomBarItems(),
               onTap: (index) {
-                /// perform action on tab change and to update pages you can update pages without pages
-                // log('current selected index $index');
                 _pageController.jumpToPage(index);
               },
               kIconSize: 24.0,

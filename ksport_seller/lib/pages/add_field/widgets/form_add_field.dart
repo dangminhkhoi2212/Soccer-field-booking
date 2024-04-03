@@ -5,6 +5,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ksport_seller/pages/main_screen/main_screen_state.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
@@ -17,8 +18,9 @@ class FormAddField extends StatefulWidget {
 }
 
 class _FormAddFieldState extends State<FormAddField> {
-  final logger = Logger();
+  final _logger = Logger();
   late bool isUpdate = false;
+  final MainScreenState _mainScreenState = Get.put(MainScreenState());
   final _formKey = GlobalKey<FormBuilderState>();
   final GetStorage _box = GetStorage();
   late String _userID;
@@ -59,13 +61,14 @@ class _FormAddFieldState extends State<FormAddField> {
         _loadingSelectCover = true;
         _isLoading = true;
       });
-      final dynamic response =
-          await FieldService().getSoccerField(fieldID: _fieldID);
+      final dynamic response = await FieldService().getOneSoccerField(
+        fieldID: _fieldID!,
+      );
       debugPrint(response.toString());
 
       if (response.statusCode == 200) {
-        final data = response.data[0];
-        debugPrint(data.toString());
+        final data = response.data;
+        _logger.f(data.toString());
         _initValue = {
           'name': data['name'],
           'type': data['type'].toString(),
@@ -187,7 +190,7 @@ class _FormAddFieldState extends State<FormAddField> {
         throw 'Cannot add a new field. Please try again.';
       }
     } catch (e) {
-      logger.e(error: e, 'Error');
+      _logger.e(error: e, 'Error');
       SnackbarUtil.getSnackBar(
           title: 'Add new soccer field',
           message: 'Cannot add a new field. Please try again.');
@@ -242,18 +245,18 @@ class _FormAddFieldState extends State<FormAddField> {
             isRepair: isRepair,
             description: description,
             coverImage: coverImage);
-        logger.i(result.toString());
+        _logger.i(result.toString());
         if (result != null) {
           SnackbarUtil.getSnackBar(
               title: "Update field", message: "Update field successfully");
-          return Get.offAllNamed(RoutePaths.mainScreen,
-              parameters: {'index': '1'});
+          _mainScreenState.changeIndexPage(1);
+          return;
         } else {
           throw 'Cannot add a new field. Please try again.';
         }
       }
     } catch (e) {
-      logger.e(error: e, 'Error update field');
+      _logger.e(error: e, 'Error update field');
       SnackbarUtil.getSnackBar(
           title: 'Add new soccer field',
           message: 'Cannot add a new field. Please try again.');
@@ -494,32 +497,22 @@ class _FormAddFieldState extends State<FormAddField> {
   }
 
   Widget _buildAddButton() {
-    return InkWell(
-      onTap: () {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(backgroundColor: MyColor.primary),
+      onPressed: () {
         if (_loadingSelectCover || _isLoading) return;
         _fieldID != null ? _handleUpdateField() : _handleAddField();
       },
-      borderRadius: BorderRadius.circular(50),
-      child: Ink(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-          vertical: 15,
-        ),
-        decoration: BoxDecoration(
-          color: MyColor.primary,
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: Center(
-            child: _isLoading
-                ? MyLoading.spinkit()
-                : Text(
-                    _fieldID != null ? 'Save' : 'Add',
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
-                  )),
-      ),
+      child: Center(
+          child: _isLoading
+              ? MyLoading.spinkit()
+              : Text(
+                  _fieldID != null ? 'Save' : 'Add',
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white),
+                )),
     );
   }
 

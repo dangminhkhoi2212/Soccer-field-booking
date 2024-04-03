@@ -155,13 +155,16 @@ class _MyLineChartState extends State<MyLineChart> {
           maxX = max(maxX, id.toDouble());
           minX = min(minX, id.toDouble());
           maxY = max(maxY, revenue.toDouble());
-          minY = min(minY, revenue.toDouble());
+          // minY = min(minY, revenue.toDouble());
         }
       }
     }
-    _logger.d(error: maxX, 'maxX');
-    _logger.d(error: maxY, 'maxY');
-    _logger.d(error: _data, 'data');
+    if (values.length < 2) {
+      _data.insert(0, FlSpot.zero);
+    }
+    // _logger.d(error: maxX, 'maxX');
+    // _logger.d(error: maxY, 'maxY');
+    // _logger.d(error: _data, 'data');
 
     setState(() {});
   }
@@ -182,8 +185,6 @@ class _MyLineChartState extends State<MyLineChart> {
       gridData: FlGridData(
         show: _isGrid,
         drawVerticalLine: true,
-        horizontalInterval: 1,
-        verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: _mainColor,
@@ -210,15 +211,15 @@ class _MyLineChartState extends State<MyLineChart> {
           sideTitles: const SideTitles(
             showTitles: true,
             reservedSize: 30,
+            interval: 1,
           ),
         ),
         leftTitles: const AxisTitles(
           axisNameWidget: Text('Revenue'),
           axisNameSize: 20,
-          drawBelowEverything: true,
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 42,
+            reservedSize: 50,
           ),
         ),
       ),
@@ -228,10 +229,10 @@ class _MyLineChartState extends State<MyLineChart> {
             color: const Color(0xff37434d),
             strokeAlign: BorderSide.strokeAlignCenter),
       ),
-      minX: minX,
-      maxX: maxX,
-      minY: minY,
-      maxY: maxY,
+      // minX: minX,
+      // maxX: maxX,
+      // minY: minY,
+      // maxY: maxY,
       lineBarsData: [
         LineChartBarData(
           spots: _data,
@@ -270,18 +271,30 @@ class _MyLineChartState extends State<MyLineChart> {
           const SizedBox(
             height: 10,
           ),
+          const Text('Revenue statistics chart'),
+          const SizedBox(height: 5),
           Container(
-            padding: const EdgeInsets.all(10),
-            width: ScreenUtil.getWidth(context),
-            height: 300,
-            child: _statisticRevenue == null
-                ? EmptyWidget()
-                : LineChart(
-                    mainData(),
-                  ),
-          ),
+              padding: const EdgeInsets.all(10),
+              width: ScreenUtil.getWidth(context),
+              height: 350,
+              child: _buildChart()),
         ],
       ),
+    );
+  }
+
+  Widget _buildChart() {
+    final values = _statisticRevenue.values;
+
+    if (values != null && values.isNotEmpty) {
+      return LineChart(
+        mainData(),
+      );
+    }
+    return EmptyWidget(
+      hideBackgroundAnimation: true,
+      packageImage: PackageImage.Image_2,
+      title: 'No data',
     );
   }
 }

@@ -1,7 +1,12 @@
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:ksport_seller/pages/home/widget/home_controller.dart';
 import 'package:logger/logger.dart';
 import 'package:month_year_picker/month_year_picker.dart';
+
 import 'package:widget_component/my_library.dart';
 
 class FilterChart extends StatefulWidget {
@@ -12,11 +17,16 @@ class FilterChart extends StatefulWidget {
 }
 
 class _FilterChartState extends State<FilterChart> {
+  final _homeController = Get.put(HomeController());
   final _box = GetStorage();
   final _logger = Logger();
-  String date = '';
-  String month = '';
-  String year = '';
+  DateTime? selectedYear = DateTime.now();
+  DateTime? selectedMonth = DateTime.now();
+  DateTime? selectedDate = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+  }
 
   Widget _buildSelectDateTime() {
     return Container(
@@ -26,33 +36,37 @@ class _FilterChartState extends State<FilterChart> {
         spacing: 10,
         children: [
           OutlinedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return DatePickerDialog(
-                    keyboardType: TextInputType.datetime,
-                    firstDate: DateTime(2024),
-                    lastDate: DateTime(2030),
-                  );
-                },
-              ).then((value) {
-                if (value != null) {
-                  date = FormatUtil.formatDate(value);
-                  month = '';
-                  year = '';
-                  _box.write('date', date);
-                  setState(() {});
-                }
-              });
-            },
-            child: Text(date.isEmpty ? 'Date' : date),
-          ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return DatePickerDialog(
+                      initialDate: selectedDate,
+                      keyboardType: TextInputType.datetime,
+                      initialCalendarMode: DatePickerMode.day,
+                      firstDate: DateTime(2024),
+                      lastDate: DateTime(2030),
+                    );
+                  },
+                ).then((value) {
+                  _logger.d(value);
+                  if (value != null) {
+                    final date = FormatUtil.formatDate(value);
+                    _homeController.changeDate(date);
+                    setState(() {
+                      selectedDate = value;
+                    });
+                  }
+                });
+              },
+              child: Obx(() => Text(_homeController.date.value != ''
+                  ? _homeController.date.value
+                  : 'Date'))),
           OutlinedButton(
             onPressed: () async {
               await showMonthYearPicker(
                 context: context,
-                initialDate: DateTime.now(),
+                initialDate: selectedMonth!,
                 firstDate: DateTime(2023),
                 lastDate: DateTime(2030),
                 initialMonthYearPickerMode: MonthYearPickerMode.month,
@@ -65,47 +79,47 @@ class _FilterChartState extends State<FilterChart> {
                     child: child!),
               ).then((value) {
                 if (value != null) {
-                  final String monthValue = value.month.toString();
-                  _logger.f(error: value, 'month');
-                  month = monthValue;
-                  year = '';
-                  date = '';
-                  _box.write('month', month);
-                  setState(() {});
+                  final String monthValue = DateFormat('MM-yyyy').format(value);
+                  _homeController.changeMonth(monthValue);
+                  setState(() {
+                    selectedMonth = value;
+                  });
                 }
               });
             },
-            child: Text(month.isEmpty ? 'Month' : month),
+            child: Obx(() => Text(_homeController.month.value != ''
+                ? _homeController.month.value
+                : 'Month')),
           ),
           OutlinedButton(
             onPressed: () async {
               await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                        title: const Text('Select a year'),
+                        title: const Text('Select year'),
                         content: SizedBox(
                           height: 300,
                           width: 300,
                           child: YearPicker(
+                            selectedDate: selectedYear,
                             firstDate: DateTime(2023),
                             lastDate: DateTime(2030),
                             onChanged: (value) {
                               final String yearValue = value.year.toString();
-                              _logger.f(error: value, 'yearValue');
-                              year = yearValue;
-                              date = '';
-                              month = '';
-                              _box.write('year', yearValue);
-                              setState(() {});
 
+                              _homeController.changeYear(yearValue);
+                              setState(() {
+                                selectedYear = value;
+                              });
                               Navigator.pop(context);
                             },
-                            selectedDate: DateTime(2023),
                           ),
                         ),
                       ));
             },
-            child: Text(year.isEmpty ? 'Year' : year),
+            child: Obx(() => Text(_homeController.year.value != ''
+                ? _homeController.year.value
+                : 'Year')),
           ),
         ],
       ),
