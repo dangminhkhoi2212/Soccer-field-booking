@@ -151,10 +151,7 @@ class OrderService {
         if (sortBy && sortStage) aggPipeline.push(sortStage);
 
         const result = await OrderModel.aggregate(aggPipeline).exec();
-        console.log(
-            '🚀 ~ OrderService ~ getAllOrder ~ aggPipeline:',
-            aggPipeline
-        );
+
         return result;
     }
 

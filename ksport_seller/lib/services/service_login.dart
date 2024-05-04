@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:ksport_seller/storage/storage_user.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,12 +8,17 @@ import 'package:get_storage/get_storage.dart';
 import 'package:widget_component/my_library.dart';
 
 class LoginService {
-  final Dio _dio = Dio(ApiConfig.options);
+  final Dio _dio;
   final _box = GetStorage();
   final StorageUser _storageUser = StorageUser();
   final GoogleMapService _googleMapService = GoogleMapService();
-  final AddressService _addressService = AddressService();
-
+  late AddressService _addressService;
+  factory LoginService(Dio dio) {
+    final instance = LoginService._internal(dio);
+    instance._addressService = AddressService(dio);
+    return instance;
+  }
+  LoginService._internal(this._dio);
   Future<void> login(
       {required String? accessToken,
       required String? name,

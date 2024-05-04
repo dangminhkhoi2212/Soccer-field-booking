@@ -26,7 +26,7 @@ class AuthController {
             const name: string = req.body.name;
 
             if (!email) {
-                return res.status(400).json({ err_mes: 'email is required' });
+                return res.status(401).json({ err_mes: 'email is required' });
             }
 
             let user = await UserService.getOneUser({ email });
@@ -35,21 +35,29 @@ class AuthController {
             }
 
             const accessToken: string = TokenService.createToken(
-                user._id,
+                {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
                 '30s'
             );
             const refreshToken: string = TokenService.createToken(
-                user._id,
+                {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
                 '30s'
             );
 
             user.refreshToken = refreshToken;
             const userID = user._id;
-            console.log('🚀 ~ AuthController ~ login ~ userID:', userID);
 
             await user.save();
             const addresses = await AddressService.getAddress({ userID });
-            console.log('🚀 ~ AuthController ~ login ~ addresses:', addresses);
             let isUpdatedAddress = true;
             if (addresses.length) {
                 isUpdatedAddress = addresses[0].latitude != null;
@@ -75,18 +83,18 @@ class AuthController {
             var password: string = req.body.password;
 
             if (!email) {
-                return res.status(400).json({ err_mes: 'Email is required' });
+                return res.status(401).json({ err_mes: 'Email is required' });
             }
 
             let user = await UserService.getOneUser({ email });
             if (user)
                 return res
-                    .status(400)
+                    .status(401)
                     .json({ err_mes: 'This email is existed.' });
             const checkPhone = await UserService.getOneUser({ phone });
             if (checkPhone)
                 return res
-                    .status(400)
+                    .status(401)
                     .json({ err_mes: 'This phone is existed.' });
             if (!BCRYPT_SECRET) {
                 throw 'BCRYPT_SECRET not found';
@@ -104,11 +112,21 @@ class AuthController {
             console.log('🚀 ~ AuthController ~ signUp ~ user:', user);
 
             const accessToken: string = TokenService.createToken(
-                user._id,
+                {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
                 '30s'
             );
             const refreshToken: string = TokenService.createToken(
-                user._id,
+                {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
                 '30s'
             );
 
@@ -137,43 +155,62 @@ class AuthController {
     async signIn(req: Request, res: Response) {
         try {
             const email: string = req.body.email;
+            console.log('🚀 ~ AuthController ~ signIn ~ req.body:', req.body);
             const password: string = req.body.password;
 
             if (!email)
-                return res.status(404).json({ err_mes: 'Email not found.' });
+                return res.status(401).json({ err_mes: 'Email not found.' });
             const user = await UserModel.findOne({ email });
             if (!user)
-                return res.status(404).json({ err_mes: 'User not found.' });
+                return res.status(401).json({ err_mes: 'User not found.' });
             const checkPass = await bcrypt.compare(
                 password,
                 user?.password || ''
             );
             if (!checkPass)
-                return res.status(404).json({ err_mes: 'password invalid.' });
+                return res
+                    .status(401)
+                    .json({ err_mes: "Password don't match." });
 
             const accessToken: string = TokenService.createToken(
-                user._id,
+                {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
                 '30s'
             );
             const refreshToken: string = TokenService.createToken(
-                user._id,
-                '30s'
+                {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
+                '1y'
             );
-            const result = await UserModel.findByIdAndUpdate(user._id, {
-                refreshToken,
-            })
+            const result = await UserModel.findByIdAndUpdate(
+                user._id,
+                {
+                    refreshToken,
+                },
+                { new: true }
+            )
                 .select('-password')
                 .lean();
             const address = await AddressService.getAddress({
                 userID: user._id,
             });
-            let isUpdatedAddress = address != null;
+            console.log('🚀 ~ AuthController ~ signIn ~ address:', address);
+            let isUpdatedAddress = !!address.length;
             return res.send({
                 ...result,
                 isUpdatedAddress,
                 accessToken,
             });
         } catch (error: any) {
+            console.log('🚀 ~ AuthController ~ signIn ~ error:', error);
             return res
                 .status(error.status || 500)
                 .json({ err_mes: error.message || error });

@@ -1,3 +1,4 @@
+import 'package:client_app/config/api_config.dart';
 import 'package:client_app/storage/storage_user.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,11 +7,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:widget_component/my_library.dart';
 
 class LoginService {
-  final Dio _dio = Dio(ApiConfig.options);
+  final Dio _dio = ApiConfig().dio;
   final _box = GetStorage();
   final StorageUser _storageUser = StorageUser();
   final GoogleMapService _googleMapService = GoogleMapService();
-  final AddressService _addressService = AddressService();
+  final AddressService _addressService = AddressService(ApiConfig().dio);
 
   Future<void> login(
       {required String? accessToken,

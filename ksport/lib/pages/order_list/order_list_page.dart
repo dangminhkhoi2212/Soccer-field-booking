@@ -1,10 +1,11 @@
+import 'package:client_app/config/api_config.dart';
 import 'package:dio/dio.dart';
+import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
-import 'package:empty_widget/empty_widget.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
@@ -14,7 +15,7 @@ class OrderListPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderListPage> {
-  final _orderService = OrderService();
+  final OrderService _orderService = OrderService(ApiConfig().dio);
   final _box = GetStorage();
   final _logger = Logger();
   final List<OrderModel?> _orders = [];
@@ -42,17 +43,23 @@ class _OrderPageState extends State<OrderListPage> {
     });
     try {
       _orders.clear();
-      Response? response = await _orderService.getAllOrder(
+      Response response = await _orderService.getAllOrder(
         userID: _userID!,
         date: date,
         status: status,
         sortBy: sortBy,
       );
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = response.data;
         for (int i = 0; i < data.length; i++) {
           _orders.add(OrderModel.fromJson(data[i]));
         }
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            messageDebug: e.response!.data,
+            titleDebug: '_getOrders DioException');
       }
     } catch (e) {
       _logger.e(error: e, '_getOrders');
@@ -84,11 +91,9 @@ class _OrderPageState extends State<OrderListPage> {
         ),
       );
     }
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+    return Expanded(
       child: ListView.separated(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             final OrderModel? order = _orders[index];
             return OrderCard(
@@ -96,6 +101,7 @@ class _OrderPageState extends State<OrderListPage> {
               startTime: order.startTime ?? '',
               endTime: order.endTime ?? '',
               fieldName: order.field!.name ?? "",
+              coverImage: order.field!.coverImage!,
               total: order.total!.toDouble() ?? 0.0,
               status: order.status ?? '',
               onTap: () {
@@ -123,9 +129,7 @@ class _OrderPageState extends State<OrderListPage> {
             const SizedBox(
               height: 10,
             ),
-            Expanded(
-              child: _buildShowOrder(),
-            )
+            _buildShowOrder()
           ],
         ),
       ),

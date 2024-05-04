@@ -1,3 +1,4 @@
+import 'package:client_app/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,11 +22,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
   String? _fieldID;
   StatisticFeedbackModel? _statistic = StatisticFeedbackModel();
   final _logger = Logger();
-  final _feedbackService = FeedbackService();
+  final ApiConfig apiConfig = ApiConfig();
+  late FeedbackService _feedbackService;
   FeedbackModel _feedbackData = FeedbackModel();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fieldID = Get.parameters['fieldID'];
     _getValues();
@@ -34,6 +35,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   @override
   void setState(VoidCallback fn) {
     if (!mounted) return;
+    _feedbackService = FeedbackService(apiConfig.dio);
     super.setState(fn);
   }
 
@@ -41,13 +43,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
       {int page = 1, int? star, int limit = 30, String? sortBy}) async {
     if (_fieldID == null) return;
     try {
-      final Response? response = await _feedbackService.getFeedbacks(
+      final Response response = await _feedbackService.getFeedbacks(
           fieldID: _fieldID!,
           limit: limit,
           page: page,
           sortBy: sortBy,
           star: star);
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = response.data;
         _feedbackData = FeedbackModel.fromJson(data);
       } else {
@@ -62,7 +64,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     try {
       Response? response =
           await _feedbackService.getStatisticFeedback(fieldID: _fieldID);
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = response.data;
         _statistic = StatisticFeedbackModel.fromJson(data);
       }
@@ -186,6 +188,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('Feedback')),
       body: Container(
         width: double.infinity,

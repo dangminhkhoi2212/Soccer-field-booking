@@ -1,3 +1,4 @@
+import 'package:client_app/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
@@ -18,7 +19,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   String? _userID;
   final _box = GetStorage();
   final _logger = Logger();
-  final OrderService _orderService = OrderService();
+  final OrderService _orderService = OrderService(ApiConfig().dio);
   bool _isLoading = false;
   @override
   void initState() {
@@ -42,9 +43,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       _isLoading = true;
     });
     try {
-      final Response? response =
+      final Response response =
           await _orderService.getOneOrder(orderID: _orderID!, userID: _userID!);
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         _order = OrderModel.fromJson(response.data);
         _logger.d(_order.toString());
       }
@@ -72,7 +73,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildButton() {
-    if (_order == null) return const SizedBox();
+    if (_order == null || _order!.status == 'pending') return const SizedBox();
 
     if (_order!.isFeedback!) {
       return const Card(
@@ -125,9 +126,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future _handleCancel() async {
     try {
-      final Response? response = await _orderService.updateOrder(
+      final Response response = await _orderService.updateOrder(
           orderID: _order!.sId!, status: 'cancel');
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         SnackbarUtil.getSnackBar(
             title: 'Update order', message: 'Canceled this order');
         _getOrder();
@@ -144,9 +145,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future _handleAccept() async {
     try {
-      final Response? response = await _orderService.updateOrder(
+      final Response response = await _orderService.updateOrder(
           orderID: _order!.sId!, status: 'ordered');
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         SnackbarUtil.getSnackBar(
             title: 'Update order', message: 'Canceled this order');
         _getOrder();
@@ -168,14 +169,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       appBar: AppBar(
         title: const Text('Order detail'),
       ),
-      body: Container(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            children: [
-              Flexible(child: _buildBody()),
-              _buildButton(),
-            ],
-          )),
+      body: SingleChildScrollView(
+        child: Container(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              children: [
+                _buildBody(),
+                _buildButton(),
+              ],
+            )),
+      ),
     );
   }
 }

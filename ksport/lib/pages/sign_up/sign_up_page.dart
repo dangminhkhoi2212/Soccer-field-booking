@@ -1,9 +1,8 @@
-import 'package:dio/dio.dart';
+import 'package:client_app/config/api_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:client_app/services/service_google_auth.dart';
 import 'package:client_app/storage/storage_user.dart';
 import 'package:line_icons/line_icon.dart';
@@ -21,6 +20,8 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isShowPassword = false;
   bool _isShowConfirmPassword = false;
   final StorageUser _storageUser = StorageUser();
+  final ApiConfig apiConfig = ApiConfig();
+  late AuthService _authService;
   final Map<String, dynamic> _initValue = {
     'name': '',
     'email': '',
@@ -28,6 +29,11 @@ class _SignUpPageState extends State<SignUpPage> {
     'password': ''
   };
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  @override
+  void initState() {
+    super.initState();
+    _authService = AuthService(apiConfig.dio);
+  }
 
   Future _handleSignUp() async {
     try {
@@ -35,7 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
       final data = _formKey.currentState!.value;
       final errors = _formKey.currentState!.errors;
       if (errors.isEmpty) {
-        final response = await AuthService().signUp(
+        final response = await _authService.signUp(
             name: data['name'],
             email: data['email'],
             phone: data['phone'],

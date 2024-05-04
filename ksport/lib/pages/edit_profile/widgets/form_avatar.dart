@@ -82,10 +82,7 @@ class _FormAvatarState extends State<FormAvatar> {
                   width: 150,
                   child: CircleAvatar(
                     child: Center(
-                      child: SizedBox(
-                          child: CircularProgressIndicator(
-                        color: MyColor.secondary,
-                      )),
+                      child: SizedBox(child: CircularProgressIndicator()),
                     ),
                   ),
                 )

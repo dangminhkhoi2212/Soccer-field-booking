@@ -1,11 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ksport_seller/pages/main_screen/main_screen_state.dart';
+import 'package:ksport_seller/config/api_config.dart';
+import 'package:ksport_seller/pages/main_screen/state/main_screen_state.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
@@ -25,6 +27,8 @@ class _FormAddFieldState extends State<FormAddField> {
   final GetStorage _box = GetStorage();
   late String _userID;
   late String? _fieldID;
+  late FieldService _fieldService;
+  final ApiConfig _apiConfig = ApiConfig();
 
   final TextStyle _labelStyle = const TextStyle();
   late Map<String, dynamic> _initValue = {
@@ -47,7 +51,7 @@ class _FormAddFieldState extends State<FormAddField> {
     super.initState();
     _fieldID = Get.parameters['fieldID'];
     _userID = _box.read('id');
-    debugPrint(_fieldID.toString());
+    _fieldService = FieldService(_apiConfig.dio);
 
     if (_fieldID != null) {
       _getFieldUpdate();
@@ -61,14 +65,13 @@ class _FormAddFieldState extends State<FormAddField> {
         _loadingSelectCover = true;
         _isLoading = true;
       });
-      final dynamic response = await FieldService().getOneSoccerField(
+      final Response response = await _fieldService.getOneSoccerField(
         fieldID: _fieldID!,
       );
       debugPrint(response.toString());
 
       if (response.statusCode == 200) {
         final data = response.data;
-        _logger.f(data.toString());
         _initValue = {
           'name': data['name'],
           'type': data['type'].toString(),
@@ -96,6 +99,12 @@ class _FormAddFieldState extends State<FormAddField> {
             ?.didChange(data['coverImage']);
 
         _coverUrl = data['coverImage'];
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_getFieldUpdate',
+            messageDebug: e.response!.data ?? e.message);
       }
     } catch (e) {
       debugPrint('ERROR GET FIELD UPDATE: ${e.toString()}');
@@ -169,7 +178,7 @@ class _FormAddFieldState extends State<FormAddField> {
       debugPrint('isRepair: $isRepair');
       debugPrint('description: $description');
       debugPrint('coverImage: $coverImage');
-      final result = await FieldService().addSoccerField(
+      final result = await _fieldService.addSoccerField(
           userID: _box.read('id'),
           price: price,
           width: width,
@@ -233,7 +242,7 @@ class _FormAddFieldState extends State<FormAddField> {
         debugPrint('isRepair: $isRepair');
         debugPrint('description: $description');
         debugPrint('coverImage: $coverImage');
-        final result = await FieldService().updateSoccerField(
+        final result = await _fieldService.updateSoccerField(
             userID: _box.read('id'),
             fieldID: _fieldID ?? '',
             price: price,
@@ -249,7 +258,6 @@ class _FormAddFieldState extends State<FormAddField> {
         if (result != null) {
           SnackbarUtil.getSnackBar(
               title: "Update field", message: "Update field successfully");
-          _mainScreenState.changeIndexPage(1);
           return;
         } else {
           throw 'Cannot add a new field. Please try again.';

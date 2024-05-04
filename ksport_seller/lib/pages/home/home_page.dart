@@ -2,9 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:ksport_seller/pages/home/widget/header.dart';
 import 'package:ksport_seller/pages/home/widget/my_line_chart.dart';
-import 'package:ksport_seller/pages/home/widget/home_controller.dart';
+import 'package:ksport_seller/pages/home/widget/home_page_state.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
@@ -17,7 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _homeController = Get.put(HomeController());
-  final StatisticService _statisticService = StatisticService();
+  final StatisticService _statisticService = StatisticService(ApiConfig().dio);
   final _box = GetStorage();
   final _logger = Logger();
   StatisticRevenueModel _statisticRevenue = StatisticRevenueModel();
@@ -69,6 +70,13 @@ class _HomePageState extends State<HomePage> {
       if (response!.statusCode == 200) {
         _statisticRevenue = StatisticRevenueModel.fromJson(response.data);
         // _logger.d(response.data, error: 'getStatisticRevenue');
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+                titleDebug: 'getStatisticRevenue',
+                messageDebug: e.response!.data ?? e)
+            .showErrorDialog(context);
       }
     } catch (e) {
       _logger.e(e, error: '_getStatisticRevenue');

@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icon.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/services/service_upload_image.dart';
-import 'package:widget_component/widgets/my_image/my_image.dart';
+import 'package:widget_component/my_library.dart';
 
 class FormAvatar extends StatefulWidget {
   const FormAvatar({super.key});
@@ -84,10 +82,7 @@ class _FormAvatarState extends State<FormAvatar> {
                   width: 150,
                   child: CircleAvatar(
                     child: Center(
-                      child: SizedBox(
-                          child: CircularProgressIndicator(
-                        color: MyColor.secondary,
-                      )),
+                      child: SizedBox(child: CircularProgressIndicator()),
                     ),
                   ),
                 )

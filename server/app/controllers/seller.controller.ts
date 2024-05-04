@@ -1,5 +1,7 @@
-import { Request, Response } from 'express';
+import { query, Request, Response } from 'express';
 import SellerService from '../services/seller.service';
+import fieldService from '../services/field.service';
+import mongooseUtil from '../utils/mongoose.util';
 
 interface TUpdateSeller {
     userID: string;
@@ -37,8 +39,12 @@ class SellerController {
         try {
             const params: any = req.query;
             if (params.isInfo) params.isInfo = params.isInfo == 'true';
-            console.log('🚀 ~ SellerController ~ getSeller ~ params:', params);
-            const result = await SellerService.getSeller(params);
+            const userID = params.userID;
+            if (!userID)
+                return res.status(400).json({ err_mes: 'userID is required' });
+            const validID = mongooseUtil.createOjectID(userID);
+            params.userID = validID;
+            const result = await SellerService.getSellers(params);
             res.send(result);
         } catch (error: any) {
             return res
@@ -49,10 +55,17 @@ class SellerController {
     static async getOneSeller(req: Request, res: Response) {
         try {
             const params: any = req.query;
-            if (params.isInfo) params.isInfo = params.isInfo == 'true';
-            console.log('🚀 ~ SellerController ~ getSeller ~ params:', params);
-            const result = await SellerService.getOneSeller(params);
-            res.send(result);
+            const userID = params.userID;
+            if (!userID)
+                return res.status(400).json({ err_mes: 'userID is required' });
+
+            const validID = mongooseUtil.createOjectID(userID);
+
+            const [result, fieldCount] = await Promise.all([
+                SellerService.getOneSeller({ userID: validID }),
+                fieldService.getFieldCount(validID),
+            ]);
+            res.send({ ...result?.toJSON(), fieldCount });
         } catch (error: any) {
             return res
                 .status(error.status || 500)

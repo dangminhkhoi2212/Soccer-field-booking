@@ -50,7 +50,7 @@ class SellerInfoBooking extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Get.offNamed(RoutePaths.seller,
-                    parameters: {'userID': user.sId!});
+                    parameters: {'userIDSeller': user.sId!});
               },
               style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),

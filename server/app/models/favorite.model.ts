@@ -1,12 +1,26 @@
-import { Schema, Types, model } from 'mongoose';
+import mongoose, { Schema, Document, Types, Model } from 'mongoose';
+
+interface IFavorite extends Document {
+    userID: Types.ObjectId;
+    favorites: Types.ObjectId[];
+}
 
 const FavoriteModel: Schema = new Schema(
     {
-        userId: {
+        userID: {
             type: Types.ObjectId,
             ref: 'User',
+            required: true,
         },
-        favorites: [{ type: Types.ObjectId, ref: 'Field' }],
+        favorites: {
+            type: [{ type: Types.ObjectId, ref: 'User' }],
+            validate: {
+                validator: (ids: Types.ObjectId[]) => {
+                    return ids.length <= 2000;
+                },
+                message: 'Favorites have a maximum length of 2000',
+            },
+        },
     },
     {
         timestamps: true,
@@ -14,4 +28,9 @@ const FavoriteModel: Schema = new Schema(
     }
 );
 
-export default model('Favorite', FavoriteModel);
+const Favorite: Model<IFavorite> = mongoose.model<IFavorite>(
+    'Favorite',
+    FavoriteModel
+);
+
+export default Favorite;

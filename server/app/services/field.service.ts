@@ -55,5 +55,8 @@ class FieldService {
         const fieldID = MongooseUtil.createOjectID(data.fieldID);
         return await FieldModel.findOne({ _id: fieldID });
     }
+    async getFieldCount(userID: TOjectID) {
+        return FieldModel.countDocuments({ userID });
+    }
 }
 export default FieldService.getInstance();

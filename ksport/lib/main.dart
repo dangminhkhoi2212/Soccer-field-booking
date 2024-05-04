@@ -1,5 +1,5 @@
 import 'package:client_app/firebase_options.dart';
-import 'package:client_app/pages/home/home_page.dart';
+import 'package:client_app/pages/main_screen/main_screen.dart';
 import 'package:client_app/routes/get_route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,10 +28,23 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       getPages: GetRouter.routes,
       initialRoute: RoutePaths.mainScreen,
-      home: const HomePage(),
+      home: const MainScreen(),
       theme: ThemeData(
         scaffoldBackgroundColor: MyColor.background,
         colorSchemeSeed: PrimaryColor.primary,
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide()),
+          outlineBorder: const BorderSide(),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red.shade900),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
       builder: (context, child) => SafeArea(child: child!),
     );

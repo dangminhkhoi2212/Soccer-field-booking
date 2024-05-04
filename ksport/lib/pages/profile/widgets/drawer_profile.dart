@@ -1,3 +1,4 @@
+import 'package:client_app/config/api_config.dart';
 import 'package:client_app/services/service_google_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,7 +39,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
         size: 35,
       ),
       'title': 'Sign out',
-      'onPress': () => AuthService().logOut(),
+      'onPress': () => AuthService(ApiConfig().dio).logOut(),
     }
   ];
   @override

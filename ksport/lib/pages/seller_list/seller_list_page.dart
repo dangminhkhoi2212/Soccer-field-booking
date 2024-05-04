@@ -1,7 +1,7 @@
 import 'package:client_app/pages/seller_list/widget/filter_seller_list.dart';
 import 'package:client_app/pages/seller_list/widget/seller_list.dart';
 import 'package:flutter/material.dart';
-import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/my_library.dart';
 
 class SellerListPage extends StatefulWidget {
   const SellerListPage({super.key});
@@ -14,9 +14,8 @@ class _SellerListPageState extends State<SellerListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColor.background,
       body: Container(
-        color: MyColor.background,
-        height: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: const Column(
           children: [
@@ -24,7 +23,7 @@ class _SellerListPageState extends State<SellerListPage> {
             SizedBox(
               height: 10,
             ),
-            Flexible(child: SellerList()),
+            Expanded(child: SellerList()),
           ],
         ),
       ),

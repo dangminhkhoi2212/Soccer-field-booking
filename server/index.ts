@@ -12,6 +12,8 @@ import sellerRoute from './app/routes/seller.route';
 import orderRoute from './app/routes/order.route';
 import feedbackRoute from './app/routes/feedback.route';
 import statisticRoute from './app/routes/statistic.route';
+import tokenRoute from './app/routes/token.route';
+import favoriteRoute from './app/routes/favorite.route';
 dotenv.config();
 
 const app: Application = express();
@@ -30,6 +32,8 @@ app.use('/api/seller', sellerRoute);
 app.use('/api/order', orderRoute);
 app.use('/api/feedback', feedbackRoute);
 app.use('/api/statistic', statisticRoute);
+app.use('/api/token', tokenRoute);
+app.use('/api/favorite', favoriteRoute);
 
 //handle error
 app.use((req: Request, res: Response, next: NextFunction) => {

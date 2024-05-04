@@ -11,8 +11,9 @@ interface TGetRevenue {
 class StatisticController {
     private static instance: StatisticController;
     static getInstance() {
-        if (!this.instance) this.instance = new StatisticController();
-        return this.instance;
+        if (!StatisticController.instance)
+            StatisticController.instance = new StatisticController();
+        return StatisticController.instance;
     }
     async getRevenue(req: Request, res: Response) {
         try {

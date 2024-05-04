@@ -1,7 +1,6 @@
 import 'package:client_app/pages/profile/widgets/info_user.dart';
-import 'package:client_app/pages/profile/widgets/menu.dart';
+import 'package:client_app/pages/profile/widgets/menu_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:widget_component/my_library.dart';
 
 class UserPage extends StatefulWidget {
@@ -19,10 +18,10 @@ class UserState extends State<UserPage> {
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
+        child: const Column(
           children: [
-            const InfoUser(),
-            const SizedBox(height: 10),
+            InfoUser(),
+            SizedBox(height: 10),
             Flexible(child: MenuUser())
           ],
         ),

@@ -3,11 +3,10 @@ import 'dart:math';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:ksport_seller/pages/home/widget/filter_chart.dart';
 import 'package:logger/logger.dart';
-import 'package:month_year_picker/month_year_picker.dart';
 import 'package:widget_component/my_library.dart';
+import 'package:intl/intl.dart';
 
 class MyLineChart extends StatefulWidget {
   final StatisticRevenueModel statisticRevenue;
@@ -177,7 +176,10 @@ class _MyLineChartState extends State<MyLineChart> {
     } else {
       str = '';
     }
-    return Text(str);
+    return Text(
+      str,
+      style: const TextStyle(fontSize: 10),
+    );
   }
 
   LineChartData mainData() {
@@ -208,18 +210,39 @@ class _MyLineChartState extends State<MyLineChart> {
         ),
         bottomTitles: AxisTitles(
           axisNameWidget: axisNameWidget(),
-          sideTitles: const SideTitles(
+          sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 30,
             interval: 1,
+            getTitlesWidget: (value, meta) => SideTitleWidget(
+                axisSide: meta.axisSide,
+                child: Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(fontSize: 10),
+                )),
           ),
         ),
-        leftTitles: const AxisTitles(
-          axisNameWidget: Text('Revenue'),
+        leftTitles: AxisTitles(
           axisNameSize: 20,
+
+          axisNameWidget: const Text(
+            'Revenue',
+            style: TextStyle(fontSize: 10),
+          ),
+
+          // axisNameSize: 10,
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 50,
+            reservedSize: 40,
+            getTitlesWidget: (value, meta) => SideTitleWidget(
+                axisSide: meta.axisSide,
+                child: Text(
+                  NumberFormat.compactCurrency(
+                    locale: "en-US",
+                    symbol: '',
+                  ).format(value),
+                  style: const TextStyle(fontSize: 10),
+                )),
           ),
         ),
       ),
@@ -287,8 +310,11 @@ class _MyLineChartState extends State<MyLineChart> {
     final values = _statisticRevenue.values;
 
     if (values != null && values.isNotEmpty) {
-      return LineChart(
-        mainData(),
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        child: LineChart(
+          mainData(),
+        ),
       );
     }
     return EmptyWidget(

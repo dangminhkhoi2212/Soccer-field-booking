@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:ksport_seller/utils/util_snackbar.dart';
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/services/service_seller.dart';
-import 'package:widget_component/utils/loading.dart';
+import 'package:widget_component/my_library.dart';
 
 class EditOperatingTime extends StatefulWidget {
   const EditOperatingTime({super.key});
@@ -21,6 +19,9 @@ class _EditOperatingTimeState extends State<EditOperatingTime> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _box = GetStorage();
   final logger = Logger();
+  final Logger _logger = Logger();
+  final ApiConfig apiConfig = ApiConfig();
+  late SellerService _sellerService;
   String _userID = '';
   DateFormat format = DateFormat('HH:mm');
   late final Map<String, dynamic> _initValue = {
@@ -33,16 +34,16 @@ class _EditOperatingTimeState extends State<EditOperatingTime> {
   @override
   void initState() {
     _userID = _box.read('id');
+    _sellerService = SellerService(apiConfig.dio);
     _getOperatingTime();
     super.initState();
   }
 
   Future _getOperatingTime() async {
     try {
-      final Response? response =
-          await SellerService().getSeller(userID: _userID);
+      final Response response = await _sellerService.getSeller(userID: _userID);
 
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final rawData = response.data;
         dynamic data;
         if (rawData is List) {
@@ -84,25 +85,29 @@ class _EditOperatingTimeState extends State<EditOperatingTime> {
         debugPrint('End Time: $valueEndTime');
         debugPrint('isHalfHour: $isHalfHour');
 
-        final Response? response = await SellerService().updateSeller(
+        final Response response = await _sellerService.updateSeller(
             userID: _userID,
             startTime: valueStartTime,
             endTime: valueEndTime,
             isHalfHour: isHalfHour);
 
-        if (response!.statusCode == 200) {
+        if (response.statusCode == 200) {
           SnackbarUtil.getSnackBar(
               title: 'Update operating time', message: "Updated successfully");
         }
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_handleSave', messageDebug: e.response!.data ?? e);
+      }
     } catch (e) {
-      debugPrint(e.toString());
+      _logger.e(e, error: '_handleSave');
     }
-    Future.delayed(
-        const Duration(milliseconds: 2000),
-        () => setState(() {
-              _isLoading = false;
-            }));
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Widget _buildButton() {

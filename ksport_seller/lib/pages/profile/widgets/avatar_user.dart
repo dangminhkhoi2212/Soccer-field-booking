@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:widget_component/widgets/my_image/my_image.dart';
+import 'package:widget_component/my_library.dart';
 
 class AvatarUser extends StatefulWidget {
   const AvatarUser({super.key});

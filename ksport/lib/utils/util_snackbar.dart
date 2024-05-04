@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:widget_component/const/colors.dart';
+import 'package:widget_component/my_library.dart';
 
 class SnackbarUtil {
   static SnackbarController getSnackBar(

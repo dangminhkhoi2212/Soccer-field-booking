@@ -1,13 +1,14 @@
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:ksport_seller/pages/edit_profile/widgets/form_avatar.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:ksport_seller/utils/validate.dart';
 import 'package:line_icons/line_icon.dart';
-import 'package:widget_component/services/service_user.dart';
+import 'package:logger/logger.dart';
+import 'package:widget_component/my_library.dart';
 
 class FromEditProfile extends StatefulWidget {
   const FromEditProfile({super.key});
@@ -19,7 +20,8 @@ class FromEditProfile extends StatefulWidget {
 class _FromEditProfileState extends State<FromEditProfile> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _box = GetStorage();
-  final UserService _serviceUser = UserService();
+  final _logger = Logger();
+  final UserService _userService = UserService(ApiConfig().dio);
   final Map<String, dynamic> _initValue = {
     'name': '',
     'email': '',
@@ -40,9 +42,9 @@ class _FromEditProfileState extends State<FromEditProfile> {
 
   @override
   void dispose() {
+    super.dispose();
     _listenAllowSave!.call();
     _listenCurrentAvatar!.call();
-    super.dispose();
   }
 
   void initValueForm() {
@@ -79,7 +81,6 @@ class _FromEditProfileState extends State<FromEditProfile> {
     if (errors.isEmpty) {
       await handleUpdate(name: data['name'], phone: data['phone'] ?? '');
     }
-    print('ERROR HANDLE SAVE: $errors');
   }
 
   Future handleUpdate({required String name, required String phone}) async {
@@ -90,42 +91,36 @@ class _FromEditProfileState extends State<FromEditProfile> {
 
       final userID = _box.read('id');
 
-      final Map<String, dynamic> result = await _serviceUser.updateUser(
+      final Response response = await _userService.updateUser(
           userID: userID,
           name: name,
           phone: phone,
           avatar: _currentAvatar ?? avatar);
-
-      _box.write('name', result['name']);
-      _box.write('phone', result['phone']);
-      _box.write('avatar', result['avatar']);
+      final data = response.data;
+      _box.write('name', data['name']);
+      _box.write('phone', data['phone']);
+      _box.write('avatar', data['avatar']);
 
       // refresh
-      Get.snackbar(
-        'Edit profile',
-        'Update successfully.',
-        colorText: Colors.black,
-        backgroundColor: Colors.white60,
-        snackPosition: SnackPosition.TOP,
-        maxWidth: Get.width,
-      );
+      SnackbarUtil.getSnackBar(
+          title: 'Edit profile', message: 'Update successfully.');
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+                titleDebug: 'handleUpdate',
+                messageDebug: e.response!.data['err_mes'],
+                message: e.response!.data['err_mes'])
+            .showErrorDialog(context);
+      }
     } catch (e) {
-      Get.snackbar(
-        'Edit profile',
-        'Update failed. Please try again.',
-        colorText: Colors.black,
-        backgroundColor: Colors.white60,
-        snackPosition: SnackPosition.TOP,
-        maxWidth: Get.width,
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      _logger.e(e, error: 'handleUpdate');
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
-  static bool isValidPhoneNumber(String phoneNumber) {
+  bool isValidPhoneNumber(String phoneNumber) {
     RegExp vietnamesePhoneNumberRegExp =
         RegExp(r'^(03[2-9]|05[689]|07[0-9]|08[1-9]|09[0-9])[0-9]{7}$');
 
@@ -141,19 +136,12 @@ class _FromEditProfileState extends State<FromEditProfile> {
       child: Column(
         children: [
           const FormAvatar(),
-          const SizedBox(
-            height: 10,
-          ),
           FormBuilderTextField(
             name: 'name',
             decoration: const InputDecoration(
               prefixIcon: LineIcon.userAlt(),
               labelText: 'Name',
             ),
-            validator: FormValidate.nameValidation(),
-          ),
-          const SizedBox(
-            height: 10,
           ),
           FormBuilderTextField(
             name: 'email',
@@ -162,9 +150,6 @@ class _FromEditProfileState extends State<FromEditProfile> {
                 prefixIcon: LineIcon.envelope(),
                 labelText: 'Email',
                 helperText: 'This email can\'t be changed.'),
-          ),
-          const SizedBox(
-            height: 10,
           ),
           FormBuilderTextField(
             name: 'phone',

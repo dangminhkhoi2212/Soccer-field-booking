@@ -1,7 +1,6 @@
 import express, { Router } from 'express';
 import FieldController from '../controllers/field.controller';
 const router: Router = Router();
-
 router.route('/all').get(FieldController.getSoccerFields);
 router
     .route('/')

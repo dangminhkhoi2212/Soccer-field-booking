@@ -2,7 +2,7 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 import 'package:get/get.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
 import 'package:ksport_seller/pages/home/home_page.dart';
-import 'package:ksport_seller/pages/main_screen/main_screen_state.dart';
+import 'package:ksport_seller/pages/main_screen/state/main_screen_state.dart';
 import 'package:ksport_seller/pages/order_list/order_list_page.dart';
 import 'package:ksport_seller/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';

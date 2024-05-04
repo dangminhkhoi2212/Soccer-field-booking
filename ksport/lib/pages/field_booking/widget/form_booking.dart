@@ -1,10 +1,10 @@
-import 'dart:math';
 import 'dart:ui';
 
+import 'package:client_app/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +23,8 @@ class FormBooking extends StatefulWidget {
 
 class _FormBookingState extends State<FormBooking> {
   final _formKey = GlobalKey<FormBuilderState>();
-  final _orderService = OrderService();
+  final ApiConfig apiConfig = ApiConfig();
+  final _orderService = OrderService(ApiConfig().dio);
   final _box = GetStorage();
   late FieldModel _field;
   late String? _userID;
@@ -68,9 +69,8 @@ class _FormBookingState extends State<FormBooking> {
       Response? response = await _orderService.getOrderedTime(
           fieldID: _field.sId!, date: FormatUtil.formatDate(date).toString());
 
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final dataResponse = response.data;
-        _logger.d(dataResponse);
         if (dataResponse['times'] != null) {
           final OrderedTimeModel data = OrderedTimeModel.fromJson(dataResponse);
           final List<Times?>? times = data.times;
@@ -93,8 +93,11 @@ class _FormBookingState extends State<FormBooking> {
           }
         }
       }
+    } on DioException catch (e) {
+      HandleError(
+          titleDebug: '_getOrderedTime', messageDebug: e.response!.data! ?? e);
     } catch (e) {
-      _logger.e(error: e, '_getOrderedTime');
+      _logger.d(e, error: '_getOrderedTime');
     }
     setState(() {});
   }
@@ -176,22 +179,27 @@ class _FormBookingState extends State<FormBooking> {
           .toUtc()
           .add(const Duration(hours: 7))
           .toIso8601String();
-      Response? response = await _orderService.createOrder(
+      Response response = await _orderService.createOrder(
           userID: _userID!,
           date: utcDate,
           fieldID: _field.sId!,
           startTime: utcStartTime,
           endTime: utcEndTime,
           total: _priceOrder);
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         Navigator.pop(context, 'CANCEL');
         SnackbarUtil.getSnackBar(
             title: 'Book a field', message: 'Booked successfully');
+        Get.offAndToNamed(RoutePaths.mainScreen, arguments: {'index': 2});
       } else {
         throw response.data;
       }
+    } on DioException catch (e) {
+      HandleError(
+          titleDebug: '_handlePlace DioException',
+          messageDebug: e.response!.data ?? e);
     } catch (e) {
-      _logger.e(error: e, '_handlePlace');
+      _logger.e(e, error: '_handlePlace');
     }
     setState(() {
       _isLoading = false;

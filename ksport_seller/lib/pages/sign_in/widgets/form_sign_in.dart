@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:ksport_seller/services/service_google_auth.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
 class FromSignIn extends StatefulWidget {
@@ -16,9 +19,29 @@ class FromSignIn extends StatefulWidget {
 
 class _FromSignInState extends State<FromSignIn> {
   final _formKey = GlobalKey<FormBuilderState>();
+  late AddressService _addressService;
+  final ApiConfig apiConfig = ApiConfig();
+  late AuthService _authService;
+  final _logger = Logger();
+  @override
+  initState() {
+    super.initState();
+    _addressService = AddressService(apiConfig.dio);
+    _authService = AuthService(apiConfig.dio);
+  }
 
   Future<void> _signIn() async {
     try {
+      _formKey.currentState!.saveAndValidate();
+      final data = _formKey.currentState!.value;
+      final errors = _formKey.currentState!.errors;
+      if (errors.isNotEmpty) {
+        return;
+      }
+      String? email = data['email'];
+      String? password = data['password'];
+      if (email == null || password == null) return;
+
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -28,16 +51,8 @@ class _FromSignInState extends State<FromSignIn> {
           ),
         ),
       );
-      _formKey.currentState!.save();
-      final data = _formKey.currentState!.value;
-      final errors = _formKey.currentState!.errors;
-      if (errors.isNotEmpty) {
-        return;
-      }
-      String? email = data['email'];
-      String? password = data['password'];
-      if (email == null || password == null) return;
-      final response = await AuthService().signInWithEmailAndPassword(
+
+      final response = await _authService.signInWithEmailAndPassword(
         email: email.toString(),
         password: password,
       );
@@ -49,21 +64,23 @@ class _FromSignInState extends State<FromSignIn> {
         if (isUpdatedAddress == false) {
           final Position? position =
               await GoogleMapService().determinePosition();
+
           double lat = position!.latitude;
           double long = position.longitude;
+
           final String? address = await GoogleMapService()
               .getAddressFromLatLng(latitude: lat, longitude: long);
 
-          debugPrint(address.toString());
+          _logger.i(address.toString());
 
-          await AddressService().updateAddress(
+          await _addressService.updateAddress(
               userID: result['_id'],
               lat: position.latitude,
               long: position.longitude,
               address: address);
         }
 
-        AuthService().setUserLocal(result);
+        _authService.setUserLocal(result);
         await Get.offNamed(RoutePaths.mainScreen);
       } else {
         SnackbarUtil.getSnackBar(
@@ -71,13 +88,18 @@ class _FromSignInState extends State<FromSignIn> {
           message: result['err_mes'] ?? 'Occur an error. Please try again',
         );
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop();
+        HandleError(
+                titleDebug: '_handleSignUp',
+                messageDebug: e.response!.data ?? e,
+                title: 'Sign in',
+                message: e.response!.data['err_mes'])
+            .showErrorDialog(context);
+      }
     } catch (e) {
-      debugPrint('Error _signin: $e');
-      SnackbarUtil.getSnackBar(
-        title: 'Sign in',
-        message: 'Occur an error. Please try again',
-      );
-    } finally {
+      _logger.e(e, error: '_signIn');
       Navigator.of(context).pop(); // Close the dialog in all cases
     }
   }

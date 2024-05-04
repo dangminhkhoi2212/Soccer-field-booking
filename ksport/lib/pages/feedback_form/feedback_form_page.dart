@@ -1,3 +1,4 @@
+import 'package:client_app/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
-import 'package:image_picker/image_picker.dart';
 
 class FeedbackFormPage extends StatefulWidget {
   const FeedbackFormPage({super.key});
@@ -19,7 +19,8 @@ class FeedbackFormPage extends StatefulWidget {
 
 class _FeedbackFormPageState extends State<FeedbackFormPage> {
   final _formKey = GlobalKey<FormBuilderState>();
-  final _feedbackService = FeedbackService();
+  final _feedbackService = FeedbackService(ApiConfig().dio);
+  final _orderService = OrderService(ApiConfig().dio);
   final _logger = Logger();
   int _lengthContent = 0;
   String? _userID;
@@ -30,7 +31,6 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _orderID = Get.parameters['orderID']!;
     _userID = _box.read('id');
@@ -48,11 +48,15 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
       _isLoading = true;
     });
     try {
-      final Response? response = await OrderService()
-          .getOneOrder(orderID: _orderID!, userID: _userID!);
+      final Response? response =
+          await _orderService.getOneOrder(orderID: _orderID!, userID: _userID!);
       if (response!.statusCode == 200) {
         _order = OrderModel.fromJson(response.data);
       }
+    } on DioException catch (e) {
+      HandleError(
+          titleDebug: '_getOrder DioException',
+          messageDebug: e.response!.data! ?? e);
     } catch (e) {
       _logger.e(error: e, '_getOrder');
     }
@@ -78,52 +82,48 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
   }
 
   Widget _buildInfoField() {
-    return Container(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              child: MyImage(
-                width: double.infinity,
-                height: 100,
-                src: _order!.field!.coverImage!,
-                radius: 12,
-              ),
-            ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+          child: MyImage(
+            width: double.infinity,
+            height: 100,
+            src: _order!.field!.coverImage!,
+            radius: 12,
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-              flex: 3,
-              child: Table(
-                columnWidths: const {
-                  0: FlexColumnWidth(1),
-                  1: FlexColumnWidth(1),
-                },
-                children: [
-                  _buildTableRow(
-                      label: 'Field name', value: _order!.field!.name!),
-                  _buildTableRow(
-                      label: 'Owner name', value: _order!.seller!.name!),
-                  _buildTableRow(
-                      label: 'Ordered date',
-                      value: FormatUtil.formatISOtoDate(_order!.date!)),
-                  _buildTableRow(
-                    label: 'Ordered time',
-                    value:
-                        '${FormatUtil.formatISOtoTime(_order!.startTime!)} - ${FormatUtil.formatISOtoTime(_order!.endTime!)}',
-                  ),
-                  _buildTableRow(
-                    label: 'Total date',
-                    value: FormatUtil.formatNumber(_order!.total!) + ' VND',
-                  ),
-                ],
-              )),
-        ],
-      ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Expanded(
+            flex: 3,
+            child: Table(
+              columnWidths: const {
+                0: FlexColumnWidth(1),
+                1: FlexColumnWidth(1),
+              },
+              children: [
+                _buildTableRow(
+                    label: 'Field name', value: _order!.field!.name!),
+                _buildTableRow(
+                    label: 'Owner name', value: _order!.seller!.name!),
+                _buildTableRow(
+                    label: 'Ordered date',
+                    value: FormatUtil.formatISOtoDate(_order!.date!)),
+                _buildTableRow(
+                  label: 'Ordered time',
+                  value:
+                      '${FormatUtil.formatISOtoTime(_order!.startTime!)} - ${FormatUtil.formatISOtoTime(_order!.endTime!)}',
+                ),
+                _buildTableRow(
+                  label: 'Total date',
+                  value: FormatUtil.formatNumber(_order!.total!) + ' VND',
+                ),
+              ],
+            )),
+      ],
     );
   }
 
@@ -254,8 +254,8 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
             userID: _order!.user!.sId!,
             star: star,
             content: content.trim(),
-            images: imagesUrl ?? []);
-        if (response!.statusCode == 200) {
+            images: imagesUrl);
+        if (response.statusCode == 200) {
           SnackbarUtil.getSnackBar(
               title: 'Feedback',
               message: 'You have sent your feedback successfully');
@@ -270,8 +270,9 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
       }
     } catch (e) {
       _logger.e(error: e, '_handelSubmit');
+    } finally {
+      Navigator.of(context).pop();
     }
-    Navigator.of(context).pop();
   }
 
   Widget _buildButton() {

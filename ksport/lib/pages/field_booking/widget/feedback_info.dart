@@ -1,11 +1,10 @@
 import 'dart:math';
 
+import 'package:client_app/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
@@ -23,13 +22,12 @@ class FeedbackField extends StatefulWidget {
 }
 
 class _FieldInfoState extends State<FeedbackField> {
-  final int _groupValue = 0;
   bool _isLoading = false;
   late String _fieldID;
   final _logger = Logger();
   StatisticFeedbackModel _statistic = StatisticFeedbackModel();
   FeedbackModel? _feedback = FeedbackModel.fromJson({});
-  final FeedbackService _feedbackService = FeedbackService();
+  final FeedbackService _feedbackService = FeedbackService(ApiConfig().dio);
 
   final PagingController _pagingController = PagingController(firstPageKey: 0);
   @override
@@ -45,14 +43,18 @@ class _FieldInfoState extends State<FeedbackField> {
       _isLoading = true;
     });
     try {
-      final Response? response =
+      final Response response =
           await _feedbackService.getFeedbacks(fieldID: _fieldID, limit: 5);
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = response.data;
         _feedback = FeedbackModel.fromJson(data);
       } else {
         throw response.data;
       }
+    } on DioException catch (e) {
+      HandleError(
+          titleDebug: '_getFeedbacks DioException',
+          messageDebug: e.response!.data! ?? e);
     } catch (e) {
       _logger.e(e, error: '_getFeedbacks');
     }

@@ -1,3 +1,4 @@
+import 'package:client_app/config/api_config.dart';
 import 'package:client_app/pages/field_booking/widget/feedback_info.dart';
 import 'package:client_app/pages/field_booking/widget/field_info.dart';
 import 'package:client_app/pages/field_booking/widget/form_booking.dart';
@@ -6,7 +7,6 @@ import 'package:client_app/pages/field_booking/widget/seller_info_booking.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
@@ -20,10 +20,11 @@ class FieldBooking extends StatefulWidget {
 }
 
 class _FieldBookingState extends State<FieldBooking> {
-  final UserService _userService = UserService();
-  final SellerService _sellerService = SellerService();
-  final AddressService _addressService = AddressService();
-  final FeedbackService _feedbackService = FeedbackService();
+  final UserService _userService = UserService(ApiConfig().dio);
+  final SellerService _sellerService = SellerService(ApiConfig().dio);
+  final AddressService _addressService = AddressService(ApiConfig().dio);
+  final FeedbackService _feedbackService = FeedbackService(ApiConfig().dio);
+  final FieldService _fieldService = FieldService(ApiConfig().dio);
   FieldModel? _field;
   UserModel? _user;
   SellerModel? _seller;
@@ -50,49 +51,62 @@ class _FieldBookingState extends State<FieldBooking> {
 
   Future _getUser() async {
     try {
-      Response? response = await _userService.getOneUser(userID: _sellerID);
-      if (response!.statusCode == 200) {
+      Response response = await _userService.getOneUser(userID: _sellerID);
+      if (response.statusCode == 200) {
         final data = response.data;
         _user = UserModel.fromJson(data);
       }
+    } on DioException catch (e) {
+      HandleError(titleDebug: '_getUser', messageDebug: e.response!.data ?? e);
     } catch (e) {
-      _logger.e(error: e, '_getUser');
+      _logger.e(e, error: _getUser);
     }
   }
 
   Future _getSeller() async {
     try {
-      Response? response = await _sellerService.getOneSeller(userID: _sellerID);
-      if (response!.statusCode == 200) {
+      Response response = await _sellerService.getOneSeller(userID: _sellerID);
+      if (response.statusCode == 200) {
         final data = response.data;
         _seller = SellerModel.fromJson(data);
       }
+    } on DioException catch (e) {
+      HandleError(
+          titleDebug: '_getSeller', messageDebug: e.response!.data ?? e);
     } catch (e) {
-      _logger.e(error: e, '_getSeller');
+      _logger.e(e, error: '_getSeller');
     }
   }
 
   Future _getAddress() async {
     try {
-      Response? response = await _addressService.getAddress(userID: _sellerID);
-      if (response!.statusCode == 200) {
+      Response response =
+          await _addressService.getOneAddress(userID: _sellerID!);
+      if (response.statusCode == 200) {
         final data = response.data;
 
         _address = AddressModel.fromJson(data);
       }
+    } on DioException catch (e) {
+      HandleError(
+          titleDebug: '_getAddress', messageDebug: e.response!.data ?? e);
     } catch (e) {
-      _logger.e(error: e, '_getAddress');
+      _logger.e(e, error: '_getAddress');
     }
   }
 
   Future _getStatisticFeedback() async {
     try {
-      Response? response =
+      Response response =
           await _feedbackService.getStatisticFeedback(fieldID: _fieldID);
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = response.data;
         _statistic = StatisticFeedbackModel.fromJson(data);
       }
+    } on DioException catch (e) {
+      HandleError(
+          titleDebug: '_getStatisticFeedback',
+          messageDebug: e.response!.data ?? e);
     } catch (e) {
       _logger.e(e, error: '_getStatisticFeedback');
     }
@@ -100,15 +114,17 @@ class _FieldBookingState extends State<FieldBooking> {
 
   Future _getField() async {
     try {
-      final Response? response =
-          await FieldService().getOneSoccerField(fieldID: _fieldID!);
-      if (response!.statusCode == 200) {
+      final Response response =
+          await _fieldService.getOneSoccerField(fieldID: _fieldID!);
+      if (response.statusCode == 200) {
         final data = response.data;
         _field = FieldModel.fromJson(data);
         _title = _field!.name!;
       }
+    } on DioException catch (e) {
+      HandleError(titleDebug: '_getField', messageDebug: e.response!.data ?? e);
     } catch (e) {
-      _logger.e(error: e, '_getFieldData');
+      _logger.e(e, error: '_getField');
     }
   }
 

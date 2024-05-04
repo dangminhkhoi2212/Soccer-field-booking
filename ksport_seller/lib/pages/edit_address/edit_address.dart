@@ -5,14 +5,11 @@ import 'package:dio/src/response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
-import 'package:widget_component/const/colors.dart';
-import 'package:widget_component/services/service_address.dart';
-import 'package:widget_component/services/service_google_map.dart';
-import 'package:widget_component/utils/loading.dart';
-import 'package:widget_component/utils/util_snackbar.dart';
+import 'package:widget_component/my_library.dart';
 
 class EditAddressPage extends StatefulWidget {
   const EditAddressPage({super.key});
@@ -79,10 +76,10 @@ class _EditAddressPageState extends State<EditAddressPage> {
       _isLoading = true;
     });
     try {
-      final Response? response =
-          await AddressService().getAddress(userID: _userID);
+      final Response response =
+          await AddressService(ApiConfig().dio).getOneAddress(userID: _userID);
 
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = response.data;
         LatLng myPoint = LatLng(data['latitude'], data['longitude']);
         _currentLatlag = _myLatlag = myPoint;
@@ -117,12 +114,13 @@ class _EditAddressPageState extends State<EditAddressPage> {
         _isSubmitting = true;
       });
       await Future.delayed(const Duration(seconds: 2));
-      final Response? response = await AddressService().updateAddress(
-          userID: _userID,
-          lat: _currentLatlag.latitude,
-          long: _currentLatlag.longitude,
-          address: _address);
-      if (response!.statusCode == 200) {
+      final Response response = await AddressService(ApiConfig().dio)
+          .updateAddress(
+              userID: _userID,
+              lat: _currentLatlag.latitude,
+              long: _currentLatlag.longitude,
+              address: _address);
+      if (response.statusCode == 200) {
         SnackbarUtil.getSnackBar(
             title: 'Update address', message: 'Update address successfully');
       } else {

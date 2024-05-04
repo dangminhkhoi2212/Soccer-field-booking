@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ksport_seller/pages/fields/widget/field_filter.dart';
+import 'package:ksport_seller/pages/profile/widgets/soccer_field_list.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:widget_component/my_library.dart';
 

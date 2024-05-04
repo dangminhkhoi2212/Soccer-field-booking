@@ -31,6 +31,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: MyColor.background,
         colorSchemeSeed: PrimaryColor.primary,
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
       initialRoute: RoutePaths.mainScreen,
       home: const MainScreen(),

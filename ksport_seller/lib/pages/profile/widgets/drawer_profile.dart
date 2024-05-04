@@ -1,3 +1,4 @@
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:ksport_seller/models/model_user.dart';
 import 'package:ksport_seller/services/service_google_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,40 +21,43 @@ class _DrawerProfileState extends State<DrawerProfile> {
   String email = '';
   String avatar = '';
   Function? _listenChangeStorage;
-  final List<Map<String, dynamic>> listMenu = [
-    {
-      'icon': const LineIcon.userEdit(
-        size: 35,
-      ),
-      'title': 'Edit profile',
-      'onPress': () => Get.toNamed(RoutePaths.editProfile),
-    },
-    {
-      'icon': const LineIcon.mapMarked(
-        size: 35,
-      ),
-      'title': 'Address',
-      'onPress': () => Get.toNamed(RoutePaths.editAddress),
-    },
-    {
-      'icon': const LineIcon.calendar(
-        size: 35,
-      ),
-      'title': 'Operating time',
-      'onPress': () => Get.toNamed(RoutePaths.editOperatingTime),
-    },
-    {
-      'icon': const LineIcon.alternateSignOut(
-        size: 35,
-      ),
-      'title': 'Sign out',
-      'onPress': () => AuthService().logOut(),
-    },
-  ];
+  final ApiConfig _apiConfig = ApiConfig();
+  late AuthService _authService;
+  List<Map<String, dynamic>> listMenu = [];
   @override
-  void initState() {
-    initValue();
+  initState() {
     super.initState();
+    _authService = AuthService(_apiConfig.dio);
+    listMenu = [
+      {
+        'icon': const LineIcon.userEdit(
+          size: 35,
+        ),
+        'title': 'Edit profile',
+        'onPress': () => Get.toNamed(RoutePaths.editProfile),
+      },
+      {
+        'icon': const LineIcon.mapMarked(
+          size: 35,
+        ),
+        'title': 'Address',
+        'onPress': () => Get.toNamed(RoutePaths.editAddress),
+      },
+      {
+        'icon': const LineIcon.calendar(
+          size: 35,
+        ),
+        'title': 'Operating time',
+        'onPress': () => Get.toNamed(RoutePaths.editOperatingTime),
+      },
+      {
+        'icon': const LineIcon.alternateSignOut(
+          size: 35,
+        ),
+        'title': 'Sign out',
+        'onPress': () => _authService.logOut(),
+      },
+    ];
   }
 
   void listenChangeName() {

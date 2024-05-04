@@ -1,8 +1,5 @@
 import 'package:client_app/pages/edit_profile/widgets/form_edit_profile.dart';
-import 'package:client_app/widgets/my_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:line_icons/line_icon.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -13,17 +10,21 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final nameController = TextEditingController();
-  final _box = GetStorage();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Edit profile',
@@ -36,7 +37,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           horizontal: 10,
         ),
         // margin: const EdgeInsets.all(10),
-        child: const FromEditProfile(),
+        child: const SingleChildScrollView(child: FromEditProfile()),
       ),
     );
   }

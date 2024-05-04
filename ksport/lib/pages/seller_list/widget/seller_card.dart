@@ -16,6 +16,10 @@ class SellerCard extends StatelessWidget {
             seller.name ?? '',
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
           ),
+          Text(
+            'Fields: ${seller.fieldCount.toString()}',
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w300),
+          ),
         ],
       ),
     );
@@ -28,7 +32,8 @@ class SellerCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          Get.toNamed(RoutePaths.seller, parameters: {'userID': seller.sId!});
+          Get.toNamed(RoutePaths.seller,
+              parameters: {'userIDSeller': seller.sId!});
         },
         child: Ink(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
@@ -48,9 +53,6 @@ class SellerCard extends StatelessWidget {
                 width: 20,
               ),
               _buildInfo(),
-              Align(
-                  child: IconButton(
-                      onPressed: () {}, icon: const LineIcon.heart()))
             ],
           ),
         ),

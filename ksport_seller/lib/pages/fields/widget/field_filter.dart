@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
@@ -29,6 +29,8 @@ class _FieldFilterState extends State<FieldFilter> {
   String? endTime;
   List<TimeOfDay?> _disableTimes = [];
   bool _isLoading = false;
+  late SellerService _sellerService;
+  final ApiConfig apiConfig = ApiConfig();
   TimeRangePickerState timeRangePicker = TimeRangePickerState();
   @override
   void setState(VoidCallback fn) {
@@ -40,6 +42,7 @@ class _FieldFilterState extends State<FieldFilter> {
   void initState() {
     super.initState();
     _userID = _box.read('id');
+    _sellerService = SellerService(apiConfig.dio);
     _getOperatingTime();
     _generateDisableTime();
   }
@@ -58,9 +61,9 @@ class _FieldFilterState extends State<FieldFilter> {
       setState(() {
         _isLoading = true;
       });
-      final response = await SellerService().getOneSeller(userID: _userID);
+      final response = await _sellerService.getOneSeller(userID: _userID);
 
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = response.data;
 
         startTime = data['startTime'];

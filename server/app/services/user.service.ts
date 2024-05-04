@@ -3,6 +3,8 @@ import UserModel, { TUser } from '../models/user.model';
 import 'dotenv/config';
 import MongooseUtil from '../utils/mongoose.util';
 import { TGetOneUser, TGetUsers } from '../controllers/user.controller';
+import fieldService from './field.service';
+import mongooseUtil from '../utils/mongoose.util';
 const USER_JSON: string = process.env.USER_JSON?.toString() || '';
 
 class UserService {
@@ -57,7 +59,15 @@ class UserService {
                 isPublic: 1,
             },
         });
-        const result = await UserModel.aggregate(aggregate);
+        let result = await UserModel.aggregate(aggregate);
+        result = await Promise.all(
+            result.map(async (user) => {
+                user.fieldCount = await fieldService.getFieldCount(
+                    mongooseUtil.createOjectID(user._id)
+                );
+                return user;
+            })
+        );
         return result;
     }
     static async updateUser({

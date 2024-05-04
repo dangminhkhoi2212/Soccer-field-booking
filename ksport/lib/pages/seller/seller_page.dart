@@ -1,8 +1,11 @@
 // import 'package:client_app/pages/seller/widget/field_list.dart';
 // import 'package:client_app/pages/seller/widget/owner_info.dart';
+import 'package:client_app/config/api_config.dart';
+import 'package:client_app/pages/seller/widget/soccer_field_list.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
@@ -14,59 +17,129 @@ class SellerPage extends StatefulWidget {
 }
 
 class _SellerPageState extends State<SellerPage> {
-  String? _userID;
+  String? _userIDSeller;
+  late String _userID;
   String _titleBar = '';
   final Logger _logger = Logger();
   bool _isLoading = false;
-  final UserService _userService = UserService();
-  final SellerService _sellerService = SellerService();
-  final AddressService _addressService = AddressService();
-  UserModel? _user;
+  final ApiConfig apiConfig = ApiConfig();
+  late UserService _userService;
+  late SellerService _sellerService;
+  late AddressService _addressService;
+  late FavoriteService _favoriteService;
+  UserModel? _userSeller;
   SellerModel? _seller;
   AddressModel? _address;
+  bool? _isFavorite;
+  final _box = GetStorage();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _userID = Get.parameters['userID'];
+    _userService = UserService(apiConfig.dio);
+    _sellerService = SellerService(apiConfig.dio);
+    _addressService = AddressService(apiConfig.dio);
+    _favoriteService = FavoriteService(apiConfig.dio);
+    _userIDSeller = Get.parameters['userIDSeller'];
+    _userID = _box.read('id');
     _initValue();
+  }
+
+  Future _checkFavorite() async {
+    try {
+      final Response response = await _favoriteService.checkFavorite(
+          userID: _userID, sellerID: _userIDSeller!);
+      if (response.statusCode == 200) {
+        _logger.d(response.data);
+        final data = CheckFavoriteModel.fromJson(response.data);
+        _isFavorite = data.isFavorite;
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_checkFavorite',
+            messageDebug: e.response!.data ?? e.message);
+      }
+    } catch (e) {
+      _logger.e(e, error: '_checkFavorite');
+    }
+  }
+
+  Future _handleFavorite() async {
+    try {
+      final Response response = await _favoriteService.handelFavorite(
+          userID: _userID, sellerID: _userIDSeller!);
+      if (response.statusCode == 200) {
+        final data = FavoriteStatusModel.fromJson(response.data);
+        setState(() {
+          _isFavorite = data.isFavorite;
+        });
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_checkFavorite',
+            messageDebug: e.response!.data ?? e.message);
+      }
+    } catch (e) {
+      _logger.e(e, error: '_checkFavorite');
+    }
   }
 
   Future _getUser() async {
     try {
-      Response? response = await _userService.getOneUser(userID: _userID);
-      if (response!.statusCode == 200) {
+      Response? response = await _userService.getOneUser(userID: _userIDSeller);
+      if (response.statusCode == 200) {
         final data = response.data;
-        _user = UserModel.fromJson(data);
-        _titleBar = _user?.name ?? '';
+        _userSeller = UserModel.fromJson(data);
+        _titleBar = _userSeller?.name ?? '';
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_getUser',
+            messageDebug: e.response!.data ?? e.message);
       }
     } catch (e) {
-      _logger.e(error: e, '_getUser');
+      _logger.e(e, error: '_getUser');
     }
   }
 
   Future _getSeller() async {
     try {
-      Response? response = await _sellerService.getOneSeller(userID: _userID);
-      if (response!.statusCode == 200) {
+      Response? response =
+          await _sellerService.getOneSeller(userID: _userIDSeller);
+      if (response.statusCode == 200) {
         final data = response.data;
         _seller = SellerModel.fromJson(data);
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_getSeller',
+            messageDebug: e.response!.data ?? e.message);
+      }
     } catch (e) {
-      _logger.e(error: e, '_getSeller');
+      _logger.e(e, error: '_getSeller');
     }
   }
 
   Future _getAddress() async {
     try {
-      Response? response = await _addressService.getAddress(userID: _userID);
-      if (response!.statusCode == 200) {
+      Response? response =
+          await _addressService.getOneAddress(userID: _userIDSeller!);
+      if (response.statusCode == 200) {
         final data = response.data;
 
         _address = AddressModel.fromJson(data);
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_getAddress',
+            messageDebug: e.response!.data ?? e.message);
+      }
     } catch (e) {
-      _logger.e(error: e, '_getAddress');
+      _logger.e(e, error: '_getAddress');
     }
   }
 
@@ -74,7 +147,8 @@ class _SellerPageState extends State<SellerPage> {
     setState(() {
       _isLoading = true;
     });
-    await Future.wait([_getAddress(), _getUser(), _getSeller()]);
+    await Future.wait(
+        [_getAddress(), _getUser(), _getSeller(), _checkFavorite()]);
     setState(() {
       _isLoading = false;
     });
@@ -86,7 +160,7 @@ class _SellerPageState extends State<SellerPage> {
         child: MyLoading.spinkit(),
       );
     }
-    if (_user == null) {
+    if (_userSeller == null) {
       return const Center(
         child: Text('Don not find this owner'),
       );
@@ -94,13 +168,15 @@ class _SellerPageState extends State<SellerPage> {
     return Column(
       children: [
         InfoOwner(
-          user: _user!,
+          user: _userSeller!,
           seller: _seller!,
           address: _address!,
+          isFavorite: _isFavorite,
+          opTap: _handleFavorite,
         ), // Removed Expanded wrapper
         const SizedBox(height: 20), // Added spacing between widgets
         SoccerFieldList(
-            userID: _user!.sId ?? '',
+            userID: _userSeller!.sId ?? '',
             isOnTap: true), // Removed Expanded wrapper
       ],
     );
@@ -119,5 +195,40 @@ class _SellerPageState extends State<SellerPage> {
                 clipBehavior: Clip.hardEdge,
                 primary: true,
                 child: _buildBody())));
+  }
+}
+
+class CheckFavoriteModel {
+  bool? isFavorite;
+
+  CheckFavoriteModel({this.isFavorite});
+
+  CheckFavoriteModel.fromJson(Map<String, dynamic> json) {
+    isFavorite = json['isFavorite']!;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['isFavorite'] = isFavorite;
+    return data;
+  }
+}
+
+class FavoriteStatusModel {
+  String? status;
+  bool? isFavorite;
+
+  FavoriteStatusModel({this.status, this.isFavorite});
+
+  FavoriteStatusModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    isFavorite = json['isFavorite'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['isFavorite'] = isFavorite;
+    return data;
   }
 }

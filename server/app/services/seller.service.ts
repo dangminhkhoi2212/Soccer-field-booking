@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import SellerModel from '../models/seller.model';
 import 'dotenv/config';
 import '../utils/mongoose.util';
-import MongooseUtil from '../utils/mongoose.util';
+import MongooseUtil, { TOjectID } from '../utils/mongoose.util';
 const USER_JSON = '_id name avatar role';
 class SellerService {
     private static instance: SellerService;
@@ -43,30 +43,22 @@ class SellerService {
 
         return fields;
     }
-    async getSeller(params: any) {
+    async getSellers(params: any) {
         const pipeline = [];
 
-        // Initialize the query object with isInfo parameter
-        let query: any = { isInfo: params.isInfo ?? false };
-
-        // If sellerID is provided, add $match stage to filter by sellerID
         if (params.sellerID) {
             pipeline.push({
                 $match: {
                     _id: MongooseUtil.createOjectID(params.sellerID),
                 },
             });
-        }
-
-        // If userID is provided, add $match stage to filter by userID
-        else if (params.userID) {
+        } else if (params.userID) {
             pipeline.push({
                 $match: {
                     userID: MongooseUtil.createOjectID(params.userID),
                 },
             });
         } else pipeline.push({ $match: {} });
-        // If isInfo is true, add $lookup stage to populate userID
         if (params.isInfo) {
             pipeline.push({
                 $lookup: {
@@ -108,11 +100,9 @@ class SellerService {
                 'user.lock': 1,
             },
         });
-        // Execute the aggregation pipeline
         const result = await SellerModel.aggregate(pipeline);
         console.log('🚀 ~ SellerService ~ getSeller ~ pipeline:', pipeline);
 
-        // If isInfo is true, map the result to remove the 'user' field from each document
         if (params.isInfo == false) {
             return result.map((doc) => {
                 delete doc.user;
@@ -120,15 +110,14 @@ class SellerService {
             });
         }
         const destructuredData = result.map((item) => {
-            // Destructure user field and rest of the fields
             const result = { ...item, ...item.user };
             if (result.user) delete result.user;
-            return result; // Return user and rest of the fields as separate objects
+            return result;
         });
         return result;
     }
-    async getOneSeller(query: { userID: string }) {
-        const userID = MongooseUtil.createOjectID(query.userID);
+    async getOneSeller(query: { userID: TOjectID }) {
+        const { userID } = query;
         const result = await SellerModel.findOne({ userID });
         return result;
     }
