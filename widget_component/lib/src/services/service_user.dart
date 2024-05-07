@@ -11,6 +11,7 @@ class UserService {
   Future<Response> updateUser(
       {required String name,
       required String userID,
+      required String email,
       required String phone,
       required String? avatar}) async {
     final response = await _dio.put('/user',
@@ -18,7 +19,8 @@ class UserService {
           "userID": userID,
           "name": name,
           "phone": phone,
-          'avatar': avatar
+          'avatar': avatar,
+          'email': email,
         },
         options: Options(headers: {
           'Accept': 'application/json',
@@ -33,15 +35,16 @@ class UserService {
     return response;
   }
 
-  Future<Response> getUsers(
-      {String? userID, String? select, required String role}) async {
+  Future<Response> getUsers({String? textSearch, required String role}) async {
     Response response = await _dio.get('/user/all',
-        queryParameters: {"userID": userID, "select": select, 'role': role});
+        queryParameters: {'textSearch': textSearch, 'role': role});
     return response;
   }
 
-  Future<Response> updatePassword(
-      {required String oldPass, required String newPass}) async {
+  Future<Response> updatePassword({
+    required String oldPass,
+    required String newPass,
+  }) async {
     Response response = await _dio
         .post('/user/password', data: {'oldPass': oldPass, 'newPass': newPass});
     return response;

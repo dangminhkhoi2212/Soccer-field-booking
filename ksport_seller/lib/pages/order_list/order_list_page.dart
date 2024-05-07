@@ -27,7 +27,6 @@ class _OrderPageState extends State<OrderList> {
     super.initState();
     _orderService = OrderService(apiConfig.dio);
     _sellerID = _box.read('id');
-    print(_sellerID);
     _getOrders(
       date: FormatUtil.formatDate(DateTime.now()),
     );

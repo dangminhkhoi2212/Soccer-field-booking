@@ -69,7 +69,7 @@ class _FavoritePageState extends State<FavoritePage> {
         itemBuilder: (context, index) =>
             FavoriteCard(favorite: _favorites[index]!),
         separatorBuilder: (context, index) => const SizedBox(
-              height: 5,
+              height: 10,
             ),
         itemCount: _favorites.length);
   }
@@ -84,7 +84,7 @@ class _FavoritePageState extends State<FavoritePage> {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            const FilterFavorite(),
+            // const FilterFavorite(),
             const SizedBox(
               height: 5,
             ),

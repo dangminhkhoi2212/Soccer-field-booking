@@ -155,7 +155,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           orderID: _order!.sId!, status: 'ordered');
       if (response.statusCode == 200) {
         SnackbarUtil.getSnackBar(
-            title: 'Update order', message: 'Canceled this order');
+            title: 'Update order', message: 'This order is accepted');
         _getOrder();
       } else {
         SnackbarUtil.getSnackBar(
@@ -172,7 +172,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColor.background,
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Order detail'),
+      ),
       body: Container(
           padding: const EdgeInsets.all(15),
           child: SingleChildScrollView(

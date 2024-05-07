@@ -73,17 +73,19 @@ class UserService {
     static async updateUser({
         userID,
         name,
+        email,
         phone,
         avatar,
     }: {
         userID: string;
         name: string;
+        email: string;
         phone: string;
         avatar: string;
     }) {
         return await UserModel.findByIdAndUpdate(
             { _id: new mongoose.Types.ObjectId(userID) },
-            { name, phone, avatar },
+            { name, phone, avatar, email },
             { new: true }
         );
     }

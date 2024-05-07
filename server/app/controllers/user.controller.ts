@@ -30,22 +30,36 @@ class UserController {
             const name: string = body.name;
             const phone: string = body.phone;
             const avatar: string = body.avatar;
+            const email: string = body.email;
 
             if (!userID)
                 return res.status(400).json({ err_mes: 'userID not found' });
 
-            const checkPhone = await userModel.findOne({ phone });
-            console.log(
-                '🚀 ~ UserController ~ updateUser ~ checkPhone:',
-                checkPhone
-            );
+            const user: any = await userModel.findById(userID);
+            if (!user)
+                return res.status(400).json({ err_mes: 'user not found' });
+            if (phone !== user.phone) {
+                const checkPhone = await userModel.findOne({ phone });
 
-            if (checkPhone) {
-                return res.status(400).json({ err_mes: 'Phone was existed.' });
+                if (checkPhone) {
+                    return res
+                        .status(400)
+                        .json({ err_mes: 'Phone was existed.' });
+                }
+            }
+            if (email !== user.email) {
+                const checkEmail = await userModel.findOne({ email });
+
+                if (checkEmail) {
+                    return res
+                        .status(400)
+                        .json({ err_mes: 'Email was existed.' });
+                }
             }
             const result = await UserService.updateUser({
                 userID,
                 name,
+                email,
                 phone,
                 avatar,
             });

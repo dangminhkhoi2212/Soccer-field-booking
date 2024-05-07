@@ -1,6 +1,7 @@
 import { PipelineStage } from 'mongoose';
 import orderModel from '../models/order.model';
 import { TOjectID } from '../utils/mongoose.util';
+import Favorite from '../models/favorite.model';
 interface TGetRevenue {
     sellerID: TOjectID;
     date?: string;
@@ -166,10 +167,108 @@ class StatisticService {
                 }
             );
         }
-
+        agg.push({
+            $sort: {
+                id: 1,
+            },
+        });
         result = await orderModel.aggregate(agg);
 
         return { typeID, values: result };
+    }
+    async getTotalRevenue(userID: TOjectID) {
+        const agg: PipelineStage[] = [
+            {
+                $lookup: {
+                    from: 'fields',
+                    localField: 'fieldID',
+                    foreignField: '_id',
+                    as: 'field',
+                    pipeline: [
+                        {
+                            $project: {
+                                userID: 1,
+                                _id: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind: '$field',
+            },
+            {
+                $match: {
+                    'field.userID': userID,
+                },
+            },
+            {
+                $group: {
+                    _id: '$field.userID',
+                    totalRevenue: { $sum: '$total' },
+                },
+            },
+
+            {
+                $project: {
+                    totalRevenue: 1,
+                },
+            },
+        ];
+
+        const result = await orderModel.aggregate(agg);
+        return (result.length != 0 && result[0].totalRevenue) || 0;
+    }
+    async getTotalFollow(userID: TOjectID) {
+        const result = await Favorite.countDocuments({
+            favorites: {
+                $in: userID,
+            },
+        });
+        return result ?? 0;
+    }
+    async getTotalOrder(userID: TOjectID) {
+        const agg: PipelineStage[] = [
+            {
+                $lookup: {
+                    from: 'fields',
+                    localField: 'fieldID',
+                    foreignField: '_id',
+                    as: 'field',
+                    pipeline: [
+                        {
+                            $project: {
+                                userID: 1,
+                                _id: 1,
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind: '$field',
+            },
+            {
+                $match: {
+                    'field.userID': userID,
+                },
+            },
+            {
+                $group: {
+                    _id: '$field.userID',
+                    totalOrder: { $sum: 1 },
+                },
+            },
+
+            {
+                $project: {
+                    totalOrder: 1,
+                },
+            },
+        ];
+
+        const result = await orderModel.aggregate(agg);
+        return (result.length !== 0 && result[0].totalOrder) || 0;
     }
 }
 export default StatisticService.getInstance();

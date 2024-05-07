@@ -48,9 +48,9 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
       _isLoading = true;
     });
     try {
-      final Response? response =
+      final Response response =
           await _orderService.getOneOrder(orderID: _orderID!, userID: _userID!);
-      if (response!.statusCode == 200) {
+      if (response.statusCode == 200) {
         _order = OrderModel.fromJson(response.data);
       }
     } on DioException catch (e) {
@@ -174,7 +174,7 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
       name: 'photos',
       maxImages: 5,
       decoration: const InputDecoration(
-        labelText: 'Quality of this field',
+        labelText: 'Photos',
         labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         enabledBorder: InputBorder.none,
       ),
@@ -226,6 +226,7 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
   Future _handelSubmit() async {
     showDialog(
       useSafeArea: true,
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return Center(
@@ -281,7 +282,7 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
           _handelSubmit();
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: MyColor.litePrimary,
+          backgroundColor: MyColor.primary,
         ),
         child: const Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -292,9 +293,9 @@ class _FeedbackFormPageState extends State<FeedbackFormPage> {
               child: Text(
                 'Submit',
                 style: TextStyle(
-                    color: MyColor.primary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600),
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
             )

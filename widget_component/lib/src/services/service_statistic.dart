@@ -8,7 +8,7 @@ class StatisticService {
   }
   final Dio _dio;
 
-  Future<Response?> getStatisticRevenue(
+  Future<Response> getStatisticRevenue(
       {required String sellerID,
       String? date,
       String? month,
@@ -18,6 +18,16 @@ class StatisticService {
       'date': date,
       'month': month,
       'year': year
+    });
+    return response;
+  }
+
+  Future<Response> getTotalFields({
+    required String userID,
+  }) async {
+    final Response response =
+        await _dio.get('/statistic/total-fields', queryParameters: {
+      'userID': userID,
     });
     return response;
   }

@@ -31,7 +31,7 @@ class OrderInfo extends StatelessWidget {
             ),
             borderRadius: const BorderRadius.all(Radius.circular(12))),
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text('This order status: $status',
+        child: Text('Order status: $status',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
       ),
     );

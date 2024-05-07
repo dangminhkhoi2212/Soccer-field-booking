@@ -70,7 +70,7 @@ class OrderCard extends StatelessWidget {
                       radius: 6,
                     ),
                     const SizedBox(
-                      width: 5,
+                      width: 10,
                     ),
                     Text(
                       fieldName,

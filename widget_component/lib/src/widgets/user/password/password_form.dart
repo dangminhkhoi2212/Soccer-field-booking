@@ -49,35 +49,35 @@ class _PasswordFormState extends State<PasswordForm> {
       final Response response = await _userService.updatePassword(
           oldPass: data['oldPass'], newPass: data['newPass']);
       _logger.d(response.data, error: 'update pass');
-      if (response.statusCode == 200) {
-        _formkey.currentState!.reset();
-        if (mounted) {
-          await showDialog(
-            context: context,
-            builder: (context) => CupertinoAlertDialog(
-              title: const Text(
-                'Update password',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              content: const Text('Your password is updated'),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text(
+              'Update password',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
-          );
-        }
+            content: const Text('Your password is updated'),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          ),
+        );
 
         // SnackbarUtil.getSnackBar(
         //     title: 'Update password', message: 'Your password is updated');
       }
     } on DioException catch (e) {
       _logger.e(e.toString(), error: 'DioException');
-      if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted && e.response!.statusCode == 400) {
         HandleError(
                 titleDebug: '_handleUpdatePassword',
                 messageDebug: e.response!.data['err_mes'],
@@ -87,6 +87,8 @@ class _PasswordFormState extends State<PasswordForm> {
     } catch (e) {
       _logger.e(e, error: '_handleUpdatePassword');
     }
+    _formkey.currentState!.reset();
+
     setState(() {
       _isLoading = false;
     });
@@ -164,9 +166,18 @@ class _PasswordFormState extends State<PasswordForm> {
                 onPressed: () {
                   _isLoading ? null : _handleUpdatePassword();
                 },
-                style: ElevatedButton.styleFrom(),
-                child: _isLoading ? MyLoading.spinkit() : const Text('Update')),
-          )
+                style:
+                    ElevatedButton.styleFrom(backgroundColor: MyColor.primary),
+                child: _isLoading
+                    ? MyLoading.spinkit()
+                    : const Text(
+                        'Update',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18),
+                      )),
+          ),
         ],
       ),
     );

@@ -21,17 +21,18 @@ class ApiConfig {
   final _box = GetStorage();
   final _logger = Logger();
   final dio = Dio(BaseOptions(
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      baseUrl: baseUrl,
-      maxRedirects: 10,
-      receiveDataWhenStatusError: true,
-      connectTimeout: const Duration(seconds: connectionTimeout),
-      receiveTimeout: const Duration(seconds: receiveTimeout),
-      responseType: ResponseType.json,
-      contentType: 'application/json'));
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    },
+    baseUrl: baseUrl,
+    receiveDataWhenStatusError: true,
+    followRedirects: false,
+    connectTimeout: const Duration(seconds: connectionTimeout),
+    receiveTimeout: const Duration(seconds: receiveTimeout),
+    responseType: ResponseType.json,
+    contentType: Headers.jsonContentType,
+  ));
   ApiConfig() {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
@@ -39,10 +40,10 @@ class ApiConfig {
         options.headers['authorization'] = 'Bear $accessToken';
         return handler.next(options);
       },
-      // onResponse: (response, handler) {
-      //   _logger.e(error: 'onResponse', response);
-      //   return handler.next(response);
-      // },
+      onResponse: (response, handler) {
+        // _logger.e(error: 'onResponse', response);
+        return handler.next(response);
+      },
       onError: (error, handler) async {
         final String? errMessage = error.response!.data['err_mes'];
 
@@ -54,7 +55,7 @@ class ApiConfig {
             return handler.resolve(await dio.fetch(error.requestOptions));
           }
         }
-        return handler.next(error);
+        return handler.reject(error);
       },
     ));
   }

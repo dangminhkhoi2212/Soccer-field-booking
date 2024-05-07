@@ -24,11 +24,12 @@ class _FormAddFieldState extends State<FormAddField> {
   final _formKey = GlobalKey<FormBuilderState>();
   final GetStorage _box = GetStorage();
   late String _userID;
+  late String? _fieldID;
   late FieldService _fieldService;
   final ApiConfig _apiConfig = ApiConfig();
 
   final TextStyle _labelStyle = const TextStyle();
-  late final Map<String, dynamic> _initValue = {
+  late Map<String, dynamic> _initValue = {
     'name': '',
     'type': '',
     'width': '',
@@ -46,13 +47,74 @@ class _FormAddFieldState extends State<FormAddField> {
   @override
   void initState() {
     super.initState();
+    _fieldID = Get.parameters['fieldID'];
     _userID = _box.read('id');
     _fieldService = FieldService(_apiConfig.dio);
+    if (_fieldID != null) {
+      _getFieldUpdate();
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future _getFieldUpdate() async {
+    try {
+      if (!mounted) return;
+      setState(() {
+        _loadingSelectCover = true;
+        _isLoading = true;
+      });
+      final Response response = await _fieldService.getOneSoccerField(
+        fieldID: _fieldID!,
+      );
+      debugPrint(response.toString());
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        _initValue = {
+          'name': data['name'],
+          'type': data['type'].toString(),
+          'width': FormatUtil.formatNumber(data['width']).toString(),
+          'length': FormatUtil.formatNumber(data['length']).toString(),
+          'price': FormatUtil.formatNumber(data['price']).toString(),
+          'description': data['description'],
+          'coverImage': data['coverImage'],
+          'isLock': data['isLock'],
+          'isRepair': data['isRepair'],
+        };
+        _formKey.currentState?.fields['name']
+            ?.didChange(data['name'].toString());
+        _formKey.currentState?.fields['type']
+            ?.didChange(data['type'].toString());
+        _formKey.currentState?.fields['width']
+            ?.didChange(FormatUtil.formatNumber(data['width']).toString());
+        _formKey.currentState?.fields['length']
+            ?.didChange(FormatUtil.formatNumber(data['length']).toString());
+        _formKey.currentState?.fields['price']
+            ?.didChange(FormatUtil.formatNumber(data['price']).toString());
+        _formKey.currentState?.fields['description']
+            ?.didChange(data['description'].toString());
+        _formKey.currentState?.fields['coverImage']
+            ?.didChange(data['coverImage']);
+
+        _coverUrl = data['coverImage'];
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        HandleError(
+            titleDebug: '_getFieldUpdate',
+            messageDebug: e.response!.data ?? e.message);
+      }
+    } catch (e) {
+      debugPrint('ERROR GET FIELD UPDATE: ${e.toString()}');
+    }
+    setState(() {
+      _isLoading = false;
+      _loadingSelectCover = false;
+    });
   }
 
   Future<void> _selectImage() async {
@@ -151,6 +213,71 @@ class _FormAddFieldState extends State<FormAddField> {
     }
   }
 
+  Future<void> _handleUpdateField() async {
+    try {
+      if (!mounted && _fieldID == null) return;
+      setState(() {
+        _isLoading = true;
+      });
+      _formKey.currentState!.saveAndValidate();
+
+      FocusScope.of(context).unfocus();
+      final Map<String, dynamic> data = _formKey.currentState!.value;
+      final Map<String, dynamic> errors = _formKey.currentState!.errors;
+
+      if (errors.isEmpty) {
+        final num price = num.parse(data['price'].split(',').join(''));
+        final num width = num.parse(data['width'].split(',').join(''));
+        final num length = num.parse(data['length'].split(',').join(''));
+        final num type = num.parse(data['type']);
+        final String name = data['name'];
+        final bool isLock = data['isLock'];
+        final bool isRepair = data['isRepair'];
+        final String description = data['description'];
+        final String coverImage = data['coverImage'];
+
+        debugPrint('price: $price');
+        debugPrint('width: $width');
+        debugPrint('length: $length');
+        debugPrint('type: $type');
+        debugPrint('name: $name');
+        debugPrint('isLock: $isLock');
+        debugPrint('isRepair: $isRepair');
+        debugPrint('description: $description');
+        debugPrint('coverImage: $coverImage');
+        final result = await _fieldService.updateSoccerField(
+            userID: _box.read('id'),
+            fieldID: _fieldID ?? '',
+            price: price,
+            width: width,
+            length: length,
+            type: type,
+            name: name,
+            isLock: isLock,
+            isRepair: isRepair,
+            description: description,
+            coverImage: coverImage);
+        _logger.i(result.toString());
+        if (result != null) {
+          SnackbarUtil.getSnackBar(
+              title: "Update field", message: "Update field successfully");
+          return;
+        } else {
+          throw 'Cannot add a new field. Please try again.';
+        }
+      }
+    } catch (e) {
+      _logger.e(error: e, 'Error update field');
+      SnackbarUtil.getSnackBar(
+          title: 'Add new soccer field',
+          message: 'Cannot add a new field. Please try again.');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Widget _buildContentCoverContainer() {
     if (_loadingSelectCover == true) {
       return const Center(
@@ -169,7 +296,6 @@ class _FormAddFieldState extends State<FormAddField> {
   Widget _buildFieldCoverImage() {
     return FormBuilderField(
       name: 'coverImage',
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: FormBuilderValidators.compose([
         FormBuilderValidators.required(),
       ]),
@@ -180,45 +306,41 @@ class _FormAddFieldState extends State<FormAddField> {
             errorText: field.errorText ?? '',
             border: InputBorder.none,
           ),
-          child: Stack(
+          child: Row(
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      _loadingSelectCover ? null : _selectImage();
-                    },
-                    child: Container(
-                      clipBehavior: Clip.hardEdge,
-                      width: 180,
-                      height: 130,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: _buildContentCoverContainer(),
+              GestureDetector(
+                onTap: () {
+                  _loadingSelectCover ? null : _selectImage();
+                },
+                child: Container(
+                  clipBehavior: Clip.hardEdge,
+                  width: 180,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: _buildContentCoverContainer(),
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Cover image',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Cover image',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black),
-                        ),
-                        Text('File format: PNG/JPEG'),
-                      ],
-                    ),
-                  ),
-                ],
-              )
+                    Text('File format: PNG/JPEG'),
+                  ],
+                ),
+              ),
             ],
           ),
         );
@@ -381,14 +503,14 @@ class _FormAddFieldState extends State<FormAddField> {
       style: ElevatedButton.styleFrom(backgroundColor: MyColor.primary),
       onPressed: () {
         if (_loadingSelectCover || _isLoading) return;
-        _handleAddField();
+        _fieldID != null ? _handleUpdateField() : _handleAddField();
       },
       child: Center(
           child: _isLoading
               ? MyLoading.spinkit()
-              : const Text(
-                  'Add',
-                  style: TextStyle(
+              : Text(
+                  _fieldID != null ? 'Save' : 'Add',
+                  style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: Colors.white),

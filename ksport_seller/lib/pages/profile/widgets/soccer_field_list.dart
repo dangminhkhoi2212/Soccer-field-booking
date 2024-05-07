@@ -105,16 +105,13 @@ class SoccerFieldListState extends State<SoccerFieldList> {
         debugPrint(field.toString());
         if (field == null) return const SizedBox();
         return FieldCard(
+          isSeller: true,
           field: field,
           onTap: () async {
-            if (_isSeller) {
-              return await Get.toNamed(
-                RoutePaths.addField,
-                parameters: {'fieldID': field.sId ?? ''},
-              );
-            }
-            await Get.toNamed(RoutePaths.addField,
-                parameters: {'fieldID': field.sId ?? ''});
+            await Get.toNamed(RoutePaths.fieldBooking, parameters: {
+              'fieldID': field.sId ?? '',
+              'sellerID': field.userID!
+            });
           },
         );
       },

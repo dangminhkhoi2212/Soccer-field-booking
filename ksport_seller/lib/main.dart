@@ -33,10 +33,17 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: PrimaryColor.primary,
         inputDecorationTheme: InputDecorationTheme(
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide()),
+          outlineBorder: const BorderSide(),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red.shade900),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ),

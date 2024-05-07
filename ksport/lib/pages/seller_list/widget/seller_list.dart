@@ -1,7 +1,10 @@
 import 'package:client_app/config/api_config.dart';
+import 'package:client_app/pages/seller_list/state/seller_list_state.dart';
 import 'package:client_app/pages/seller_list/widget/seller_card.dart';
 import 'package:dio/dio.dart';
+import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 
@@ -16,11 +19,25 @@ class _SellerListState extends State<SellerList> {
   List<UserModel?> _sellerList = [];
   final UserService _userService = UserService(ApiConfig().dio);
   final Logger _logger = Logger();
+  final SellerListState sellerListState = Get.put(SellerListState());
+
   bool _isLoading = false;
   @override
   void initState() {
     super.initState();
-    _getSellers();
+    sellerListState.textSearch.listen((value) {
+      _logger.d(value);
+      if (value.isNotEmpty) {
+        _getSellers(value);
+      }
+    });
+    _getSellers(null);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Get.delete<SellerListState>();
   }
 
   @override
@@ -29,15 +46,13 @@ class _SellerListState extends State<SellerList> {
     super.setState(fn);
   }
 
-  Future _getSellers() async {
+  Future _getSellers(String? textSearch) async {
     setState(() {
       _isLoading = true;
     });
     try {
-      final Response response = await _userService.getUsers(
-        select: '_id name avatar',
-        role: 'seller',
-      );
+      final Response response =
+          await _userService.getUsers(role: 'seller', textSearch: textSearch);
       if (response.statusCode == 200) {
         final List data = response.data;
 
@@ -61,6 +76,13 @@ class _SellerListState extends State<SellerList> {
     if (_isLoading) {
       Center(
         child: MyLoading.spinkit(),
+      );
+    }
+    if (_sellerList.isEmpty) {
+      return EmptyWidget(
+        packageImage: PackageImage.Image_2,
+        hideBackgroundAnimation: true,
+        subTitle: 'Not found',
       );
     }
     return ListView.separated(

@@ -1,15 +1,14 @@
 import 'dart:math';
 
-import 'package:client_app/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:ksport_seller/config/api_config.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:logger/logger.dart';
 import 'package:widget_component/my_library.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class FeedbackField extends StatefulWidget {
   final String fieldID;
@@ -29,7 +28,6 @@ class _FieldInfoState extends State<FeedbackField> {
   FeedbackModel? _feedback = FeedbackModel.fromJson({});
   final FeedbackService _feedbackService = FeedbackService(ApiConfig().dio);
 
-  final PagingController _pagingController = PagingController(firstPageKey: 0);
   @override
   void initState() {
     super.initState();
@@ -65,7 +63,7 @@ class _FieldInfoState extends State<FeedbackField> {
 
   Widget _buildStar() {
     return RatingBar.builder(
-      initialRating: _statistic.ratingStar!,
+      initialRating: 5,
       minRating: 1,
       direction: Axis.horizontal,
       allowHalfRating: false,

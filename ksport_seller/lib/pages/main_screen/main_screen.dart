@@ -1,8 +1,9 @@
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:get/get.dart';
+import 'package:ksport_seller/pages/add_field/add_field_page.dart';
+import 'package:ksport_seller/pages/add_field/widgets/form_add_field.dart';
 import 'package:ksport_seller/pages/fields/fields_page.dart';
 import 'package:ksport_seller/pages/home/home_page.dart';
-import 'package:ksport_seller/pages/main_screen/state/main_screen_state.dart';
 import 'package:ksport_seller/pages/order_list/order_list_page.dart';
 import 'package:ksport_seller/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -20,36 +21,21 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final List pages = [
     const HomePage(),
-    const FieldsPage(),
+    const AddFieldPage(),
     const OrderList(),
     const ProfilePage()
   ];
   int? _index;
   final _logger = Logger();
-  final _pageController = PageController(
-    initialPage: 0,
-  );
-  final MainScreenState _mainScreenState = Get.put(MainScreenState());
-  final _controller = NotchBottomBarController(index: 0);
+  late PageController _pageController;
+  late NotchBottomBarController _controller;
 
   int maxCount = 4;
   late Worker worker;
   @override
   void initState() {
     super.initState();
-
-    ever(
-      _mainScreenState.indexPage,
-      (index) {
-        if (index != _mainScreenState.initValue && _pageController.hasClients) {
-          _pageController.jumpToPage(index);
-          _controller.jumpTo(index);
-          _mainScreenState.resetValue();
-
-          Navigator.of(context).pop();
-        }
-      },
-    );
+    handleRedirect();
   }
 
   final _iconList = [
@@ -65,6 +51,20 @@ class _MainScreenState extends State<MainScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void handleRedirect() {
+    final arg = Get.arguments;
+    if (arg != null) {
+      final int? index = arg['index'];
+      if (index != null && index < pages.length) {
+        _pageController = PageController(initialPage: index);
+        _controller = NotchBottomBarController(index: index);
+      }
+    } else {
+      _pageController = PageController(initialPage: 0);
+      _controller = NotchBottomBarController(index: 0);
+    }
   }
 
   List<BottomBarItem> _bottomBarItems() {

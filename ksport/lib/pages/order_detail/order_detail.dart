@@ -105,7 +105,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MyColor.litePrimary,
+                  backgroundColor: MyColor.primary,
                 ),
                 onPressed: () {
                   Get.toNamed(RoutePaths.feedbackForm,
@@ -114,7 +114,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 child: const Text(
                   'Feedback',
                   style: TextStyle(
-                      color: MyColor.primary, fontWeight: FontWeight.w600),
+                      color: Colors.white, fontWeight: FontWeight.w500),
                 ),
               ),
             ),

@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ksport_seller/pages/add_field/widgets/form_add_field.dart';
+import 'package:ksport_seller/pages/update_field/widgets/form_update_field.dart';
 
-class AddFieldPage extends StatefulWidget {
-  const AddFieldPage({super.key});
+class UpdateFieldPage extends StatefulWidget {
+  const UpdateFieldPage({super.key});
 
   @override
-  State<AddFieldPage> createState() => _AddFieldPageState();
+  State<UpdateFieldPage> createState() => _UpdateFieldPageState();
 }
 
-class _AddFieldPageState extends State<AddFieldPage> {
+class _UpdateFieldPageState extends State<UpdateFieldPage> {
+  String? _fieldID;
   @override
   void initState() {
     super.initState();
+    _fieldID = Get.parameters['fieldID'];
   }
 
   @override
@@ -26,8 +28,9 @@ class _AddFieldPageState extends State<AddFieldPage> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           centerTitle: true,
-          automaticallyImplyLeading: false,
-          title: const Text('Add soccer field'),
+          automaticallyImplyLeading: _fieldID != null,
+          title: Text(
+              _fieldID != null ? 'Update soccer field' : 'Add soccer field'),
         ),
         body: SingleChildScrollView(
           child: Container(

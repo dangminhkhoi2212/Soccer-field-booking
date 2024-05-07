@@ -38,25 +38,6 @@ class _ProfilePageState extends State<ProfilePage> {
     _addressService = AddressService(apiConfig.dio);
     _userID = _box.read('id');
     _initValue();
-    test();
-  }
-
-  Future test() async {
-    try {
-      final Position? position = await GoogleMapService().determinePosition();
-
-      double lat = position!.latitude;
-      double long = position.longitude;
-
-      _logger.i(lat.toString());
-      _logger.i(long.toString());
-      final String? address = await GoogleMapService()
-          .getAddressFromLatLng(latitude: lat, longitude: long);
-
-      _logger.i(address.toString());
-    } catch (e) {
-      _logger.e(e);
-    }
   }
 
   Future _getUser() async {

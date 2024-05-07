@@ -14,6 +14,7 @@ class RoutePaths {
   static String password = '/profile/password';
   static String editOperatingTime = '/profile/edit-operating-time';
   static String addField = '/fields/add-field';
+  static String updateField = '/fields/update-field';
   static String fieldBooking = '/fields/field-booking';
   static String orderDetail = '/orderDetail';
   static String feedbackForm = '/feedback-form';

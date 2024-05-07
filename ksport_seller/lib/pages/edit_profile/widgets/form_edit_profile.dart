@@ -79,11 +79,15 @@ class _FromEditProfileState extends State<FromEditProfile> {
     final Map<String, dynamic> data = _formKey.currentState!.value;
     final Map<String, dynamic> errors = _formKey.currentState!.errors;
     if (errors.isEmpty) {
-      await handleUpdate(name: data['name'], phone: data['phone'] ?? '');
+      await handleUpdate(
+          name: data['name'], phone: data['phone'] ?? '', email: data['email']);
     }
   }
 
-  Future handleUpdate({required String name, required String phone}) async {
+  Future handleUpdate(
+      {required String name,
+      required String phone,
+      required String email}) async {
     try {
       setState(() {
         _isLoading = true;
@@ -95,6 +99,7 @@ class _FromEditProfileState extends State<FromEditProfile> {
           userID: userID,
           name: name,
           phone: phone,
+          email: email,
           avatar: _currentAvatar ?? avatar);
       final data = response.data;
       _box.write('name', data['name']);
@@ -136,6 +141,9 @@ class _FromEditProfileState extends State<FromEditProfile> {
       child: Column(
         children: [
           const FormAvatar(),
+          const SizedBox(
+            height: 10,
+          ),
           FormBuilderTextField(
             name: 'name',
             decoration: const InputDecoration(
@@ -143,13 +151,18 @@ class _FromEditProfileState extends State<FromEditProfile> {
               labelText: 'Name',
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
           FormBuilderTextField(
             name: 'email',
-            enabled: false,
             decoration: const InputDecoration(
-                prefixIcon: LineIcon.envelope(),
-                labelText: 'Email',
-                helperText: 'This email can\'t be changed.'),
+              prefixIcon: LineIcon.envelope(),
+              labelText: 'Email',
+            ),
+          ),
+          const SizedBox(
+            height: 15,
           ),
           FormBuilderTextField(
             name: 'phone',
@@ -174,43 +187,23 @@ class _FromEditProfileState extends State<FromEditProfile> {
           const SizedBox(
             height: 40,
           ),
-          InkWell(
-            onTap: () {
-              _isAllowSave ? _handleSave() : null;
-            },
-            borderRadius: BorderRadius.circular(50),
-            child: Ink(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(50),
-                  ),
-                  border: Border.all(
-                    color: _isAllowSave ? Colors.black87 : Colors.grey.shade200,
-                    width: 2,
-                  )),
-              child: _isLoading == false
-                  ? Center(
-                      child: Text(
-                        'Save',
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+                onPressed: () {
+                  _isAllowSave ? _handleSave() : null;
+                },
+                style:
+                    ElevatedButton.styleFrom(backgroundColor: MyColor.primary),
+                child: _isLoading
+                    ? MyLoading.spinkit()
+                    : const Text(
+                        'Update',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: _isAllowSave
-                              ? Colors.black87
-                              : Colors.grey.shade200,
-                        ),
-                      ),
-                    )
-                  : const Center(
-                      child: SizedBox(
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.black),
-                        ),
-                      ),
-                    ),
-            ),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18),
+                      )),
           ),
           Padding(
             padding: EdgeInsets.only(
